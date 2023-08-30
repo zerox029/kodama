@@ -146,7 +146,7 @@ Arrays are dynamic in size and can grow and shrink at runtime.
 
 ```
 // Function that takes an array of u64 and returns an array of strings
-fn foo(numbers: [u64]) -> [String] {
+def foo(numbers: [u64]) -> [String] {
     ...
 }
 
@@ -161,7 +161,7 @@ let array: [i64] = [0; 100]
 Sets can be created and accessed in the following way
 ```
 let set: {String} = {"one", "two", "three"}
-print(set.contains("one)) // prints true
+print(set.contains("one")) // prints true
 ```
 
 ## Dictionaries
