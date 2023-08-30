@@ -1,5 +1,8 @@
 # The Kodama programming language
-Kodama is a modern and friendly, dynamically typed systems programming language. It is designed to build reliable and maintainable software that without sacrificing on efficiency.
+Kodama is a modern and friendly, strongly typed systems programming language. It is designed to build reliable and maintainable software that without sacrificing on efficiency.
+
+## Type safety
+
 
 ## Math safety
 By default, integer overflows will cause runtime errors. To specify that a variable can overflow, it must be marked with the `[[can_overflow]]` attribute
@@ -80,10 +83,10 @@ while(counter < 5) {
     counter++
 }
 
-let mut counter_two = 0
+let mut counter = 0
 do {
-    print(counter_two)
-    counter_two++
+    print(counter)
+    counter++
 } while()
 ```
 
@@ -93,6 +96,31 @@ for value in (0...5) {
     print(value)
 }
 ```
+
+## Arrays
+Arrays are dynamic in size and can grow and shrink at runtime.
+
+```
+// Function that takes an array of u64 and returns an array of strings
+fn foo(numbers: [u64]) -> [String] {
+    ...
+}
+
+// Creating an array of 5 integers
+let array: [i64] = [1, 2, 3, 4, 5] 
+
+// Creating an array of 100 items initialized at 0
+let array: [i64] = [0; 100]
+```
+
+## Dictionaries
+Dictionaries can be created an accessed in the following way
+
+```
+let dict: {String:i64} = {"one": 1, "two: 2, "three": 3}
+let i = dict["one"] // i takes on the value 1
+```
+
 
 ## Operators
 
