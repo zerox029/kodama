@@ -2,7 +2,8 @@
 Kodama is a modern and friendly, strongly typed systems programming language. It is designed to build reliable and maintainable software that without sacrificing on efficiency.
 
 ## Type safety
-
+- Immutability by default
+- All casts must be explicit
 
 ## Math safety
 By default, integer overflows will cause runtime errors. To specify that a variable can overflow, it must be marked with the `[[can_overflow]]` attribute
@@ -51,6 +52,9 @@ def floatFive() -> f32 {
 def addOne(x: u64) {
     return x + 1
 }
+
+// One liner shorthand
+def addOne(x: u64) => return x + 1
 ```
 
 ## Function calls
@@ -61,6 +65,46 @@ setSize(width: 20, height: 50)
 There are two exceptions to this:
 - If the parameter in the function declaration is declared as anon, omitting the argument label is allowed.
 - When passing a variable with the same name as the parameter.
+
+## Classes and structs
+Structures in Kodama can be created with either `struct` or `class`
+
+### `struct`
+Members of a struct are public by default.
+```
+struct Rectangle {
+    width: i64
+    height: i64
+}
+```
+Structs in Kodama are passed by value. Copying a struct instance will always produce a deep copy such that any variable containing one will possess a unique instance.
+
+### `class`
+Members of a class are by default assumed to be private, the `public` identifier must be added otherwise. \
+Member variables can be accessed using the `self.` notation or with the shorthand `.` ommiting the `self`.
+```
+class Rectangle {
+    width: i64
+    height: i64
+
+    public def area() -> i64 => return .width * .height
+}
+```
+
+A default constructor will be generated for classes, it takes all fields by name. For the above class, the following will get generated.
+```
+Rectangle(width: 10, height: 20)
+```
+Custom constructors can be created in the following way
+```
+public Rectangle(width: i64, height: i64) -> Rectangle {
+    .width = width
+    .height = height
+}
+```
+
+Classes in Kodama are passed by reference such that copying a class copies a reference to that class and two variables may point to the same instance of a single class.
+
 
 ## Control flow
 Kodama supports 3 main control flow statements:
@@ -113,12 +157,27 @@ let array: [i64] = [1, 2, 3, 4, 5]
 let array: [i64] = [0; 100]
 ```
 
+## Sets
+Sets can be created and accessed in the following way
+```
+let set: {String} = {"one", "two", "three"}
+print(set.contains("one)) // prints true
+```
+
 ## Dictionaries
 Dictionaries can be created an accessed in the following way
 
 ```
 let dict: {String:i64} = {"one": 1, "two: 2, "three": 3}
-let i = dict["one"] // i takes on the value 1
+print(dict["one"]) // prints 1
+```
+
+
+## Tuples
+Tuples can be created and accessed in the following way
+```
+let tuple: (String:bool:u64) = ("heya", true, 55)
+print(tuple[1]) // prints true
 ```
 
 
@@ -183,3 +242,4 @@ let i = dict["one"] // i takes on the value 1
 | `.` | Member access |
 | `*` | Dereference |
 | `...` | Range literal |
+| `??` | Null coalescing operator |
