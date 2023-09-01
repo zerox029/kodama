@@ -4,6 +4,7 @@ Kodama is a modern and friendly, strongly typed systems programming language. It
 ## Type safety
 - Immutability by default
 - All casts must be explicit
+- Optional chaining
 
 ## Math safety
 By default, integer overflows will cause runtime errors. To specify that a variable can overflow, it must be marked with the `[[can_overflow]]` attribute
@@ -26,35 +27,35 @@ let x = 5
 let mut y = 5
 ```
 
-Data types can be specified by apending them to the variable name but will also be infered by the compiler if left unspecified
+Data types can be specified by apending them to the variable name but will also be infered by the compiler if left unspecified. When multiple sizes of the same data type are available, the compiler will always default to 64 bit.
 ```
 // x is infered to be f64
-let mut x = 3.0
+let x = 3.0
 
 // y is explicitely set to be f32
-let mut x: f32 = 3.0
+let x: f32 = 3.0
 ```
 
 ## Functions declarations
-Functions in Kodama are declared using the `def` keyword. Like variables, return types can be explicitely specified but will be infered by the compiler otherwise. Arguments however must have a specified type.
+Functions in Kodama are declared using the `fn` keyword. Like variables, return types can be explicitely specified but will be infered by the compiler otherwise. Arguments however must have a specified type.
 ```
 // Declare a function five
-def five() {
+fn five() {
     return 5
 }
 
 // Declare a function floatFive explicitely setting its return type to f32
-def floatFive() -> f32 {
+fn floatFive() -> f32 {
     return 5.0
 }
 
 // Declare a function addOne that takes in a u64
-def addOne(x: u64) {
+fn addOne(x: u64) {
     return x + 1
 }
 
 // One liner shorthand
-def addOne(x: u64) => return x + 1
+fn addOne(x: u64) => return x + 1
 ```
 
 ## Function calls
@@ -81,13 +82,13 @@ Structs in Kodama are passed by value. Copying a struct instance will always pro
 
 ### `class`
 Members of a class are by default assumed to be private, the `public` identifier must be added otherwise. \
-Member variables can be accessed using the `self.` notation or with the shorthand `.` ommiting the `self`.
+Member variables can be accessed using `self` notation or with the shorthand `.` ommiting the `self`.
 ```
 class Rectangle {
     width: i64
     height: i64
 
-    public def area() -> i64 => return .width * .height
+    public fn area() -> i64 => return .width * .height
 }
 ```
 
@@ -109,17 +110,19 @@ Classes in Kodama are passed by reference such that copying a class copies a ref
 ## Control flow
 Kodama supports 3 main control flow statements:
 
-- `if else`
+- `if ... (else if) ... (else)`
 ```
 let num = 5
 if(num == 5) {
     print("This executes")
-} else {
+} else if (num == 10) {
     print("This does not execute")
+} else {
+    print("This also does not execute")
 }
 ```
 
-- `(do) while`
+- `(do) ... while`
 ```
 let mut counter = 0
 while(counter < 5) {
@@ -142,19 +145,21 @@ for value in (0...5) {
 ```
 
 ## Arrays
-Arrays are dynamic in size and can grow and shrink at runtime.
+Arrays are dynamic in size and can grow and shrink at runtime. \
+**Open question**: Do we really want that behavior?
 
 ```
 // Function that takes an array of u64 and returns an array of strings
-def foo(numbers: [u64]) -> [String] {
+fn foo(numbers: [u64]) -> [String] {
     ...
 }
 
 // Creating an array of 5 integers
 let array: [i64] = [1, 2, 3, 4, 5] 
-
-// Creating an array of 100 items initialized at 0
-let array: [i64] = [0; 100]
+```
+An array spanning a continuous range of integers can be created with the following shorthand
+```
+let range: [i64] = 0...500
 ```
 
 ## Sets
@@ -172,74 +177,9 @@ let dict: {String:i64} = {"one": 1, "two: 2, "three": 3}
 print(dict["one"]) // prints 1
 ```
 
-
 ## Tuples
 Tuples can be created and accessed in the following way
 ```
-let tuple: (String:bool:u64) = ("heya", true, 55)
+let tuple: (String, bool, u64) = ("heya", true, 55)
 print(tuple[1]) // prints true
 ```
-
-
-## Operators
-
-### Arithmetic operators
-| Operator | Description    |
-| -------- | -------------- |
-| `+`      | Addition       |
-| `-`      | Substraction   |
-| `*`      | Multiplication |
-| `/`      | Division       |
-| `%`      | Modulo         |
-| `++`     | Increment      |
-| `--`     | Decrement      |
-
-
-### Assignment operators
-| Operator | Description |
-| --- | --- |
-| `=` |  Assignment |
-| `+=` | Arithmetic addition and assignment |
-| `-=` |  Arithmetic substraction and assignment |
-| `*=` |  Arithmetic multiplication and assignment |
-| `/=` |  Arithmetic division and assignment |
-| `%=` |  Arithmetic modulo and assignment |
-
-
-### Relational operators
-| Operators | Description |
-| --- | --- |
-| `==` | Equality |
-| `!=` | Inequality |
-| `>` | Greater than |
-| `<` | Less than |
-| `>=` | Greater than or equal to |
-| `<=` | Less than or equal to |
-
-### Logical operators
-| Operators | Description |
-| --- | --- |
-| `&&` | Logical AND |
-| `\|\|` | Logical OR |
-| `!` | Logical complement |
-
-### Bitwise operators
-| Operators | Description |
-| --- | --- |
-| `&` | Bitwise AND |
-| `\|` | Bitwise OR |
-| `^` | Bitwise XOR |
-| `~` | Bitwise NOT |
-| `<<` | Bitwise left-shift |
-| `>>` | Bitwise right-shift |
-
-### Other operators
-| Operators | Description |
-| --- | --- |
-| `?:` | Ternary conditional |
-| `?.` | Optional chaining |
-| `&` | Address-of |
-| `.` | Member access |
-| `*` | Dereference |
-| `...` | Range literal |
-| `??` | Null coalescing operator |
