@@ -124,17 +124,19 @@ if(num == 5) {
 
 - `(do) ... while`
 ```
-let mut counter = 0
-while(counter < 5) {
-    print(counter)
-    counter++
+// Prints all numbers from 0 to 10
+let mut x = 0
+while(x <= 10) {
+    print(x)
+    x++
 }
 
-let mut counter = 0
+// Prints 0
+let mut x = 0
 do {
-    print(counter)
-    counter++
-} while()
+    print(x)
+    x++
+} while(x < 0)
 ```
 
 - `for`
