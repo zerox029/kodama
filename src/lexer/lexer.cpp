@@ -4,6 +4,11 @@
 
 #include "lexer.hpp"
 #include <sstream>
+#include <map>
+
+std::map<std::string, TokenType> symbols = {
+    {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH}
+};
 
 Token Lexer::peek() {
   Token token = next();
@@ -13,39 +18,44 @@ Token Lexer::peek() {
 }
 
 Token Lexer::next() {
-  char c = input.at(index);
-
-  if(isdigit(c))
-    return readNumber();
-
-  switch(c) {
-    case '+':
-      index++;
-      return Token{TK_PLUS, "+"};
-    case '-':
-      index++;
-      return Token{TK_MINUS, "-"};
-    case '*':
-      index++;
-      return Token{TK_STAR, "*"};
-    case '/':
-      index++;
-      return Token{TK_SLASH, "/"};
-    default:
-      index++;
-      return Token{TK_EOF, ""};
+  // Process symbols
+  std::optional<Token> token = readSymbol();
+  if(token.has_value()) {
+    index += token.value().getStr().length();
+    return token.value();
   }
+
+  // Process numbers
+  token = readNumber();
+  if(token.has_value()) return token.value();
+
+  throw std::invalid_argument{"Unexpected token"};
 }
 
-Token Lexer::readNumber() {
-  std::stringstream str {};
+std::optional<Token> Lexer::readSymbol() {
+  auto iterator = symbols.begin();
+  while(iterator != symbols.end()) {
+    if(input.substr(index).starts_with(iterator->first)) {
+      return Token{ iterator->second, iterator->first };
+    }
+    ++iterator;
+  }
 
-  while (index < input.length() && isdigit(input.at(index))) {
-    str << input.at(index);
+  return {};
+}
+
+std::optional<Token> Lexer::readNumber() {
+  std::stringstream numValue {};
+
+  while (index < input.length() && isdigit(static_cast<unsigned char>(input.at(index)))) {
+    numValue << input.at(index);
     index++;
   }
 
-  return Token{TK_NUMBER, str.str()};
+  if(numValue.str().length() == 0)
+    return {};
+
+  return Token{TK_NUMBER, numValue.str()};
 }
 
 std::queue<Token> Lexer::tokenize() {

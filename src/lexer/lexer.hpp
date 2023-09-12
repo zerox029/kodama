@@ -8,6 +8,7 @@
 #include "token.hpp"
 #include <queue>
 #include <string>
+#include <optional>
 
 class Lexer {
  public:
@@ -21,7 +22,8 @@ class Lexer {
 
   Token peek();
   Token next();
-  Token readNumber();
+  std::optional<Token> readSymbol();
+  std::optional<Token> readNumber();
 };
 
 #endif //KODAMA_SRC_LEXER_LEXER_HPP_
