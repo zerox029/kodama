@@ -6,27 +6,10 @@
 #include <sstream>
 
 Token Lexer::peek() {
-  char c = input.at(index);
+  Token token = next();
+  index -= token.getStr().length();
 
-  if(isdigit(c)) {
-    Token token = readNumber();
-    index -= token.getStr().length();
-
-    return token;
-  }
-
-  switch(c) {
-    case '+':
-      return Token{TK_PLUS, "+"};
-    case '-':
-      return Token{TK_MINUS, "-"};
-    case '*':
-      return Token{TK_STAR, "*"};
-    case '/':
-      return Token{TK_SLASH, "/"};
-    default:
-      return Token{TK_EOF, ""};
-  }
+  return token;
 }
 
 Token Lexer::next() {
