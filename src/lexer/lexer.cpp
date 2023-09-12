@@ -5,8 +5,9 @@
 #include "lexer.hpp"
 #include <sstream>
 #include <map>
+#include <iostream>
 
-std::map<std::string, TokenType> symbols = {
+const std::map<std::string, TokenType> symbols = {
     {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH}
 };
 
@@ -18,6 +19,11 @@ Token Lexer::peek() {
 }
 
 Token Lexer::next() {
+  // Eliminate white spaces
+  while(isspace(static_cast<unsigned char>(input.at(index)))) {
+    index++;
+  }
+
   // Process symbols
   std::optional<Token> token = readSymbol();
   if(token.has_value()) {
