@@ -1,6 +1,12 @@
 #include <iostream>
+#include "lexer/lexer.hpp"
 
 int main() {
-  std::cout << "Hello, World!" << std::endl;
+  Lexer lexer {"14+5"};
+
+  std::queue<Token> tokens = lexer.tokenize();
+
+  std::cout << tokens.size() << std::endl;
+
   return 0;
 }
