@@ -35,7 +35,7 @@ Token Lexer::next() {
   token = readNumber();
   if(token.has_value()) return token.value();
 
-  throw std::invalid_argument{"Unexpected token"};
+  throw std::invalid_argument{"Unexpected operatorToken"};
 }
 
 std::optional<Token> Lexer::readSymbol() {
