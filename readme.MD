@@ -1,10 +1,11 @@
 # The Kodama programming language
 Kodama is a modern and friendly, strongly typed systems programming language. It is designed to build reliable and maintainable software that without sacrificing on efficiency.
 
-## Readability
+## Readability and safety features
 - Immutability by default
 - All casts must be explicit
 - Optional chaining
+- Integer overflows are not allowed by default
 
 ## Math safety
 By default, integer overflows will cause runtime errors. To specify that a variable can overflow, it must be marked with the `[[can_overflow]]` attribute
