@@ -5,7 +5,7 @@
 #include "parser.hpp"
 #include <utility>
 
-Parser::Parser(std::queue<Token> tokenQueue) : tokens {std::move(tokenQueue)}, currentToken {tokens.front()} {
+Parser::Parser(std::queue<Token> tokenQueue) : tokens{std::move(tokenQueue)}, currentToken{tokens.front()} {
   tokens.pop();
 }
 
@@ -27,7 +27,7 @@ Parser::ParseBinaryOperation() {
 
 std::shared_ptr<AstNode>
 Parser::ParseNumber() {
-  NumberLiteral numberLiteralNode {currentToken, currentToken.getStr()};
+  NumberLiteral numberLiteralNode{currentToken, currentToken.getStr()};
 
   advance();
 

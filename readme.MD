@@ -1,13 +1,14 @@
 # The Kodama programming language
 Kodama is a modern and friendly, strongly typed systems programming language. It is designed to build reliable and maintainable software that without sacrificing on efficiency.
 
-## Readability and safety features
-- Immutability by default
-- All casts must be explicit
-- Optional chaining
-- Integer overflows are not allowed by default
+## Overview
+- Type inference
+- First-class functions
+- Algebraic data types
+- Parametric polymorphism
+- Pattern matching
 
-## Math safety
+## Safety
 By default, integer overflows will cause runtime errors. To specify that a variable can overflow, it must be marked with the `[[can_overflow]]` attribute
 ```
 let mut x: u8 = 255
@@ -28,13 +29,24 @@ let x = 5
 let mut y = 5
 ```
 
-Data types can be specified by apending them to the variable name but will also be infered by the compiler if left unspecified. When multiple sizes of the same data type are available, the compiler will always default to 64 bit.
+Data types can be specified by apending them to the variable name but will also be inferred by the compiler if left unspecified. 
+The keyword `auto` can also be used to let the compiler infer the required type.
+When multiple sizes of the same data type are available, the compiler will always default to 64 bit.
 ```
 // x is infered to be f64
 let x = 3.0
 
+// x is infered to be f64 through the use of auto
+let x: auto = 3.0
+
 // y is explicitely set to be f32
 let x: f32 = 3.0
+```
+
+Variables are non-nullable by default. They can be made nullable by adding a question mark (?) to the type.
+```
+let x = null // Will not compile
+let x: int? = null // Will compile correctly
 ```
 
 ## Functions declarations
@@ -92,6 +104,9 @@ class Rectangle {
     public fn area() -> i64 => return .width * .height
 }
 ```
+
+### `mixin`
+Todo
 
 A default constructor will be generated for classes, it takes all fields by name. For the above class, the following will get generated.
 ```
