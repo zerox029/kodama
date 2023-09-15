@@ -44,7 +44,7 @@ let x: f32 = 3.0
 ```
 
 Variables are non-nullable by default. They can be made nullable by adding a question mark (?) to the type.
-**Open question**: Would it be better to use a [[nullable]] annotation instead? And get rid of the auto keyword.
+**Open question**: Would it be better to use a `[[nullable]]` annotation instead? And get rid of the auto keyword.
 ```
 let x = null // Will not compile
 let x: int? = null // Will compile correctly
