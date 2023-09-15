@@ -9,15 +9,16 @@
 #include <queue>
 #include <string>
 #include <optional>
+#include <utility>
 
 class Lexer {
  public:
-  explicit Lexer(const std::string& input) : input{input}, index{0} {}
+  explicit Lexer(std::string input) : input{std::move(input)}, index{0} {}
 
   std::queue<Token> tokenize();
 
  private:
-  std::string_view input;
+  std::string input;
   size_t index;
 
   Token peek();

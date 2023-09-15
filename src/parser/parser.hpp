@@ -20,10 +20,10 @@ class Parser {
   std::queue<Token> tokens;
   Token currentToken;
 
-  void advance();
-
   std::shared_ptr<AstNode> ParseBinaryOperation();
   std::shared_ptr<AstNode> ParseNumber();
+
+  void advance();
 };
 
 #endif //KODAMA_SRC_PARSER_PARSER_HPP_

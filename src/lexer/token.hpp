@@ -22,14 +22,14 @@ enum TokenType {
 
 class Token {
  public:
-  Token(TokenType type, const std::string& str) : type{type}, str{str} {}
+  Token(TokenType type, std::string  str) : type{type}, str{std::move(str)} {}
 
-  TokenType getTokenType() { return type; }
-  std::string_view getStr() { return str; }
+  [[nodiscard]] TokenType getTokenType() const { return type; }
+  [[nodiscard]] std::string getStr() const { return str; }
 
  private:
   TokenType type;
-  std::string_view str;
+  std::string str;
 };
 
 #endif //KODAMA_SRC_LEXER_TOKEN_HPP_

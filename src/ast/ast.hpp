@@ -9,6 +9,7 @@
 #include <memory>
 
 enum AstNodeKind {
+  AST_EXPRESSION,
   AST_NUMBER_LITERAL,
   AST_BINARY_OPERATION
 };
@@ -17,8 +18,9 @@ class AstNode {
  public:
   virtual ~AstNode() = default;
 
-  virtual Token getToken() const = 0;
-  virtual AstNodeKind getKind() const = 0;
+  virtual Token GetToken() const = 0;
+  virtual AstNodeKind GetKind() const = 0;
+  virtual std::string Stringify() const = 0;
 };
 
 class NumberLiteral : public AstNode {
@@ -29,26 +31,28 @@ class NumberLiteral : public AstNode {
  public:
   NumberLiteral(Token tok, std::string_view val);
 
-  std::string getValue() const;
-
-  Token getToken() const;
-  AstNodeKind getKind() const;
+  std::string GetValue() const;
+  Token GetToken() const;
+  AstNodeKind GetKind() const;
+  std::string Stringify() const;
 };
 
 class BinaryOperation : public AstNode {
  private:
   Token operatorToken;
-  std::shared_ptr<NumberLiteral> lhs;
-  std::shared_ptr<NumberLiteral> rhs;
+  std::string value;
+  std::shared_ptr<AstNode> lhs;
+  std::shared_ptr<AstNode> rhs;
 
  public:
-  BinaryOperation(Token tok, std::shared_ptr<NumberLiteral> lhs, std::shared_ptr<NumberLiteral> rhs);
+  BinaryOperation(Token operatorTok, std::shared_ptr<AstNode> lhs, std::shared_ptr<AstNode> rhs);
 
-  std::shared_ptr<NumberLiteral> getLHS();
-  std::shared_ptr<NumberLiteral> getRHS();
+  std::shared_ptr<AstNode> GetLhs();
+  std::shared_ptr<AstNode> GetRhs();
 
-  Token getToken() const;
-  AstNodeKind getKind() const;
+  Token GetToken() const;
+  AstNodeKind GetKind() const;
+  std::string Stringify() const;
 };
 
 #endif //KODAMA_SRC_EXPRESSION_H_

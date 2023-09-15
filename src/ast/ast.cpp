@@ -7,32 +7,40 @@
 #include <utility>
 
 /// Number Literal
-
 NumberLiteral::NumberLiteral(Token tok, std::string_view val) : token{tok}, value{val} {}
 
 std::string
-NumberLiteral::getValue() const { return value; }
+NumberLiteral::GetValue() const { return value; }
 
 Token
-NumberLiteral::getToken() const { return token; }
+NumberLiteral::GetToken() const { return token; }
 
 AstNodeKind
-NumberLiteral::getKind() const { return AST_NUMBER_LITERAL; }
+NumberLiteral::GetKind() const { return AST_NUMBER_LITERAL; }
+
+std::string NumberLiteral::Stringify() const {
+  std::string s = "dede";
+  return value;
+}
 
 
 /// Binary Operation
-
-BinaryOperation::BinaryOperation(Token tok, std::shared_ptr<NumberLiteral> lhs, std::shared_ptr<NumberLiteral> rhs)
+BinaryOperation::BinaryOperation(Token tok, std::shared_ptr<AstNode> lhs, std::shared_ptr<AstNode> rhs)
   : operatorToken{tok}, lhs{std::move(lhs)}, rhs{std::move(rhs)} {}
 
-std::shared_ptr<NumberLiteral>
-BinaryOperation::getLHS() { return lhs; }
+std::shared_ptr<AstNode>
+BinaryOperation::GetLhs() { return lhs; }
 
-std::shared_ptr<NumberLiteral>
-BinaryOperation::getRHS() { return rhs; }
+std::shared_ptr<AstNode>
+BinaryOperation::GetRhs() { return rhs; }
 
 Token
-BinaryOperation::getToken() const { return operatorToken; }
+BinaryOperation::GetToken() const { return operatorToken; }
 
 AstNodeKind
-BinaryOperation::getKind() const { return AST_BINARY_OPERATION; }
+BinaryOperation::GetKind() const { return AST_BINARY_OPERATION; }
+
+std::string BinaryOperation::Stringify() const {
+  std::string op = std::string{operatorToken.getStr()};
+  return "[" + lhs->Stringify() + " " + op + " " + rhs->Stringify() + "]";
+}
