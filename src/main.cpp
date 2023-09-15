@@ -1,7 +1,6 @@
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
-
-#include <iostream>
+#include "codegen/codegen.hpp"
 
 int main() {
   Lexer lexer{"14 + 5"};
@@ -10,7 +9,8 @@ int main() {
   Parser parser{tokens};
   std::shared_ptr<AstNode> tree = parser.Parse();
 
-  std::cout << tree->Stringify();
+  Codegen codegen{};
+  tree->Accept(&codegen);
 
   return 0;
 }

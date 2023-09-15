@@ -12,4 +12,8 @@ add_executable(Kodama src/main.cpp
         src/parser/parser.cpp
         src/parser/parser.hpp
         src/ast/ast.hpp
-        src/ast/ast.cpp)
+        src/ast/ast.cpp
+        src/ast/astVisitor.cpp
+        src/ast/astVisitor.hpp
+        src/codegen/codegen.cpp
+        src/codegen/codegen.hpp)

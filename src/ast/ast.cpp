@@ -23,16 +23,15 @@ std::string NumberLiteral::Stringify() const {
   return value;
 }
 
-
 /// Binary Operation
 BinaryOperation::BinaryOperation(Token tok, std::shared_ptr<AstNode> lhs, std::shared_ptr<AstNode> rhs)
   : operatorToken{tok}, lhs{std::move(lhs)}, rhs{std::move(rhs)} {}
 
 std::shared_ptr<AstNode>
-BinaryOperation::GetLhs() { return lhs; }
+BinaryOperation::GetLhs() const { return lhs; }
 
 std::shared_ptr<AstNode>
-BinaryOperation::GetRhs() { return rhs; }
+BinaryOperation::GetRhs() const { return rhs; }
 
 Token
 BinaryOperation::GetToken() const { return operatorToken; }
