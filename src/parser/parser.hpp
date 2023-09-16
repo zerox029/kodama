@@ -10,6 +10,7 @@
 #include <queue>
 #include <utility>
 #include <memory>
+#include <list>
 
 class Parser {
  public:
@@ -24,9 +25,12 @@ class Parser {
   std::shared_ptr<AstNode> ParseAssignment();
   std::shared_ptr<AstNode> ParseAddExpression();
   std::shared_ptr<AstNode> ParseMulExpression();
-
   std::shared_ptr<AstNode> ParseNumber();
 
+  std::unique_ptr<Token> Consume(TokenType tokenType);
+  std::unique_ptr<Token> ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes);
+  std::unique_ptr<Token> ConsumeDataType();
+  void Expect(TokenType tokenType);
   void advance();
 };
 

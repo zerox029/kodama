@@ -18,7 +18,7 @@ class Codegen : public AstVisitor {
   std::unique_ptr<llvm::LLVMContext> context;
   std::unique_ptr<llvm::IRBuilder<>> builder;
   std::unique_ptr<llvm::Module> module;
-  std::map<std::string, llvm::Value *> namedValues;
+  std::map<std::string, llvm::Value*> namedValues;
 
   llvm::Type* ResolveType(const TokenType type);
   llvm::Function* CreateFunction(const std::string& fnName, llvm::FunctionType* fnType);

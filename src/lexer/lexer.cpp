@@ -59,7 +59,7 @@ Lexer::Next() {
 
 std::optional<Token>
 Lexer::ReadSymbol() {
-  for (const auto &symbol : symbols) {
+  for (const auto& symbol : symbols) {
     if (input.substr(index).starts_with(symbol.first)) {
       return Token{symbol.second, symbol.first};
     }
@@ -70,7 +70,7 @@ Lexer::ReadSymbol() {
 
 std::optional<Token>
 Lexer::ReadKeyword() {
-  for (const auto &symbol : keywords) {
+  for (const auto& symbol : keywords) {
     if (input.substr(index).starts_with(symbol.first)) {
       return Token{symbol.second, symbol.first};
     }

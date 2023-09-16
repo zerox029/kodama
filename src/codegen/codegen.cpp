@@ -67,18 +67,12 @@ Codegen::Visit(const BinaryOperation* element) {
 llvm::Type*
 Codegen::ResolveType(const TokenType type) {
   switch (type) {
-    case TK_U8:
-      return llvm::Type::getInt8Ty(*context);
-    case TK_U16:
-      return llvm::Type::getInt16Ty(*context);
-    case TK_U32:
-      return llvm::Type::getInt32Ty(*context);
-    case TK_U64:
-      return llvm::Type::getInt64Ty(*context);
-    case TK_U128:
-      return llvm::Type::getInt128Ty(*context);
-    default:
-      return nullptr;
+    case TK_U8:return llvm::Type::getInt8Ty(*context);
+    case TK_U16:return llvm::Type::getInt16Ty(*context);
+    case TK_U32:return llvm::Type::getInt32Ty(*context);
+    case TK_U64:return llvm::Type::getInt64Ty(*context);
+    case TK_U128:return llvm::Type::getInt128Ty(*context);
+    default:return nullptr;
   }
 }
 

@@ -6,42 +6,32 @@
 #include <utility>
 #include <iostream>
 
-Parser::Parser(std::vector<Token> tokensVec) : tokens{std::move(tokensVec)}, currentTokenIndex{0}, currentToken{tokens.at(0)} {}
+Parser::Parser(std::vector<Token> tokensVec) : tokens{std::move(tokensVec)},
+                                               currentTokenIndex{0},
+                                               currentToken{tokens.at(0)} {}
 
 std::shared_ptr<AstNode>
 Parser::Parse() {
   return ParseAssignment();
 }
 
-// Ugly
 std::shared_ptr<AstNode>
 Parser::ParseAssignment() {
-  if(currentToken.getTokenType() == TK_LET) {
-    advance();
-    Token identifier = currentToken;
-    advance();
-    if(currentToken.getTokenType() == TK_COLON) {
-      advance();
-      Token dataType = currentToken;
-      advance();
-      if(currentToken.getTokenType() == TK_ASSIGN) {
-        advance();
-        return std::make_shared<Assignment>(identifier, dataType, ParseAddExpression());
-      }
-    }
-  }
+  Expect(TK_LET);
+  Token identifier = *Consume(TK_IDENTIFIER);
+  Expect(TK_COLON);
+  Token dataType = *ConsumeDataType();
+  Expect(TK_ASSIGN);
 
-  return nullptr;
+  return std::make_shared<Assignment>(identifier, dataType, ParseAddExpression());
 }
 
 std::shared_ptr<AstNode>
 Parser::ParseAddExpression() {
   std::shared_ptr<AstNode> expression = ParseMulExpression();
 
-  if(currentToken.getTokenType() == TK_PLUS || currentToken.getTokenType() == TK_MINUS) {
-    Token operatorToken = currentToken;
-    advance();
-    BinaryOperation binaryOperationNode {operatorToken, expression, ParseMulExpression()};
+  if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_PLUS, TK_MINUS})) {
+    BinaryOperation binaryOperationNode{*operatorToken, expression, ParseMulExpression()};
     return std::make_shared<BinaryOperation>(binaryOperationNode);
   }
 
@@ -52,10 +42,8 @@ std::shared_ptr<AstNode>
 Parser::ParseMulExpression() {
   std::shared_ptr<AstNode> expression = ParseNumber();
 
-  if(currentToken.getTokenType() == TK_STAR || currentToken.getTokenType() == TK_SLASH || currentToken.getTokenType() == TK_PERCENT) {
-    Token operatorToken = currentToken;
-    advance();
-    BinaryOperation binaryOperationNode {operatorToken, expression, ParseNumber()};
+  if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_STAR, TK_SLASH, TK_PERCENT})) {
+    BinaryOperation binaryOperationNode{*operatorToken, expression, ParseNumber()};
     return std::make_shared<BinaryOperation>(binaryOperationNode);
   }
 
@@ -70,13 +58,51 @@ Parser::ParseNumber() {
   return std::make_shared<NumberLiteral>(numberLiteralNode);
 }
 
+std::unique_ptr<Token>
+Parser::Consume(TokenType tokenType) {
+  if (currentToken.getTokenType() == tokenType) {
+    std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
+    advance();
+
+    return consumedToken;
+  } else {
+    return nullptr;
+  }
+}
+
+std::unique_ptr<Token>
+Parser::ConsumeDataType() {
+  return ConsumeOneOf({TK_U8, TK_U16, TK_U32, TK_U64, TK_U128})
+}
+
+std::unique_ptr<Token>
+Parser::ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes) {
+  for (const TokenType& tokenType : possibleTokenTypes) {
+    std::unique_ptr<Token> consumedToken = Consume(tokenType);
+    if (consumedToken) {
+      return consumedToken;
+    }
+  }
+
+  return nullptr;
+}
+
+void
+Parser::Expect(TokenType tokenType) {
+  if (currentToken.getTokenType() == tokenType) {
+    std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
+    advance();
+  } else {
+    throw std::invalid_argument("Token was not of expected type");
+  }
+}
+
 void
 Parser::advance() {
-  if(currentTokenIndex < tokens.size() - 1) {
+  if (currentTokenIndex < tokens.size() - 1) {
     currentTokenIndex++;
     currentToken = tokens.at(currentTokenIndex);
-  }
-  else {
+  } else {
     std::cout << "No more tokens" << std::endl;
   }
 }

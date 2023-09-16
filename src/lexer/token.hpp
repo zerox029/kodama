@@ -34,7 +34,7 @@ enum TokenType {
 
 class Token {
  public:
-  Token(TokenType type, std::string  str) : type{type}, str{std::move(str)} {}
+  Token(TokenType type, std::string str) : type{type}, str{std::move(str)} {}
 
   [[nodiscard]] TokenType getTokenType() const { return type; }
   [[nodiscard]] std::string getStr() const { return str; }

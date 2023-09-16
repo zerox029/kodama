@@ -3,7 +3,8 @@
 #include "codegen/codegen.hpp"
 #include <llvm/IR/Value.h>
 
-void run() {
+void
+run() {
   Lexer lexer{"let var: u16 = 1 + 4"};
   std::vector<Token> tokens = lexer.Tokenize();
 
@@ -15,7 +16,8 @@ void run() {
   codegen.Print();
 }
 
-int main() {
+int
+main() {
   run();
   return 0;
 }
