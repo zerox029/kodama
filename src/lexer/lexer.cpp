@@ -36,12 +36,6 @@ Token Lexer::next() {
     return token.value();
   }
 
-  // Process keywords
-  token = readKeyword();
-  if(token.has_value()) {
-    index += token.value().getStr().length();
-    return token.value();
-  }
 
   // Process numbers
   token = readNumber();

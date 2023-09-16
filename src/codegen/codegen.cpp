@@ -19,7 +19,7 @@ Codegen::Print() {
 
 void
 Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
-  CreateFunction("main", llvm::FunctionType::get(builder->getInt32Ty(), false));
+  llvm::Function* fn = CreateFunction("main", llvm::FunctionType::get(builder->getInt64Ty(), false));
 
   builder->CreateRet(ast->Accept(this));
 }
@@ -27,6 +27,7 @@ Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
 llvm::Value*
 Codegen::Visit(const NumberLiteral* element) {
   llvm::Value* val = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetValue(), 10));
+
   return val;
 }
 
@@ -35,8 +36,18 @@ Codegen::Visit(const BinaryOperation* element) {
   llvm::Value* lhs = element->GetLhs()->Accept(this);
   llvm::Value* rhs = element->GetRhs()->Accept(this);
 
-  llvm::Value* op = builder->CreateAdd(lhs, rhs, "addtmp");
-  return op;
+  switch (element->GetToken().getTokenType()) {
+    case TK_PLUS:
+      return builder->CreateAdd(lhs, rhs, "addtmp");
+    case TK_MINUS:
+      return builder->CreateSub(lhs, rhs, "subtmp");
+    case TK_STAR:
+      return builder->CreateMul(lhs, rhs, "multmp");
+    case TK_SLASH:
+      return builder->CreateSDiv(lhs, rhs, "divtmp");
+    default:
+      return nullptr;
+  }
 }
 
 // Temporary

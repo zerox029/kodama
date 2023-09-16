@@ -5,7 +5,7 @@
 #include <llvm/IR/Value.h>
 
 void run() {
-  Lexer lexer{"let 14 + 5"};
+  Lexer lexer{"10-2*4"};
   std::queue<Token> tokens = lexer.tokenize();
 
   Parser parser{tokens};
@@ -17,8 +17,6 @@ void run() {
 }
 
 int main() {
-  //PrintMemoryUsage();
   run();
-  //PrintMemoryUsage();
   return 0;
 }
