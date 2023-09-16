@@ -6,23 +6,22 @@
 
 #include <utility>
 
-/// Number Literal
-NumberLiteral::NumberLiteral(Token tok, std::string_view val) : token{tok}, value{val} {}
+/// Assignment
+Assignment::Assignment(std::string  identifier, DataType dataType, std::shared_ptr<AstNode> value)
+  : identifier{std::move(identifier)}, dataType(dataType), value{std::move(value)} {}
 
 std::string
-NumberLiteral::GetValue() const { return value; }
+Assignment::GetIdentifier() const { return identifier; }
 
-Token
-NumberLiteral::GetToken() const { return token; }
+DataType
+Assignment::GetDataType() const { return dataType; }
+
+std::shared_ptr<AstNode>
+Assignment::GetValue() const { return value; }
 
 AstNodeKind
-NumberLiteral::GetKind() const { return AST_NUMBER_LITERAL; }
+Assignment::GetKind() const { return AST_ASSIGNMENT; }
 
-std::string
-NumberLiteral::Stringify() const {
-  std::string s = "dede";
-  return value;
-}
 
 /// Binary Operation
 BinaryOperation::BinaryOperation(Token tok, std::shared_ptr<AstNode> lhs, std::shared_ptr<AstNode> rhs)
@@ -35,37 +34,16 @@ std::shared_ptr<AstNode>
 BinaryOperation::GetRhs() const { return rhs; }
 
 Token
-BinaryOperation::GetToken() const { return operatorToken; }
+BinaryOperation::GetOperator() const { return operatorToken; }
 
 AstNodeKind
 BinaryOperation::GetKind() const { return AST_BINARY_OPERATION; }
 
-std::string
-BinaryOperation::Stringify() const {
-  std::string op = std::string{operatorToken.getStr()};
-  return "[" + lhs->Stringify() + " " + op + " " + rhs->Stringify() + "]";
-}
-
-/// Assignment
-Assignment::Assignment(Token identifierToken, Token typeToken, std::shared_ptr<AstNode> value)
-    : identifier{identifierToken.getStr()}, type(typeToken), value{value} {}
+/// Number Literal
+NumberLiteral::NumberLiteral(std::string_view val) : value{val} {}
 
 std::string
-Assignment::GetIdentifier() const { return identifier; }
-
-Token
-Assignment::GetType() const { return type; }
-
-std::shared_ptr<AstNode>
-Assignment::GetValue() const { return value; }
-
-Token
-Assignment::GetToken() const { return type; }
+NumberLiteral::GetValue() const { return value; }
 
 AstNodeKind
-Assignment::GetKind() const { return AST_ASSIGNMENT; }
-
-std::string
-Assignment::Stringify() const {
-  return "[Assignment]";
-}
+NumberLiteral::GetKind() const { return AST_NUMBER_LITERAL; }

@@ -18,7 +18,7 @@ Codegen::Print() {
 }
 
 void
-Codegen::Generate(const std::shared_ptr<AstNode> &ast) {
+Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
   llvm::Function* fn = CreateFunction("main", llvm::FunctionType::get(builder->getInt64Ty(), false));
 
   ast->Accept(this);
@@ -26,7 +26,7 @@ Codegen::Generate(const std::shared_ptr<AstNode> &ast) {
 
 llvm::Value*
 Codegen::Visit(const Assignment* element) {
-  llvm::Type* varType = ResolveType(element->GetType().getTokenType());
+  llvm::Type* varType = ResolveType(element->GetDataType());
   llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
 
   llvm::Value* initialValue = element->GetValue()->Accept(this);
@@ -49,7 +49,7 @@ Codegen::Visit(const BinaryOperation* element) {
   llvm::Value* lhs = element->GetLhs()->Accept(this);
   llvm::Value* rhs = element->GetRhs()->Accept(this);
 
-  switch (element->GetToken().getTokenType()) {
+  switch (element->GetOperator().getTokenType()) {
     case TK_PLUS: // Addition
       return builder->CreateAdd(lhs, rhs, "addtmp");
     case TK_MINUS: // Substraction
@@ -60,25 +60,32 @@ Codegen::Visit(const BinaryOperation* element) {
       return builder->CreateSDiv(lhs, rhs, "divtmp");
     case TK_PERCENT: // Modulo
       return builder->CreateURem(lhs, rhs, "modtmp");
-    default:return nullptr;
+    default:
+      return nullptr;
   }
 }
 
 llvm::Type*
-Codegen::ResolveType(const TokenType type) {
+Codegen::ResolveType(const DataType type) {
   switch (type) {
-    case TK_U8:return llvm::Type::getInt8Ty(*context);
-    case TK_U16:return llvm::Type::getInt16Ty(*context);
-    case TK_U32:return llvm::Type::getInt32Ty(*context);
-    case TK_U64:return llvm::Type::getInt64Ty(*context);
-    case TK_U128:return llvm::Type::getInt128Ty(*context);
-    default:return nullptr;
+    case U8:
+      return llvm::Type::getInt8Ty(*context);
+    case U16:
+      return llvm::Type::getInt16Ty(*context);
+    case U32:
+      return llvm::Type::getInt32Ty(*context);
+    case U64:
+      return llvm::Type::getInt64Ty(*context);
+    case U128:
+      return llvm::Type::getInt128Ty(*context);
+    default:
+      return nullptr;
   }
 }
 
 // Temporary
 llvm::Function*
-Codegen::CreateFunction(const std::string &fnName, llvm::FunctionType* fnType) {
+Codegen::CreateFunction(const std::string& fnName, llvm::FunctionType* fnType) {
   llvm::Function* fn = module->getFunction(fnName);
 
   if (fn == nullptr) {

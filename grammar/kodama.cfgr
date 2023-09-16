@@ -2,6 +2,8 @@ module kodama;
 
 import dataType;
 
+expression : assignment ';';
+
 assignment : 'let' identifier ':' integer_data_type '=' add_expression;
 
 add_expression : mul_expression '+' add_expression

@@ -18,9 +18,9 @@ Parser::Parse() {
 std::shared_ptr<AstNode>
 Parser::ParseAssignment() {
   Expect(TK_LET);
-  Token identifier = *Consume(TK_IDENTIFIER);
+  std::string identifier = Consume(TK_IDENTIFIER)->getStr();
   Expect(TK_COLON);
-  Token dataType = *ConsumeDataType();
+  DataType dataType = TokenTypeToDataType(ConsumeDataType()->getTokenType());
   Expect(TK_ASSIGN);
 
   return std::make_shared<Assignment>(identifier, dataType, ParseAddExpression());
@@ -52,8 +52,8 @@ Parser::ParseMulExpression() {
 
 std::shared_ptr<AstNode>
 Parser::ParseNumber() {
-  NumberLiteral numberLiteralNode{currentToken, currentToken.getStr()};
-  advance();
+  std::shared_ptr<Token> numberNode = Consume(TK_NUMBER);
+  NumberLiteral numberLiteralNode{numberNode->getStr()};
 
   return std::make_shared<NumberLiteral>(numberLiteralNode);
 }
@@ -72,7 +72,7 @@ Parser::Consume(TokenType tokenType) {
 
 std::unique_ptr<Token>
 Parser::ConsumeDataType() {
-  return ConsumeOneOf({TK_U8, TK_U16, TK_U32, TK_U64, TK_U128})
+  return ConsumeOneOf({TK_U8, TK_U16, TK_U32, TK_U64, TK_U128});
 }
 
 std::unique_ptr<Token>
@@ -93,7 +93,7 @@ Parser::Expect(TokenType tokenType) {
     std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
     advance();
   } else {
-    throw std::invalid_argument("Token was not of expected type");
+    throw std::invalid_argument("Token was not of expected dataType");
   }
 }
 
@@ -104,5 +104,23 @@ Parser::advance() {
     currentToken = tokens.at(currentTokenIndex);
   } else {
     std::cout << "No more tokens" << std::endl;
+  }
+}
+
+DataType
+Parser::TokenTypeToDataType(TokenType tokenType) {
+  switch (tokenType) {
+    case TK_U8:
+      return U8;
+    case TK_U16:
+      return U16;
+    case TK_U32:
+      return U32;
+    case TK_U64:
+      return U64;
+    case TK_U128:
+      return U128;
+    default:
+      throw std::invalid_argument("Provided token dataType was not a valid data dataType");
   }
 }

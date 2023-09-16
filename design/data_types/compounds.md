@@ -28,7 +28,7 @@ let range: [i64] = 0...500
 ```
 
 ## Sets
-Sets are an unordered list of items of the same data type. They can contain an arbitrary amount of items but cannot contain two items with the same value.
+Sets are an unordered list of items of the same data dataType. They can contain an arbitrary amount of items but cannot contain two items with the same value.
 
 Sets can be created and accessed in the following way
 ```

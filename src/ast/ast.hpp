@@ -15,41 +15,44 @@ enum AstNodeKind {
   AST_BINARY_OPERATION
 };
 
+enum DataType {
+  U8,
+  U16,
+  U32,
+  U64,
+  U128
+};
+
 class AstVisitor;
 
 class AstNode {
  public:
   virtual ~AstNode() = default;
 
-  virtual Token GetToken() const = 0;
   virtual AstNodeKind GetKind() const = 0;
-  virtual std::string Stringify() const = 0;
   virtual llvm::Value* Accept(AstVisitor* visitor) const = 0;
 };
 
 class Assignment : public AstNode {
  private:
   std::string identifier;
-  Token type;
+  DataType dataType;
   std::shared_ptr<AstNode> value;
 
  public:
-  Assignment(Token identifierToken, Token typeToken, std::shared_ptr<AstNode> value);
+  Assignment(std::string identifier, DataType type, std::shared_ptr<AstNode> value);
 
   std::string GetIdentifier() const;
-  Token GetType() const;
+  DataType GetDataType() const;
   std::shared_ptr<AstNode> GetValue() const;
 
-  Token GetToken() const;
   AstNodeKind GetKind() const;
-  std::string Stringify() const;
   llvm::Value* Accept(AstVisitor* visitor) const;
 };
 
 class BinaryOperation : public AstNode {
  private:
   Token operatorToken;
-  std::string value;
   std::shared_ptr<AstNode> lhs;
   std::shared_ptr<AstNode> rhs;
 
@@ -58,26 +61,22 @@ class BinaryOperation : public AstNode {
 
   std::shared_ptr<AstNode> GetLhs() const;
   std::shared_ptr<AstNode> GetRhs() const;
+  Token GetOperator() const;
 
-  Token GetToken() const;
   AstNodeKind GetKind() const;
-  std::string Stringify() const;
   llvm::Value* Accept(AstVisitor* visitor) const;
 };
 
 class NumberLiteral : public AstNode {
  private:
-  Token token;
   std::string value;
 
  public:
-  NumberLiteral(Token tok, std::string_view val);
+  NumberLiteral(std::string_view val);
 
   std::string GetValue() const;
 
-  Token GetToken() const;
   AstNodeKind GetKind() const;
-  std::string Stringify() const;
   llvm::Value* Accept(AstVisitor* visitor) const;
 };
 

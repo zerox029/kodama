@@ -31,8 +31,8 @@ let mut y = 5
 ```
 
 Data types can be specified by apending them to the variable name but will also be inferred by the compiler if left unspecified. 
-The keyword `auto` can also be used to let the compiler infer the required type.
-When multiple sizes of the same data type are available, the compiler will always default to 64 bit.
+The keyword `auto` can also be used to let the compiler infer the required dataType.
+When multiple sizes of the same data dataType are available, the compiler will always default to 64 bit.
 ```
 // x is infered to be f64
 let x = 3.0
@@ -44,7 +44,7 @@ let x: auto = 3.0
 let x: f32 = 3.0
 ```
 
-Variables are non-nullable by default. They can be made nullable by adding a question mark (?) to the type.
+Variables are non-nullable by default. They can be made nullable by adding a question mark (?) to the dataType.
 **Open question**: Would it be better to use a `[[nullable]]` annotation instead? And get rid of the auto keyword.
 ```
 let x = null // Will not compile
@@ -52,14 +52,14 @@ let x: int? = null // Will compile correctly
 ```
 
 ## Functions declarations
-Functions in Kodama are declared using the `fn` keyword. Like variables, return types can be explicitely specified but will be infered by the compiler otherwise. Arguments however must have a specified type.
+Functions in Kodama are declared using the `fn` keyword. Like variables, return types can be explicitely specified but will be infered by the compiler otherwise. Arguments however must have a specified dataType.
 ```
 // Declare a function five
 fn five() {
     return 5
 }
 
-// Declare a function floatFive explicitely setting its return type to f32
+// Declare a function floatFive explicitely setting its return dataType to f32
 fn floatFive() -> f32 {
     return 5.0
 }
