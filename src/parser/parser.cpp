@@ -3,6 +3,7 @@
 //
 
 #include "parser.hpp"
+#include "../ast/datatypes.hpp"
 #include <utility>
 #include <iostream>
 
@@ -104,23 +105,5 @@ Parser::advance() {
     currentToken = tokens.at(currentTokenIndex);
   } else {
     std::cout << "No more tokens" << std::endl;
-  }
-}
-
-DataType
-Parser::TokenTypeToDataType(TokenType tokenType) {
-  switch (tokenType) {
-    case TK_U8:
-      return U8;
-    case TK_U16:
-      return U16;
-    case TK_U32:
-      return U32;
-    case TK_U64:
-      return U64;
-    case TK_U128:
-      return U128;
-    default:
-      throw std::invalid_argument("Provided token dataType was not a valid data dataType");
   }
 }

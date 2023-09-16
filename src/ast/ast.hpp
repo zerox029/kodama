@@ -6,6 +6,7 @@
 #define KODAMA_SRC_EXPRESSION_H_
 
 #include "../lexer/token.hpp"
+#include "datatypes.hpp"
 #include <memory>
 #include <llvm/IR/Value.h>
 
@@ -13,14 +14,6 @@ enum AstNodeKind {
   AST_ASSIGNMENT,
   AST_NUMBER_LITERAL,
   AST_BINARY_OPERATION
-};
-
-enum DataType {
-  U8,
-  U16,
-  U32,
-  U64,
-  U128
 };
 
 class AstVisitor;
