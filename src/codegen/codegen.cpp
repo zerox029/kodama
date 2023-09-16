@@ -37,15 +37,15 @@ Codegen::Visit(const BinaryOperation* element) {
   llvm::Value* rhs = element->GetRhs()->Accept(this);
 
   switch (element->GetToken().getTokenType()) {
-    case TK_PLUS:
+    case TK_PLUS: // Addition
       return builder->CreateAdd(lhs, rhs, "addtmp");
-    case TK_MINUS:
+    case TK_MINUS: // Substraction
       return builder->CreateSub(lhs, rhs, "subtmp");
-    case TK_STAR:
+    case TK_STAR: // Multiplication
       return builder->CreateMul(lhs, rhs, "multmp");
-    case TK_SLASH:
+    case TK_SLASH: // Division
       return builder->CreateSDiv(lhs, rhs, "divtmp");
-    case TK_PERCENT:
+    case TK_PERCENT: // Modulo
       return builder->CreateURem(lhs, rhs, "modtmp");
     default:
       return nullptr;

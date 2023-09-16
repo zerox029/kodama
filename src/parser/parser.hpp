@@ -13,11 +13,12 @@
 
 class Parser {
  public:
-  explicit Parser(std::queue<Token> tokens);
+  explicit Parser(std::vector<Token> tokens);
   std::shared_ptr<AstNode> Parse();
 
  private:
-  std::queue<Token> tokens;
+  std::vector<Token> tokens;
+  size_t currentTokenIndex;
   Token currentToken;
 
   std::shared_ptr<AstNode> ParseAddExpression();

@@ -6,7 +6,7 @@
 #define KODAMA_SRC_LEXER_LEXER_HPP_
 
 #include "token.hpp"
-#include <queue>
+#include <vector>
 #include <string>
 #include <optional>
 #include <utility>
@@ -15,7 +15,7 @@ class Lexer {
  public:
   explicit Lexer(std::string input) : input{std::move(input)}, index{0} {}
 
-  std::queue<Token> tokenize();
+  std::vector<Token> tokenize();
 
  private:
   std::string input;

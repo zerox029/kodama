@@ -6,9 +6,7 @@
 #include <utility>
 #include <iostream>
 
-Parser::Parser(std::queue<Token> tokenQueue) : tokens{std::move(tokenQueue)}, currentToken{tokens.front()} {
-  tokens.pop();
-}
+Parser::Parser(std::vector<Token> tokensVec) : tokens{std::move(tokensVec)}, currentTokenIndex{0}, currentToken{tokens.at(0)} {}
 
 std::shared_ptr<AstNode>
 Parser::Parse() {
@@ -53,11 +51,11 @@ Parser::ParseNumber() {
 
 void
 Parser::advance() {
-  if(!tokens.empty()) {
-    currentToken = tokens.front();
-    tokens.pop();
+  if(currentTokenIndex < tokens.size() - 1) {
+    currentTokenIndex++;
+    currentToken = tokens.at(currentTokenIndex);
   }
   else {
-    std::cout << "Token stack empty" << std::endl;
+    std::cout << "No more tokens" << std::endl;
   }
 }

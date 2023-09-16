@@ -5,7 +5,7 @@
 
 void run() {
   Lexer lexer{"10%4"};
-  std::queue<Token> tokens = lexer.tokenize();
+  std::vector<Token> tokens = lexer.tokenize();
 
   Parser parser{tokens};
   std::shared_ptr<AstNode> tree = parser.Parse();

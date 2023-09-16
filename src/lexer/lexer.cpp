@@ -82,11 +82,11 @@ std::optional<Token> Lexer::readNumber() {
   return Token{TK_NUMBER, numValue.str()};
 }
 
-std::queue<Token> Lexer::tokenize() {
-  std::queue<Token> tokens {};
+std::vector<Token> Lexer::tokenize() {
+  std::vector<Token> tokens {};
 
   while(index < input.length() && peek().getTokenType() != TK_EOF) {
-    tokens.push(next());
+    tokens.push_back(next());
   }
 
   return tokens;
