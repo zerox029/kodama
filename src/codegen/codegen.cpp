@@ -45,6 +45,8 @@ Codegen::Visit(const BinaryOperation* element) {
       return builder->CreateMul(lhs, rhs, "multmp");
     case TK_SLASH:
       return builder->CreateSDiv(lhs, rhs, "divtmp");
+    case TK_PERCENT:
+      return builder->CreateURem(lhs, rhs, "modtmp");
     default:
       return nullptr;
   }

@@ -9,7 +9,7 @@
 
 const std::map<std::string, TokenType> symbols = {
     {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH}, {":", TK_COLON},
-    {"=", TK_ASSIGN}
+    {"=", TK_ASSIGN}, {"%", TK_PERCENT}
 };
 
 const std::map<std::string, TokenType> keywords = {

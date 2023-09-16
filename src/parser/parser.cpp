@@ -12,17 +12,17 @@ Parser::Parser(std::queue<Token> tokenQueue) : tokens{std::move(tokenQueue)}, cu
 
 std::shared_ptr<AstNode>
 Parser::Parse() {
-  return ParseAdditiveExpression();
+  return ParseAddExpression();
 }
 
 std::shared_ptr<AstNode>
-Parser::ParseAdditiveExpression() {
-  std::shared_ptr<AstNode> expression = ParseMultiplicativeExpression();
+Parser::ParseAddExpression() {
+  std::shared_ptr<AstNode> expression = ParseMulExpression();
 
   if(currentToken.getTokenType() == TK_PLUS || currentToken.getTokenType() == TK_MINUS) {
     Token operatorToken = currentToken;
     advance();
-    BinaryOperation binaryOperationNode {operatorToken, expression, ParseMultiplicativeExpression()};
+    BinaryOperation binaryOperationNode {operatorToken, expression, ParseMulExpression()};
     return std::make_shared<BinaryOperation>(binaryOperationNode);
   }
 
@@ -30,10 +30,10 @@ Parser::ParseAdditiveExpression() {
 }
 
 std::shared_ptr<AstNode>
-Parser::ParseMultiplicativeExpression() {
+Parser::ParseMulExpression() {
   std::shared_ptr<AstNode> expression = ParseNumber();
 
-  if(currentToken.getTokenType() == TK_STAR || currentToken.getTokenType() == TK_SLASH) {
+  if(currentToken.getTokenType() == TK_STAR || currentToken.getTokenType() == TK_SLASH || currentToken.getTokenType() == TK_PERCENT) {
     Token operatorToken = currentToken;
     advance();
     BinaryOperation binaryOperationNode {operatorToken, expression, ParseNumber()};

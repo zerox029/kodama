@@ -1,11 +1,10 @@
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
 #include "codegen/codegen.hpp"
-#include "memoryUtils.hpp"
 #include <llvm/IR/Value.h>
 
 void run() {
-  Lexer lexer{"10-2*4"};
+  Lexer lexer{"10%4"};
   std::queue<Token> tokens = lexer.tokenize();
 
   Parser parser{tokens};
