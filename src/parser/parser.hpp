@@ -20,6 +20,9 @@ class Parser {
   std::queue<Token> tokens;
   Token currentToken;
 
+  std::shared_ptr<AstNode> ParseAdditiveExpression();
+  std::shared_ptr<AstNode> ParseMultiplicativeExpression();
+
   std::shared_ptr<AstNode> ParseBinaryOperation();
   std::shared_ptr<AstNode> ParseNumber();
 

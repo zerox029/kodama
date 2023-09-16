@@ -1,0 +1,4 @@
+module operators;
+
+additive_operator: '+' | '-';
+multiplicative_operator: '*' | '/';

@@ -12,24 +12,41 @@ Parser::Parser(std::queue<Token> tokenQueue) : tokens{std::move(tokenQueue)}, cu
 
 std::shared_ptr<AstNode>
 Parser::Parse() {
-  return ParseBinaryOperation();
+  return ParseAdditiveExpression();
 }
 
 std::shared_ptr<AstNode>
-Parser::ParseBinaryOperation() {
-  std::shared_ptr<AstNode> lhs = ParseNumber();
-  advance();
-  Token operatorToken = currentToken;
-  advance();
-  std::shared_ptr<AstNode> rhs = ParseNumber();
+Parser::ParseAdditiveExpression() {
+  std::shared_ptr<AstNode> expression = ParseMultiplicativeExpression();
 
-  BinaryOperation binaryOperationNode {operatorToken, lhs, rhs};
-  return std::make_shared<BinaryOperation>(binaryOperationNode);
+  if(currentToken.getTokenType() == TK_PLUS || currentToken.getTokenType() == TK_MINUS) {
+    Token operatorToken = currentToken;
+    advance();
+    BinaryOperation binaryOperationNode {operatorToken, expression, ParseMultiplicativeExpression()};
+    return std::make_shared<BinaryOperation>(binaryOperationNode);
+  }
+
+  return expression;
+}
+
+std::shared_ptr<AstNode>
+Parser::ParseMultiplicativeExpression() {
+  std::shared_ptr<AstNode> expression = ParseNumber();
+
+  if(currentToken.getTokenType() == TK_STAR || currentToken.getTokenType() == TK_SLASH) {
+    Token operatorToken = currentToken;
+    advance();
+    BinaryOperation binaryOperationNode {operatorToken, expression, ParseNumber()};
+    return std::make_shared<BinaryOperation>(binaryOperationNode);
+  }
+
+  return expression;
 }
 
 std::shared_ptr<AstNode>
 Parser::ParseNumber() {
   NumberLiteral numberLiteralNode{currentToken, currentToken.getStr()};
+  advance();
 
   return std::make_shared<NumberLiteral>(numberLiteralNode);
 }
