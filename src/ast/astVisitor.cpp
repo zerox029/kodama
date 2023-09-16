@@ -4,12 +4,12 @@
 
 #include "astVisitor.hpp"
 
-void
+llvm::Value*
 NumberLiteral::Accept(AstVisitor* visitor) const {
-  visitor->Visit(this);
+  return visitor->Visit(this);
 }
 
-void
+llvm::Value*
 BinaryOperation::Accept(AstVisitor* visitor) const {
-  visitor->Visit(this);
+  return visitor->Visit(this);
 }

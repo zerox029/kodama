@@ -6,11 +6,12 @@
 #define KODAMA_SRC_CODEGEN_ASTVISITOR_HPP_
 
 #include "ast.hpp"
+#include <llvm/IR/Value.h>
 
 class AstVisitor {
  public:
-  virtual void Visit(const NumberLiteral* element) = 0;
-  virtual void Visit(const BinaryOperation* element) = 0;
+  virtual llvm::Value* Visit(const NumberLiteral* element) = 0;
+  virtual llvm::Value* Visit(const BinaryOperation* element) = 0;
 };
 
 #endif //KODAMA_SRC_CODEGEN_ASTVISITOR_HPP_

@@ -7,6 +7,7 @@
 
 #include "../lexer/token.hpp"
 #include <memory>
+#include <llvm/IR/Value.h>
 
 enum AstNodeKind {
   AST_NUMBER_LITERAL,
@@ -22,7 +23,7 @@ class AstNode {
   virtual Token GetToken() const = 0;
   virtual AstNodeKind GetKind() const = 0;
   virtual std::string Stringify() const = 0;
-  virtual void Accept(AstVisitor* visitor) const = 0;
+  virtual llvm::Value* Accept(AstVisitor* visitor) const = 0;
 };
 
 class NumberLiteral : public AstNode {
@@ -38,7 +39,7 @@ class NumberLiteral : public AstNode {
   Token GetToken() const;
   AstNodeKind GetKind() const;
   std::string Stringify() const;
-  void Accept(AstVisitor* visitor) const;
+  llvm::Value* Accept(AstVisitor* visitor) const;
 };
 
 class BinaryOperation : public AstNode {
@@ -57,7 +58,7 @@ class BinaryOperation : public AstNode {
   Token GetToken() const;
   AstNodeKind GetKind() const;
   std::string Stringify() const;
-  void Accept(AstVisitor* visitor) const;
+  llvm::Value* Accept(AstVisitor* visitor) const;
 };
 
 #endif //KODAMA_SRC_EXPRESSION_H_
