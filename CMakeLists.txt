@@ -27,8 +27,7 @@ add_executable(Kodama src/main.cpp
             src/ast/astVisitor.cpp
             src/ast/astVisitor.hpp
             src/codegen/codegen.cpp
-            src/codegen/codegen.hpp
-            src/memoryUtils.hpp)
+            src/codegen/codegen.hpp)
 
 # Find the libraries that correspond to the LLVM components
 # that you wish to use
