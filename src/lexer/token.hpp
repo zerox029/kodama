@@ -14,8 +14,19 @@ enum TokenType {
   TK_MINUS,
   TK_STAR,
   TK_SLASH,
+  TK_COLON,
+  TK_ASSIGN,
+
+  TK_LET,
+
+  TK_I8,
+  TK_I16,
+  TK_I32,
+  TK_I64,
+  TK_I128,
 
   TK_NUMBER,
+  TK_LABEL,
 
   TK_EOF
 };

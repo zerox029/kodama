@@ -8,7 +8,12 @@
 #include <iostream>
 
 const std::map<std::string, TokenType> symbols = {
-    {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH}
+    {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH}, {":", TK_COLON},
+    {"=", TK_ASSIGN}
+};
+
+const std::map<std::string, TokenType> keywords = {
+    {"let", TK_LET}
 };
 
 Token Lexer::peek() {
@@ -31,6 +36,13 @@ Token Lexer::next() {
     return token.value();
   }
 
+  // Process keywords
+  token = readKeyword();
+  if(token.has_value()) {
+    index += token.value().getStr().length();
+    return token.value();
+  }
+
   // Process numbers
   token = readNumber();
   if(token.has_value()) return token.value();
@@ -40,6 +52,18 @@ Token Lexer::next() {
 
 std::optional<Token> Lexer::readSymbol() {
   auto iterator = symbols.begin();
+  while(iterator != symbols.end()) {
+    if(input.substr(index).starts_with(iterator->first)) {
+      return Token{ iterator->second, iterator->first };
+    }
+    ++iterator;
+  }
+
+  return {};
+}
+
+std::optional<Token> Lexer::readKeyword() {
+  auto iterator = keywords.begin();
   while(iterator != symbols.end()) {
     if(input.substr(index).starts_with(iterator->first)) {
       return Token{ iterator->second, iterator->first };

@@ -24,6 +24,7 @@ class Lexer {
   Token peek();
   Token next();
   std::optional<Token> readSymbol();
+  std::optional<Token> readKeyword();
   std::optional<Token> readNumber();
 };
 

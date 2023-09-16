@@ -1,5 +1,6 @@
 # The Kodama programming language
-Kodama is a modern and friendly, strongly typed systems programming language. It is designed to build reliable and maintainable software that without sacrificing on efficiency.
+Kodama is a modern and friendly, strongly typed systems programming language.
+It is still heavily under development and not meant for end-user use.
 
 ## Overview
 - Type inference
@@ -68,8 +69,8 @@ fn addOne(x: u64) {
     return x + 1
 }
 
-// One liner shorthand
-fn addOne(x: u64) => return x + 1
+// One liner return shorthand
+fn addOne(x: u64) => x + 1
 ```
 
 ## Function calls
@@ -106,9 +107,6 @@ class Rectangle {
 }
 ```
 
-### `mixin`
-Todo
-
 A default constructor will be generated for classes, it takes all fields by name. For the above class, the following will get generated.
 ```
 Rectangle(width: 10, height: 20)
@@ -123,6 +121,9 @@ public Rectangle(width: i64, height: i64) -> Rectangle {
 
 Classes in Kodama are passed by reference such that copying a class copies a reference to that class and two variables may point to the same instance of a single class.
 
+
+### `mixin`
+Todo
 
 ## Control flow
 Kodama supports 3 main control flow statements:

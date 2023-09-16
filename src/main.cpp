@@ -5,7 +5,7 @@
 #include <llvm/IR/Value.h>
 
 void run() {
-  Lexer lexer{"14 + 5"};
+  Lexer lexer{"let 14 + 5"};
   std::queue<Token> tokens = lexer.tokenize();
 
   Parser parser{tokens};
