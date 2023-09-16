@@ -15,17 +15,18 @@ class Lexer {
  public:
   explicit Lexer(std::string input) : input{std::move(input)}, index{0} {}
 
-  std::vector<Token> tokenize();
+  std::vector<Token> Tokenize();
 
  private:
   std::string input;
   size_t index;
 
-  Token peek();
-  Token next();
-  std::optional<Token> readSymbol();
-  std::optional<Token> readKeyword();
-  std::optional<Token> readNumber();
+  Token Peek();
+  Token Next();
+  std::optional<Token> ReadSymbol();
+  std::optional<Token> ReadKeyword();
+  std::optional<Token> ReadNumber();
+  std::optional<Token> ReadIdentifier();
 };
 
 #endif //KODAMA_SRC_LEXER_LEXER_HPP_

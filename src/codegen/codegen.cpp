@@ -18,15 +18,28 @@ Codegen::Print() {
 }
 
 void
-Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
+Codegen::Generate(const std::shared_ptr<AstNode> &ast) {
   llvm::Function* fn = CreateFunction("main", llvm::FunctionType::get(builder->getInt64Ty(), false));
 
-  builder->CreateRet(ast->Accept(this));
+  ast->Accept(this);
+}
+
+llvm::Value*
+Codegen::Visit(const Assignment* element) {
+  llvm::Type* varType = ResolveType(element->GetType().getTokenType());
+  llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
+
+  llvm::Value* initialValue = element->GetValue()->Accept(this);
+  initialValue->mutateType(varType);
+
+  builder->CreateStore(initialValue, variableAllocation);
+
+  return nullptr;
 }
 
 llvm::Value*
 Codegen::Visit(const NumberLiteral* element) {
-  llvm::Value* val = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetValue(), 10));
+  llvm::Value* val = llvm::ConstantInt::get(*context, llvm::APInt(32, element->GetValue(), 10));
 
   return val;
 }
@@ -47,16 +60,34 @@ Codegen::Visit(const BinaryOperation* element) {
       return builder->CreateSDiv(lhs, rhs, "divtmp");
     case TK_PERCENT: // Modulo
       return builder->CreateURem(lhs, rhs, "modtmp");
+    default:return nullptr;
+  }
+}
+
+llvm::Type*
+Codegen::ResolveType(const TokenType type) {
+  switch (type) {
+    case TK_U8:
+      return llvm::Type::getInt8Ty(*context);
+    case TK_U16:
+      return llvm::Type::getInt16Ty(*context);
+    case TK_U32:
+      return llvm::Type::getInt32Ty(*context);
+    case TK_U64:
+      return llvm::Type::getInt64Ty(*context);
+    case TK_U128:
+      return llvm::Type::getInt128Ty(*context);
     default:
       return nullptr;
   }
 }
 
 // Temporary
-llvm::Function* Codegen::CreateFunction(const std::string& fnName, llvm::FunctionType* fnType) {
+llvm::Function*
+Codegen::CreateFunction(const std::string &fnName, llvm::FunctionType* fnType) {
   llvm::Function* fn = module->getFunction(fnName);
 
-  if(fn == nullptr) {
+  if (fn == nullptr) {
     fn = llvm::Function::Create(fnType, llvm::Function::ExternalLinkage, fnName, *module);
     llvm::verifyFunction(*fn);
   }

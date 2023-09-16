@@ -4,8 +4,8 @@
 #include <llvm/IR/Value.h>
 
 void run() {
-  Lexer lexer{"10%4"};
-  std::vector<Token> tokens = lexer.tokenize();
+  Lexer lexer{"let var: u16 = 1 + 4"};
+  std::vector<Token> tokens = lexer.Tokenize();
 
   Parser parser{tokens};
   std::shared_ptr<AstNode> tree = parser.Parse();

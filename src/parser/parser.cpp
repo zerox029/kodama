@@ -10,7 +10,28 @@ Parser::Parser(std::vector<Token> tokensVec) : tokens{std::move(tokensVec)}, cur
 
 std::shared_ptr<AstNode>
 Parser::Parse() {
-  return ParseAddExpression();
+  return ParseAssignment();
+}
+
+// Ugly
+std::shared_ptr<AstNode>
+Parser::ParseAssignment() {
+  if(currentToken.getTokenType() == TK_LET) {
+    advance();
+    Token identifier = currentToken;
+    advance();
+    if(currentToken.getTokenType() == TK_COLON) {
+      advance();
+      Token dataType = currentToken;
+      advance();
+      if(currentToken.getTokenType() == TK_ASSIGN) {
+        advance();
+        return std::make_shared<Assignment>(identifier, dataType, ParseAddExpression());
+      }
+    }
+  }
+
+  return nullptr;
 }
 
 std::shared_ptr<AstNode>

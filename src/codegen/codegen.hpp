@@ -20,6 +20,7 @@ class Codegen : public AstVisitor {
   std::unique_ptr<llvm::Module> module;
   std::map<std::string, llvm::Value *> namedValues;
 
+  llvm::Type* ResolveType(const TokenType type);
   llvm::Function* CreateFunction(const std::string& fnName, llvm::FunctionType* fnType);
 
  public:
@@ -28,6 +29,7 @@ class Codegen : public AstVisitor {
   void Print();
   void Generate(const std::shared_ptr<AstNode>& ast);
 
+  llvm::Value* Visit(const Assignment* element);
   llvm::Value* Visit(const NumberLiteral* element);
   llvm::Value* Visit(const BinaryOperation* element);
 };

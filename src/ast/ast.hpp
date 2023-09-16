@@ -10,6 +10,7 @@
 #include <llvm/IR/Value.h>
 
 enum AstNodeKind {
+  AST_ASSIGNMENT,
   AST_NUMBER_LITERAL,
   AST_BINARY_OPERATION
 };
@@ -26,15 +27,18 @@ class AstNode {
   virtual llvm::Value* Accept(AstVisitor* visitor) const = 0;
 };
 
-class NumberLiteral : public AstNode {
+class Assignment : public AstNode {
  private:
-  Token token;
-  std::string value;
+  std::string identifier;
+  Token type;
+  std::shared_ptr<AstNode> value;
 
  public:
-  NumberLiteral(Token tok, std::string_view val);
+  Assignment(Token identifierToken, Token typeToken, std::shared_ptr<AstNode> value);
 
-  std::string GetValue() const;
+  std::string GetIdentifier() const;
+  Token GetType() const;
+  std::shared_ptr<AstNode> GetValue() const;
 
   Token GetToken() const;
   AstNodeKind GetKind() const;
@@ -54,6 +58,22 @@ class BinaryOperation : public AstNode {
 
   std::shared_ptr<AstNode> GetLhs() const;
   std::shared_ptr<AstNode> GetRhs() const;
+
+  Token GetToken() const;
+  AstNodeKind GetKind() const;
+  std::string Stringify() const;
+  llvm::Value* Accept(AstVisitor* visitor) const;
+};
+
+class NumberLiteral : public AstNode {
+ private:
+  Token token;
+  std::string value;
+
+ public:
+  NumberLiteral(Token tok, std::string_view val);
+
+  std::string GetValue() const;
 
   Token GetToken() const;
   AstNodeKind GetKind() const;

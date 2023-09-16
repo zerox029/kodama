@@ -21,6 +21,7 @@ class Parser {
   size_t currentTokenIndex;
   Token currentToken;
 
+  std::shared_ptr<AstNode> ParseAssignment();
   std::shared_ptr<AstNode> ParseAddExpression();
   std::shared_ptr<AstNode> ParseMulExpression();
 

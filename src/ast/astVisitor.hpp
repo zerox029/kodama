@@ -10,6 +10,7 @@
 
 class AstVisitor {
  public:
+  virtual llvm::Value* Visit(const Assignment* element) = 0;
   virtual llvm::Value* Visit(const NumberLiteral* element) = 0;
   virtual llvm::Value* Visit(const BinaryOperation* element) = 0;
 };

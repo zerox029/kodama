@@ -13,80 +13,108 @@ const std::map<std::string, TokenType> symbols = {
 };
 
 const std::map<std::string, TokenType> keywords = {
-    {"let", TK_LET}
+    {"let", TK_LET}, {"u8", TK_U8}, {"u16", TK_U16},
+    {"u32", TK_U32}, {"u64", TK_U64}, {"u128", TK_U128}
 };
 
-Token Lexer::peek() {
-  Token token = next();
+Token
+Lexer::Peek() {
+  Token token = Next();
   index -= token.getStr().length();
 
   return token;
 }
 
-Token Lexer::next() {
+Token
+Lexer::Next() {
   // Eliminate white spaces
-  while(isspace(static_cast<unsigned char>(input.at(index)))) {
+  while (isspace(static_cast<unsigned char>(input.at(index)))) {
     index++;
   }
 
   // Process symbols
-  std::optional<Token> token = readSymbol();
-  if(token.has_value()) {
+  std::optional<Token> token = ReadSymbol();
+  if (token.has_value()) {
     index += token.value().getStr().length();
     return token.value();
   }
 
+  // Process keywords
+  token = ReadKeyword();
+  if (token.has_value()) {
+    index += token.value().getStr().length();
+    return token.value();
+  }
 
   // Process numbers
-  token = readNumber();
-  if(token.has_value()) return token.value();
+  token = ReadNumber();
+  if (token.has_value()) return token.value();
+
+  // Process identifiers
+  token = ReadIdentifier();
+  if (token.has_value()) return token.value();
 
   throw std::invalid_argument{"Unexpected operatorToken"};
 }
 
-std::optional<Token> Lexer::readSymbol() {
-  auto iterator = symbols.begin();
-  while(iterator != symbols.end()) {
-    if(input.substr(index).starts_with(iterator->first)) {
-      return Token{ iterator->second, iterator->first };
+std::optional<Token>
+Lexer::ReadSymbol() {
+  for (const auto &symbol : symbols) {
+    if (input.substr(index).starts_with(symbol.first)) {
+      return Token{symbol.second, symbol.first};
     }
-    ++iterator;
   }
 
   return {};
 }
 
-std::optional<Token> Lexer::readKeyword() {
-  auto iterator = keywords.begin();
-  while(iterator != symbols.end()) {
-    if(input.substr(index).starts_with(iterator->first)) {
-      return Token{ iterator->second, iterator->first };
+std::optional<Token>
+Lexer::ReadKeyword() {
+  for (const auto &symbol : keywords) {
+    if (input.substr(index).starts_with(symbol.first)) {
+      return Token{symbol.second, symbol.first};
     }
-    ++iterator;
   }
 
   return {};
 }
 
-std::optional<Token> Lexer::readNumber() {
-  std::stringstream numValue {};
+std::optional<Token>
+Lexer::ReadNumber() {
+  std::stringstream numValue{};
 
   while (index < input.length() && isdigit(static_cast<unsigned char>(input.at(index)))) {
     numValue << input.at(index);
     index++;
   }
 
-  if(numValue.str().length() == 0)
+  if (numValue.str().length() == 0)
     return {};
 
   return Token{TK_NUMBER, numValue.str()};
 }
 
-std::vector<Token> Lexer::tokenize() {
-  std::vector<Token> tokens {};
+std::optional<Token>
+Lexer::ReadIdentifier() {
+  std::stringstream identifierValue{};
 
-  while(index < input.length() && peek().getTokenType() != TK_EOF) {
-    tokens.push_back(next());
+  while (index < input.length() && isalpha(static_cast<unsigned char>(input.at(index)))) {
+    identifierValue << input.at(index);
+    index++;
+  }
+
+  if (identifierValue.str().length() == 0)
+    return {};
+
+  return Token{TK_IDENTIFIER, identifierValue.str()};
+}
+
+std::vector<Token>
+Lexer::Tokenize() {
+  std::vector<Token> tokens{};
+
+  while (index < input.length() && Peek().getTokenType() != TK_EOF) {
+    tokens.push_back(Next());
   }
 
   return tokens;

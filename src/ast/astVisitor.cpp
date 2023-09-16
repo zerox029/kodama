@@ -5,6 +5,11 @@
 #include "astVisitor.hpp"
 
 llvm::Value*
+Assignment::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
+llvm::Value*
 NumberLiteral::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }

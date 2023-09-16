@@ -31,7 +31,7 @@ for value in (0...5) {
 ```
 
 ## `continue`
-The `continue` statement will skip over the current iteration of a loop and will automatically move on to the next. \
+The `continue` statement will skip over the current iteration of a loop and will automatically move on to the Next. \
 For example
 ```
 // Prints all numbers from 0 to 10 but skips 5
