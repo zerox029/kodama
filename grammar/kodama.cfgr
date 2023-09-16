@@ -1,0 +1,11 @@
+module kodama;
+
+additive_expression: additive_expression '+' multiplicative_expression
+                   | additive_expression '-' multiplicative_expression
+                   | multiplicative_expression;
+
+multiplicative_expression: multiplicative_expression '*' number
+                         | multiplicative_expression '/' number
+                         | number;
+
+number: {1> '0'-'9'};
