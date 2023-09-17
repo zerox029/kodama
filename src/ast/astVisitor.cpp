@@ -10,6 +10,11 @@ Program::Accept(AstVisitor* visitor) const {
 }
 
 llvm::Value*
+Return::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
+llvm::Value*
 Assignment::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }

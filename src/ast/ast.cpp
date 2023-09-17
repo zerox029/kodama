@@ -15,6 +15,16 @@ Program::GetStatements() const { return statements; }
 AstNodeKind
 Program::GetKind() const { return AST_PROGRAM; }
 
+
+/// Return
+Return::Return(std::shared_ptr<AstNode> returnValue) : returnValue{returnValue} {}
+
+std::shared_ptr<AstNode>
+Return::GetReturnValue() const { return returnValue; }
+
+AstNodeKind
+Return::GetKind() const { return AST_RETURN; }
+
 /// Assignment
 Assignment::Assignment(std::string  identifier, DataType dataType, std::shared_ptr<AstNode> value)
   : identifier{std::move(identifier)}, dataType(dataType), value{std::move(value)} {}

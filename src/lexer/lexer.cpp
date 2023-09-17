@@ -17,10 +17,10 @@ const std::map<std::string, TokenType> singleCharacterSymbols = {
 };
 
 const std::map<std::string, TokenType> keywords = {
-    {"let", TK_LET}, {"u8", TK_U8}, {"u16", TK_U16},
-    {"u32", TK_U32}, {"u64", TK_U64}, {"u128", TK_U128},
-    {"i8", TK_I8}, {"i16", TK_I16}, {"i32", TK_I32},
-    {"i64", TK_I64}, {"i128", TK_I128}
+    {"u8", TK_U8}, {"u16", TK_U16}, {"u32", TK_U32},
+    {"u64", TK_U64}, {"u128", TK_U128}, {"i8", TK_I8},
+    {"i16", TK_I16}, {"i32", TK_I32}, {"i64", TK_I64},
+    {"i128", TK_I128}, {"let", TK_LET}, {"return", TK_RET}
 };
 
 Token

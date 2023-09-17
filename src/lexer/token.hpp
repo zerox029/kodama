@@ -23,6 +23,7 @@ enum TokenType {
   TK_NOT_EQUAL,
 
   TK_LET,
+  TK_RET,
 
   TK_U8,
   TK_U16,

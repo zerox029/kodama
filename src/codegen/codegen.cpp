@@ -21,8 +21,7 @@ Codegen::Print() {
 void
 Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
   llvm::Function* fn = CreateFunction("main", llvm::FunctionType::get(builder->getInt1Ty(), false));
-
-  llvm::Value* val = ast->Accept(this);
+  ast->Accept(this);
 }
 
 llvm::Value*
@@ -32,6 +31,11 @@ Codegen::Visit(const Program* element) {
   }
 
   return nullptr;
+}
+
+llvm::Value*
+Codegen::Visit(const Return* element) {
+  return builder->CreateRet(element->GetReturnValue()->Accept(this));
 }
 
 llvm::Value*

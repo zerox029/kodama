@@ -15,12 +15,21 @@ Parser::Parse() {
   std::vector<std::shared_ptr<AstNode>> statements;
 
   while(!IsFinishedParsing()) {
-    statements.push_back(ParseExpression());
-
-    Consume(TK_SEMICOLON);
+    statements.push_back(ParseStatement());
   }
 
   return std::make_shared<Program>(statements);
+}
+
+std::shared_ptr<AstNode>
+Parser::ParseStatement() {
+  if(Consume(TK_RET)) {
+    std::shared_ptr<AstNode> returnValue{ParseEqualityExpression()};
+    return std::make_shared<Return>(returnValue);
+  }
+  else {
+    return ParseExpression();
+  }
 }
 
 std::shared_ptr<AstNode>

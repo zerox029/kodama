@@ -1,8 +1,12 @@
 module kodama;
 
 import dataType;
+import terminal;
 
-program : { expression [';'] };
+program : { statement };
+
+statement : expression [';']
+          | 'return' expression [';'];
 
 expression : assignment | add_expression;
 
@@ -20,6 +24,3 @@ mul_expression : number '*' mul_expression
                | number '/' mul_expression
                | number '%' mul_expression
                | number;
-
-identifier: {'a'-'z' | 'A'-'Z'};
-number: {'0'-'9'};

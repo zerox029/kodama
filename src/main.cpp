@@ -6,7 +6,7 @@
 
 void
 run() {
-  Lexer lexer{"1!=1"};
+  Lexer lexer{"return 1!=1"};
   std::vector<Token> tokens = lexer.Tokenize();
 
   Parser parser{tokens};

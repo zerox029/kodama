@@ -12,6 +12,7 @@
 
 enum AstNodeKind {
   AST_PROGRAM,
+  AST_RETURN,
   AST_ASSIGNMENT,
   AST_NUMBER_LITERAL,
   AST_BINARY_OPERATION
@@ -35,6 +36,19 @@ class Program : public AstNode {
   Program(std::vector<std::shared_ptr<AstNode>> statements);
 
   std::vector<std::shared_ptr<AstNode>> GetStatements() const;
+
+  AstNodeKind GetKind() const;
+  llvm::Value* Accept(AstVisitor* visitor) const;
+};
+
+class Return : public AstNode {
+ private:
+  std::shared_ptr<AstNode> returnValue;
+
+ public:
+  Return(std::shared_ptr<AstNode> returnValue);
+
+  std::shared_ptr<AstNode> GetReturnValue() const;
 
   AstNodeKind GetKind() const;
   llvm::Value* Accept(AstVisitor* visitor) const;

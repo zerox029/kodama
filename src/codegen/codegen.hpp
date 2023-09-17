@@ -22,7 +22,7 @@ class Codegen : public AstVisitor {
 
   bool handlingUnsignedVariable;
 
-  llvm::Type* ResolveType(const DataType type);
+  llvm::Type* ResolveType(DataType type);
   llvm::Function* CreateFunction(const std::string& fnName, llvm::FunctionType* fnType);
 
  public:
@@ -32,6 +32,7 @@ class Codegen : public AstVisitor {
   void Generate(const std::shared_ptr<AstNode>& ast);
 
   llvm::Value* Visit(const Program* element);
+  llvm::Value* Visit(const Return* element);
   llvm::Value* Visit(const Assignment* element);
   llvm::Value* Visit(const NumberLiteral* element);
   llvm::Value* Visit(const BinaryOperation* element);
