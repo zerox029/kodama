@@ -8,6 +8,10 @@ expression : assignment | add_expression;
 
 assignment : 'let' identifier ':' integer_data_type '=' add_expression;
 
+equality : add_expression '==' equality
+         | add_expression '!=' equality
+         | add_expression;
+
 add_expression : mul_expression '+' add_expression
                | mul_expression '-' add_expression
                | mul_expression;

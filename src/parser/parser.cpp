@@ -3,7 +3,6 @@
 //
 
 #include "parser.hpp"
-#include "../ast/datatypes.hpp"
 #include <utility>
 #include <iostream>
 
@@ -16,17 +15,22 @@ Parser::Parse() {
   std::vector<std::shared_ptr<AstNode>> statements;
 
   while(!IsFinishedParsing()) {
-    if(Consume(TK_LET)) {
-      statements.push_back(ParseAssignment());
-    }
-    else {
-      statements.push_back(ParseAddExpression());
-    }
+    statements.push_back(ParseExpression());
 
     Consume(TK_SEMICOLON);
   }
 
   return std::make_shared<Program>(statements);
+}
+
+std::shared_ptr<AstNode>
+Parser::ParseExpression() {
+  if(Consume(TK_LET)) {
+    return ParseAssignment();
+  }
+  else {
+    return ParseEqualityExpression();
+  }
 }
 
 std::shared_ptr<AstNode>
@@ -37,6 +41,18 @@ Parser::ParseAssignment() {
   Expect(TK_ASSIGN);
 
   return std::make_shared<Assignment>(identifier, dataType, ParseAddExpression());
+}
+
+std::shared_ptr<AstNode>
+Parser::ParseEqualityExpression() {
+  std::shared_ptr<AstNode> expression = ParseAddExpression();
+
+  if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_EQUAL, TK_NOT_EQUAL})) {
+    BinaryOperation binaryOperationNode{*operatorToken, expression, ParseAddExpression()};
+    return std::make_shared<BinaryOperation>(binaryOperationNode);
+  }
+
+  return expression;
 }
 
 std::shared_ptr<AstNode>

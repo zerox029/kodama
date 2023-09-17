@@ -7,7 +7,11 @@
 #include <map>
 #include <iostream>
 
-const std::map<std::string, TokenType> symbols = {
+const std::map<std::string, TokenType> dualCharacterSymbols = {
+    {"==", TK_EQUAL}, {"!=", TK_NOT_EQUAL}
+};
+
+const std::map<std::string, TokenType> singleCharacterSymbols = {
     {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH},
     {"=", TK_ASSIGN}, {"%", TK_PERCENT}, {":", TK_COLON}, {";", TK_SEMICOLON}
 };
@@ -61,7 +65,13 @@ Lexer::Next() {
 
 std::optional<Token>
 Lexer::ReadSymbol() {
-  for (const auto& symbol : symbols) {
+  for (const auto& symbol : dualCharacterSymbols) {
+    if (input.substr(index).starts_with(symbol.first)) {
+      return Token{symbol.second, symbol.first};
+    }
+  }
+
+  for (const auto& symbol : singleCharacterSymbols) {
     if (input.substr(index).starts_with(symbol.first)) {
       return Token{symbol.second, symbol.first};
     }

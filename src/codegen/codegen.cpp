@@ -20,9 +20,9 @@ Codegen::Print() {
 
 void
 Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
-  llvm::Function* fn = CreateFunction("main", llvm::FunctionType::get(builder->getInt64Ty(), false));
+  llvm::Function* fn = CreateFunction("main", llvm::FunctionType::get(builder->getInt1Ty(), false));
 
-  ast->Accept(this);
+  llvm::Value* val = ast->Accept(this);
 }
 
 llvm::Value*
@@ -62,13 +62,13 @@ Codegen::Visit(const BinaryOperation* element) {
   llvm::Value* rhs = element->GetRhs()->Accept(this);
 
   switch (element->GetOperator().getTokenType()) {
-    case TK_PLUS: // Addition
+    case TK_PLUS:
       return builder->CreateAdd(lhs, rhs, "addtmp");
-    case TK_MINUS: // Substraction
+    case TK_MINUS:
       return builder->CreateSub(lhs, rhs, "subtmp");
-    case TK_STAR: // Multiplication
+    case TK_STAR:
       return builder->CreateMul(lhs, rhs, "multmp");
-    case TK_SLASH: { // Division
+    case TK_SLASH: {
       if(handlingUnsignedVariable){
         return builder->CreateUDiv(lhs, rhs, "divtmp");
       }
@@ -76,7 +76,7 @@ Codegen::Visit(const BinaryOperation* element) {
         return builder->CreateSDiv(lhs, rhs, "divtmp");
       }
     }
-    case TK_PERCENT: { // Modulo
+    case TK_PERCENT: {
       if(handlingUnsignedVariable){
         return builder->CreateURem(lhs, rhs, "modtmp");
       }
@@ -84,6 +84,10 @@ Codegen::Visit(const BinaryOperation* element) {
         return builder->CreateSRem(lhs, rhs, "modtmp");
       }
     }
+    case TK_EQUAL:
+      return builder->CreateICmpEQ(lhs, rhs, "eqtmp");
+    case TK_NOT_EQUAL:
+      return builder->CreateICmpNE(lhs, rhs, "neqtmp");
     default:
       return nullptr;
   }
