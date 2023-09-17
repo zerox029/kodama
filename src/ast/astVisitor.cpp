@@ -19,9 +19,18 @@ IfStatement::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-
 llvm::Value*
 IfElseStatement::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
+llvm::Value*
+WhileLoop::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
+llvm::Value*
+DoWhileLoop::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 

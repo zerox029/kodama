@@ -56,7 +56,35 @@ std::shared_ptr<AstNode>
 IfElseStatement::GetAlternative() const { return alternative; }
 
 AstNodeKind
-IfElseStatement::GetKind() const { return AST_IFELSE; }
+IfElseStatement::GetKind() const { return AST_IF_ELSE; }
+
+
+/// While Loop
+WhileLoop::WhileLoop(std::shared_ptr<AstNode> condition,
+                     std::shared_ptr<AstNode> consequent) : condition{condition}, consequent{consequent} {}
+
+std::shared_ptr<AstNode>
+WhileLoop::GetCondition() const { return condition; }
+
+std::shared_ptr<AstNode>
+WhileLoop::GetConsequent() const { return consequent; }
+
+AstNodeKind
+WhileLoop::GetKind() const { return AST_WHILE; }
+
+
+/// Do While Loop
+DoWhileLoop::DoWhileLoop(std::shared_ptr<AstNode> condition,
+                         std::shared_ptr<AstNode> consequent) : condition{condition}, consequent{consequent} {}
+
+std::shared_ptr<AstNode>
+DoWhileLoop::GetCondition() const { return condition; }
+
+std::shared_ptr<AstNode>
+DoWhileLoop::GetConsequent() const { return consequent; }
+
+AstNodeKind
+DoWhileLoop::GetKind() const { return AST_DO_WHILE; }
 
 
 /// AssignmentExpression

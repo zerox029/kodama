@@ -42,6 +42,23 @@ Parser::ParseStatement() {
 
     return std::make_shared<IfStatement>(condition, consequent);
   }
+  else if(Consume(TK_WHILE)) {
+    Expect(TK_OPEN_PAREN);
+    std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
+    Expect(TK_CLOSED_PAREN);
+    std::shared_ptr<AstNode> consequent{ParseStatement()};
+
+    return std::make_shared<WhileLoop>(condition, consequent);
+  }
+  else if(Consume(TK_DO)) {
+    std::shared_ptr<AstNode> consequent{ParseStatement()};
+    Expect(TK_WHILE);
+    Expect(TK_OPEN_PAREN);
+    std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
+    Expect(TK_CLOSED_PAREN);
+
+    return std::make_shared<DoWhileLoop>(condition, consequent);
+  }
   else {
     std::shared_ptr<AstNode> expression = ParseExpression();
     Consume(TK_SEMICOLON);

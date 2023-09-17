@@ -89,6 +89,58 @@ Codegen::Visit(const IfElseStatement* element) {
 }
 
 llvm::Value*
+Codegen::Visit(const WhileLoop* element) {
+  llvm::Function* fn = module->getFunction("main");
+
+  llvm::BasicBlock* condition = llvm::BasicBlock::Create(*context, "condition", fn);
+  llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
+  llvm::BasicBlock* alternative = llvm::BasicBlock::Create(*context, "alternative", fn);
+
+  // Generate the condition
+  builder->CreateBr(condition);
+  builder->SetInsertPoint(condition);
+  llvm::Value* ifStatement = builder->CreateCondBr(element->GetCondition()->Accept(this),
+                                                   consequent,
+                                                   alternative);
+
+  // Generate the consequent
+  builder->SetInsertPoint(consequent);
+  element->GetConsequent()->Accept(this);
+  builder->CreateBr(condition);
+
+  // Go to the merge point
+  builder->SetInsertPoint(alternative);
+
+  return ifStatement;
+}
+
+llvm::Value*
+Codegen::Visit(const DoWhileLoop* element) {
+  llvm::Function* fn = module->getFunction("main");
+
+  llvm::BasicBlock* condition = llvm::BasicBlock::Create(*context, "condition", fn);
+  llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
+  llvm::BasicBlock* alternative = llvm::BasicBlock::Create(*context, "alternative", fn);
+
+  // Generate the condition
+  builder->CreateBr(consequent);
+  builder->SetInsertPoint(condition);
+  llvm::Value* ifStatement = builder->CreateCondBr(element->GetCondition()->Accept(this),
+                                                   consequent,
+                                                   alternative);
+
+  // Generate the consequent
+  builder->SetInsertPoint(consequent);
+  element->GetConsequent()->Accept(this);
+  builder->CreateBr(condition);
+
+  // Go to the merge point
+  builder->SetInsertPoint(alternative);
+
+  return ifStatement;
+}
+
+llvm::Value*
 Codegen::Visit(const AssignmentExpression* element) {
   handlingUnsignedVariable = IsUnsigned(element->GetDataType());
 
