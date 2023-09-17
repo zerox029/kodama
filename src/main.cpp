@@ -2,10 +2,11 @@
 #include "parser/parser.hpp"
 #include "codegen/codegen.hpp"
 #include <llvm/IR/Value.h>
+#include <iostream>
 
 void
 run() {
-  Lexer lexer{"let var: u16 = 1 + 4"};
+  Lexer lexer{"let var: i16 = 5 - 10"};
   std::vector<Token> tokens = lexer.Tokenize();
 
   Parser parser{tokens};

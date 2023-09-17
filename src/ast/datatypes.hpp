@@ -13,18 +13,18 @@ enum DataType {
   U16,
   U32,
   U64,
-  U128
-};
-
-const std::unordered_map<TokenType, DataType> dataTypeMapping{
-    {TK_U8, U8},
-    {TK_U16, U16},
-    {TK_U32, U32},
-    {TK_U64, U64},
-    {TK_U128, U128},
+  U128,
+  I8,
+  I16,
+  I32,
+  I64,
+  I128
 };
 
 DataType
 TokenTypeToDataType(TokenType tokenType);
+
+bool
+IsUnsigned(DataType dataType);
 
 #endif //KODAMA_SRC_AST_DATATYPES_HPP_

@@ -25,7 +25,7 @@ Assignment::GetKind() const { return AST_ASSIGNMENT; }
 
 /// Binary Operation
 BinaryOperation::BinaryOperation(Token tok, std::shared_ptr<AstNode> lhs, std::shared_ptr<AstNode> rhs)
-    : operatorToken{tok}, lhs{std::move(lhs)}, rhs{std::move(rhs)} {}
+    : operatorToken{std::move(tok)}, lhs{std::move(lhs)}, rhs{std::move(rhs)} {}
 
 std::shared_ptr<AstNode>
 BinaryOperation::GetLhs() const { return lhs; }
@@ -38,6 +38,7 @@ BinaryOperation::GetOperator() const { return operatorToken; }
 
 AstNodeKind
 BinaryOperation::GetKind() const { return AST_BINARY_OPERATION; }
+
 
 /// Number Literal
 NumberLiteral::NumberLiteral(std::string_view val) : value{val} {}

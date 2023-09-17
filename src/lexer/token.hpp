@@ -25,6 +25,11 @@ enum TokenType {
   TK_U32,
   TK_U64,
   TK_U128,
+  TK_I8,
+  TK_I16,
+  TK_I32,
+  TK_I64,
+  TK_I128,
 
   TK_NUMBER,
   TK_IDENTIFIER,

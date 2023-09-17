@@ -20,6 +20,8 @@ class Codegen : public AstVisitor {
   std::unique_ptr<llvm::Module> module;
   std::map<std::string, llvm::Value*> namedValues;
 
+  bool handlingUnsignedVariable;
+
   llvm::Type* ResolveType(const DataType type);
   llvm::Function* CreateFunction(const std::string& fnName, llvm::FunctionType* fnType);
 

@@ -58,6 +58,7 @@ class BinaryOperation : public AstNode {
 
   AstNodeKind GetKind() const;
   llvm::Value* Accept(AstVisitor* visitor) const;
+  llvm::Value* Accept(AstVisitor* visitor, bool isUnsignedOperation) const;
 };
 
 class NumberLiteral : public AstNode {

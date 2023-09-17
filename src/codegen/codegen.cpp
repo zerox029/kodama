@@ -10,6 +10,7 @@ Codegen::Codegen() {
   context = std::make_unique<llvm::LLVMContext>();
   builder = std::make_unique<llvm::IRBuilder<>>(*context);
   module = std::make_unique<llvm::Module>("KodamaGenTest", *context);
+  handlingUnsignedVariable = false;
 }
 
 void
@@ -26,6 +27,8 @@ Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
 
 llvm::Value*
 Codegen::Visit(const Assignment* element) {
+  handlingUnsignedVariable = IsUnsigned(element->GetDataType());
+
   llvm::Type* varType = ResolveType(element->GetDataType());
   llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
 
@@ -34,12 +37,14 @@ Codegen::Visit(const Assignment* element) {
 
   builder->CreateStore(initialValue, variableAllocation);
 
+  handlingUnsignedVariable = false;
+
   return nullptr;
 }
 
 llvm::Value*
 Codegen::Visit(const NumberLiteral* element) {
-  llvm::Value* val = llvm::ConstantInt::get(*context, llvm::APInt(32, element->GetValue(), 10));
+  llvm::Value* val = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetValue(), 10));
 
   return val;
 }
@@ -56,10 +61,22 @@ Codegen::Visit(const BinaryOperation* element) {
       return builder->CreateSub(lhs, rhs, "subtmp");
     case TK_STAR: // Multiplication
       return builder->CreateMul(lhs, rhs, "multmp");
-    case TK_SLASH: // Division
-      return builder->CreateSDiv(lhs, rhs, "divtmp");
-    case TK_PERCENT: // Modulo
-      return builder->CreateURem(lhs, rhs, "modtmp");
+    case TK_SLASH: { // Division
+      if(handlingUnsignedVariable){
+        return builder->CreateUDiv(lhs, rhs, "divtmp");
+      }
+      else {
+        return builder->CreateSDiv(lhs, rhs, "divtmp");
+      }
+    }
+    case TK_PERCENT: { // Modulo
+      if(handlingUnsignedVariable){
+        return builder->CreateURem(lhs, rhs, "modtmp");
+      }
+      else {
+        return builder->CreateSRem(lhs, rhs, "modtmp");
+      }
+    }
     default:
       return nullptr;
   }
@@ -77,6 +94,16 @@ Codegen::ResolveType(const DataType type) {
     case U64:
       return llvm::Type::getInt64Ty(*context);
     case U128:
+      return llvm::Type::getInt128Ty(*context);
+    case I8:
+      return llvm::Type::getInt8Ty(*context);
+    case I16:
+      return llvm::Type::getInt16Ty(*context);
+    case I32:
+      return llvm::Type::getInt32Ty(*context);
+    case I64:
+      return llvm::Type::getInt64Ty(*context);
+    case I128:
       return llvm::Type::getInt128Ty(*context);
     default:
       return nullptr;
