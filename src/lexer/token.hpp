@@ -19,6 +19,9 @@ enum TokenType {
   TK_COLON,
   TK_SEMICOLON,
 
+  TK_OPEN_PAREN,
+  TK_CLOSED_PAREN,
+
   TK_EQUAL,
   TK_NOT_EQUAL,
 
@@ -35,6 +38,13 @@ enum TokenType {
   TK_I32,
   TK_I64,
   TK_I128,
+
+  TK_IF,
+  TK_ELSE,
+  TK_DO,
+  TK_WHILE,
+  TK_FOR,
+  TK_IN,
 
   TK_NUMBER,
   TK_IDENTIFIER,

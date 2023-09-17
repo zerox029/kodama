@@ -1,7 +1,7 @@
 # Loops
 
 ## `while` loops
-Statements within a while loop will execute for as long the condition is evaluated to `true`. If preceded with a `do`, the statements in the block will evaluate once before evaluating the condition, after which the behaviour is identical to a regular `while` loop. \
+Statements within a while loop will execute for as long the condition is evaluated to `true`. IfStatement preceded with a `do`, the statements in the block will evaluate once before evaluating the condition, after which the behaviour is identical to a regular `while` loop. \
 For example:
 
 ```

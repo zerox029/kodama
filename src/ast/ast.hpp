@@ -13,6 +13,7 @@
 enum AstNodeKind {
   AST_PROGRAM,
   AST_RETURN,
+  AST_IF,
   AST_ASSIGNMENT,
   AST_BINARY_OPERATION,
   AST_NUMBER_LITERAL,
@@ -38,38 +39,57 @@ class Program : public AstNode {
 
   std::vector<std::shared_ptr<AstNode>> GetStatements() const;
 
-  AstNodeKind GetKind() const;
-  llvm::Value* Accept(AstVisitor* visitor) const;
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
 };
 
-class Return : public AstNode {
+class ReturnStatement : public AstNode {
  private:
   std::shared_ptr<AstNode> returnValue;
 
  public:
-  Return(std::shared_ptr<AstNode> returnValue);
+  ReturnStatement(std::shared_ptr<AstNode> returnValue);
 
   std::shared_ptr<AstNode> GetReturnValue() const;
 
-  AstNodeKind GetKind() const;
-  llvm::Value* Accept(AstVisitor* visitor) const;
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
 };
 
-class Assignment : public AstNode {
+class IfStatement : public AstNode {
+ private:
+  std::shared_ptr<AstNode> condition;
+  std::shared_ptr<AstNode> consequent;
+  std::shared_ptr<AstNode> alternative;
+
+ public:
+  IfStatement(std::shared_ptr<AstNode> condition,
+              std::shared_ptr<AstNode> consequent,
+              std::shared_ptr<AstNode> alternative);
+
+  std::shared_ptr<AstNode> GetCondition() const;
+  std::shared_ptr<AstNode> GetConsequent() const;
+  std::shared_ptr<AstNode> GetAlternative() const;
+
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
+};
+
+class AssignmentExpression : public AstNode {
  private:
   std::string identifier;
   DataType dataType;
   std::shared_ptr<AstNode> value;
 
  public:
-  Assignment(std::string identifier, DataType type, std::shared_ptr<AstNode> value);
+  AssignmentExpression(std::string identifier, DataType type, std::shared_ptr<AstNode> value);
 
   std::string GetIdentifier() const;
   DataType GetDataType() const;
   std::shared_ptr<AstNode> GetValue() const;
 
-  AstNodeKind GetKind() const;
-  llvm::Value* Accept(AstVisitor* visitor) const;
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
 };
 
 class BinaryOperation : public AstNode {
@@ -85,9 +105,8 @@ class BinaryOperation : public AstNode {
   std::shared_ptr<AstNode> GetRhs() const;
   Token GetOperator() const;
 
-  AstNodeKind GetKind() const;
-  llvm::Value* Accept(AstVisitor* visitor) const;
-  llvm::Value* Accept(AstVisitor* visitor, bool isUnsignedOperation) const;
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
 };
 
 class NumberLiteral : public AstNode {
@@ -99,8 +118,8 @@ class NumberLiteral : public AstNode {
 
   std::string GetValue() const;
 
-  AstNodeKind GetKind() const;
-  llvm::Value* Accept(AstVisitor* visitor) const;
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
 };
 
 class Variable : public AstNode {
@@ -112,8 +131,8 @@ class Variable : public AstNode {
 
   std::string GetIdentifier() const;
 
-  AstNodeKind GetKind() const;
-  llvm::Value* Accept(AstVisitor* visitor) const;
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
 };
 
 #endif //KODAMA_SRC_EXPRESSION_H_

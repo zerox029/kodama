@@ -16,30 +16,50 @@ AstNodeKind
 Program::GetKind() const { return AST_PROGRAM; }
 
 
-/// Return
-Return::Return(std::shared_ptr<AstNode> returnValue) : returnValue{returnValue} {}
+/// ReturnStatement
+ReturnStatement::ReturnStatement(std::shared_ptr<AstNode> returnValue) : returnValue{returnValue} {}
 
 std::shared_ptr<AstNode>
-Return::GetReturnValue() const { return returnValue; }
+ReturnStatement::GetReturnValue() const { return returnValue; }
 
 AstNodeKind
-Return::GetKind() const { return AST_RETURN; }
+ReturnStatement::GetKind() const { return AST_RETURN; }
 
-/// Assignment
-Assignment::Assignment(std::string  identifier, DataType dataType, std::shared_ptr<AstNode> value)
-  : identifier{std::move(identifier)}, dataType(dataType), value{std::move(value)} {}
+
+/// If Statement
+IfStatement::IfStatement(std::shared_ptr<AstNode> condition,
+                         std::shared_ptr<AstNode> consequent,
+                         std::shared_ptr<AstNode> alternative)
+    : condition{condition}, consequent{consequent}, alternative{alternative} {}
+
+std::shared_ptr<AstNode>
+IfStatement::GetCondition() const { return condition; }
+
+std::shared_ptr<AstNode>
+IfStatement::GetConsequent() const { return consequent; }
+
+std::shared_ptr<AstNode>
+IfStatement::GetAlternative() const { return alternative; }
+
+AstNodeKind
+IfStatement::GetKind() const { return AST_IF; }
+
+
+/// AssignmentExpression
+AssignmentExpression::AssignmentExpression(std::string identifier, DataType dataType, std::shared_ptr<AstNode> value)
+    : identifier{std::move(identifier)}, dataType(dataType), value{std::move(value)} {}
 
 std::string
-Assignment::GetIdentifier() const { return identifier; }
+AssignmentExpression::GetIdentifier() const { return identifier; }
 
 DataType
-Assignment::GetDataType() const { return dataType; }
+AssignmentExpression::GetDataType() const { return dataType; }
 
 std::shared_ptr<AstNode>
-Assignment::GetValue() const { return value; }
+AssignmentExpression::GetValue() const { return value; }
 
 AstNodeKind
-Assignment::GetKind() const { return AST_ASSIGNMENT; }
+AssignmentExpression::GetKind() const { return AST_ASSIGNMENT; }
 
 
 /// Binary Operation

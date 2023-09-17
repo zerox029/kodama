@@ -11,8 +11,9 @@
 class AstVisitor {
  public:
   virtual llvm::Value* Visit(const Program* element) = 0;
-  virtual llvm::Value* Visit(const Return* element) = 0;
-  virtual llvm::Value* Visit(const Assignment* element) = 0;
+  virtual llvm::Value* Visit(const ReturnStatement* element) = 0;
+  virtual llvm::Value* Visit(const IfStatement* element) = 0;
+  virtual llvm::Value* Visit(const AssignmentExpression* element) = 0;
   virtual llvm::Value* Visit(const BinaryOperation* element) = 0;
   virtual llvm::Value* Visit(const NumberLiteral* element) = 0;
   virtual llvm::Value* Visit(const Variable* element) = 0;

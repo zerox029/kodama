@@ -31,12 +31,13 @@ class Codegen : public AstVisitor {
   void Print();
   void Generate(const std::shared_ptr<AstNode>& ast);
 
-  llvm::Value* Visit(const Program* element);
-  llvm::Value* Visit(const Return* element);
-  llvm::Value* Visit(const Assignment* element);
-  llvm::Value* Visit(const BinaryOperation* element);
-  llvm::Value* Visit(const NumberLiteral* element);
-  llvm::Value* Visit(const Variable* element);
+  llvm::Value* Visit(const Program* element) override;
+  llvm::Value* Visit(const ReturnStatement* element) override;
+  llvm::Value* Visit(const IfStatement* element) override;
+  llvm::Value* Visit(const AssignmentExpression* element) override;
+  llvm::Value* Visit(const BinaryOperation* element) override;
+  llvm::Value* Visit(const NumberLiteral* element) override;
+  llvm::Value* Visit(const Variable* element) override;
 };
 
 #endif //KODAMA_SRC_CODEGEN_CODEGEN_HPP_

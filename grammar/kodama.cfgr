@@ -6,6 +6,7 @@ import terminal;
 program : { statement };
 
 statement : expression [';']
+          | 'if' '(' equality ')' statement
           | 'return' expression [';'];
 
 expression : assignment | add_expression;

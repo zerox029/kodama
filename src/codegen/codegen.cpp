@@ -26,7 +26,7 @@ Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
 
 llvm::Value*
 Codegen::Visit(const Program* element) {
-  for(const std::shared_ptr<AstNode>& node : element->GetStatements()) {
+  for (const std::shared_ptr<AstNode>& node : element->GetStatements()) {
     node->Accept(this);
   }
 
@@ -34,12 +34,41 @@ Codegen::Visit(const Program* element) {
 }
 
 llvm::Value*
-Codegen::Visit(const Return* element) {
+Codegen::Visit(const ReturnStatement* element) {
   return builder->CreateRet(element->GetReturnValue()->Accept(this));
 }
 
 llvm::Value*
-Codegen::Visit(const Assignment* element) {
+Codegen::Visit(const IfStatement* element) {
+  llvm::Function* fn = module->getFunction("main");
+
+  llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
+  llvm::BasicBlock* alternative = llvm::BasicBlock::Create(*context, "alternative", fn);
+  llvm::BasicBlock* merge = llvm::BasicBlock::Create(*context, "merge", fn);
+
+  llvm::Value* ifStatement = builder->CreateCondBr(element->GetCondition()->Accept(this),
+                                                   consequent,
+                                                   alternative);
+
+  // Generate the consequent
+  builder->SetInsertPoint(consequent);
+  element->GetConsequent()->Accept(this);
+  builder->CreateBr(merge);
+
+  // Generate the alternative if it exists
+  if(element->GetAlternative()) {
+    element->GetAlternative()->Accept(this);
+    builder->CreateBr(merge);
+  }
+
+  // Generate the merge block
+  builder->SetInsertPoint(merge);
+
+  return ifStatement;
+}
+
+llvm::Value*
+Codegen::Visit(const AssignmentExpression* element) {
   handlingUnsignedVariable = IsUnsigned(element->GetDataType());
 
   llvm::Type* varType = ResolveType(element->GetDataType());
@@ -75,18 +104,16 @@ Codegen::Visit(const BinaryOperation* element) {
     case TK_STAR:
       return builder->CreateMul(lhs, rhs, "multmp");
     case TK_SLASH: {
-      if(handlingUnsignedVariable){
+      if (handlingUnsignedVariable) {
         return builder->CreateUDiv(lhs, rhs, "divtmp");
-      }
-      else {
+      } else {
         return builder->CreateSDiv(lhs, rhs, "divtmp");
       }
     }
     case TK_PERCENT: {
-      if(handlingUnsignedVariable){
+      if (handlingUnsignedVariable) {
         return builder->CreateURem(lhs, rhs, "modtmp");
-      }
-      else {
+      } else {
         return builder->CreateSRem(lhs, rhs, "modtmp");
       }
     }
@@ -101,7 +128,7 @@ Codegen::Visit(const BinaryOperation* element) {
 
 llvm::Value*
 Codegen::Visit(const Variable* element) {
-  llvm::AllocaInst* alloca =  namedValues.at(element->GetIdentifier());
+  llvm::AllocaInst* alloca = namedValues.at(element->GetIdentifier());
 
   return builder->CreateLoad(alloca->getAllocatedType(), alloca, element->GetIdentifier());
 }

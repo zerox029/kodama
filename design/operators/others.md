@@ -13,7 +13,7 @@
 Used in the form `a ? b : c`, it is a shorthand for `if...else` statements. `a` must be a condition, after getting executed, `b` will be the expression to execute if `a` is truthy and `c` if `a` is falsy.
 
 ## Optional chaining
-Used in the form `a?.b`, it performs a member access of `b` on `a` if and only if `a` exists and is non-null. If `a` cannot be accessed, the operator short-circuits gracefully and `nil` is returned.
+Used in the form `a?.b`, it performs a member access of `b` on `a` if and only if `a` exists and is non-null. IfStatement `a` cannot be accessed, the operator short-circuits gracefully and `nil` is returned.
 
 ## Address-of
 Used in the form `&a`, it returns the memory address of the variable `a`.
@@ -22,7 +22,7 @@ Used in the form `&a`, it returns the memory address of the variable `a`.
 Used in the form `*a`, it returns the value located at the memory address `a`.
 
 ## Member access
-Used in the form `a.b`, it retrieves a member `a` of a structure `b`. If `a` is null, it throws a (TODO: flesh out the exception system). To avoid this behavior, use the optional chaining `?.` operator.
+Used in the form `a.b`, it retrieves a member `a` of a structure `b`. IfStatement `a` is null, it throws a (TODO: flesh out the exception system). To avoid this behavior, use the optional chaining `?.` operator.
 
 ## Range literal
 Used in the form `a...b`, it returns a sequence of integers ranging from `a` to `b` exclusively, in the form of an array such that the expression `0...5` returns the array `[0, 1, 2, 3, 4]`.

@@ -1,15 +1,15 @@
-# Assignment operators
+# AssignmentExpression operators
 ## Overview
 | Operator | Description                              |
 | -------- | ---------------------------------------- |
-| `=`      | Assignment                               |
+| `=`      | AssignmentExpression                               |
 | `+=`     | Arithmetic addition and assignment       |
 | `-=`     | Arithmetic substraction and assignment   |
 | `*=`     | Arithmetic multiplication and assignment |
 | `/=`     | Arithmetic division and assignment       |
 | `%=`     | Arithmetic modulo and assignment         |
 
-## Assignment
+## AssignmentExpression
 Used as `a = b`, the value of `b` is evaluated and put into the variable `a`. `a` can only be a variable.
 
 ## Arithmetic addition and assignment

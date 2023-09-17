@@ -27,7 +27,15 @@ Parser::ParseStatement() {
     std::shared_ptr<AstNode> returnValue{ParseEqualityExpression()};
     Consume(TK_SEMICOLON);
 
-    return std::make_shared<Return>(returnValue);
+    return std::make_shared<ReturnStatement>(returnValue);
+  }
+  else if(Consume(TK_IF)) {
+    Expect(TK_OPEN_PAREN);
+    std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
+    Expect(TK_CLOSED_PAREN);
+    std::shared_ptr<AstNode> consequent{ParseStatement()};
+
+    return std::make_shared<IfStatement>(condition, consequent, nullptr);
   }
   else {
     std::shared_ptr<AstNode> expression = ParseExpression();
@@ -54,7 +62,7 @@ Parser::ParseAssignment() {
   DataType dataType = TokenTypeToDataType(ConsumeDataType()->getTokenType());
   Expect(TK_ASSIGN);
 
-  return std::make_shared<Assignment>(identifier, dataType, ParseEqualityExpression());
+  return std::make_shared<AssignmentExpression>(identifier, dataType, ParseEqualityExpression());
 }
 
 std::shared_ptr<AstNode>
