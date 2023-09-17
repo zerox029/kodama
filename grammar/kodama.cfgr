@@ -23,4 +23,6 @@ add_expression : mul_expression '+' add_expression
 mul_expression : number '*' mul_expression
                | number '/' mul_expression
                | number '%' mul_expression
-               | number;
+               | primary;
+
+primary : number | identifier;

@@ -20,7 +20,7 @@ Codegen::Print() {
 
 void
 Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
-  llvm::Function* fn = CreateFunction("main", llvm::FunctionType::get(builder->getInt1Ty(), false));
+  llvm::Function* fn = CreateFunction("main", llvm::FunctionType::get(builder->getInt64Ty(), false));
   ast->Accept(this);
 }
 
@@ -47,6 +47,8 @@ Codegen::Visit(const Assignment* element) {
 
   llvm::Value* initialValue = element->GetValue()->Accept(this);
   initialValue->mutateType(varType);
+
+  namedValues[element->GetIdentifier()] = variableAllocation;
 
   handlingUnsignedVariable = false;
 
@@ -95,6 +97,13 @@ Codegen::Visit(const BinaryOperation* element) {
     default:
       return nullptr;
   }
+}
+
+llvm::Value*
+Codegen::Visit(const Variable* element) {
+  llvm::AllocaInst* alloca =  namedValues.at(element->GetIdentifier());
+
+  return builder->CreateLoad(alloca->getAllocatedType(), alloca, element->GetIdentifier());
 }
 
 llvm::Type*

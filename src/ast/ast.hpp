@@ -14,8 +14,9 @@ enum AstNodeKind {
   AST_PROGRAM,
   AST_RETURN,
   AST_ASSIGNMENT,
+  AST_BINARY_OPERATION,
   AST_NUMBER_LITERAL,
-  AST_BINARY_OPERATION
+  AST_VARIABLE
 };
 
 class AstVisitor;
@@ -97,6 +98,19 @@ class NumberLiteral : public AstNode {
   NumberLiteral(std::string_view val);
 
   std::string GetValue() const;
+
+  AstNodeKind GetKind() const;
+  llvm::Value* Accept(AstVisitor* visitor) const;
+};
+
+class Variable : public AstNode {
+ private:
+  std::string identifier;
+
+ public:
+  Variable(std::string_view identifier);
+
+  std::string GetIdentifier() const;
 
   AstNodeKind GetKind() const;
   llvm::Value* Accept(AstVisitor* visitor) const;

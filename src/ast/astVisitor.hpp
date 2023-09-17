@@ -13,8 +13,9 @@ class AstVisitor {
   virtual llvm::Value* Visit(const Program* element) = 0;
   virtual llvm::Value* Visit(const Return* element) = 0;
   virtual llvm::Value* Visit(const Assignment* element) = 0;
-  virtual llvm::Value* Visit(const NumberLiteral* element) = 0;
   virtual llvm::Value* Visit(const BinaryOperation* element) = 0;
+  virtual llvm::Value* Visit(const NumberLiteral* element) = 0;
+  virtual llvm::Value* Visit(const Variable* element) = 0;
 };
 
 #endif //KODAMA_SRC_CODEGEN_ASTVISITOR_HPP_

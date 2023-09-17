@@ -20,11 +20,16 @@ Assignment::Accept(AstVisitor* visitor) const {
 }
 
 llvm::Value*
+BinaryOperation::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
+llvm::Value*
 NumberLiteral::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
 llvm::Value*
-BinaryOperation::Accept(AstVisitor* visitor) const {
+Variable::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }

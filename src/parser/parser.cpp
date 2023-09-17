@@ -25,10 +25,15 @@ std::shared_ptr<AstNode>
 Parser::ParseStatement() {
   if(Consume(TK_RET)) {
     std::shared_ptr<AstNode> returnValue{ParseEqualityExpression()};
+    Consume(TK_SEMICOLON);
+
     return std::make_shared<Return>(returnValue);
   }
   else {
-    return ParseExpression();
+    std::shared_ptr<AstNode> expression = ParseExpression();
+    Consume(TK_SEMICOLON);
+
+    return expression;
   }
 }
 
@@ -49,7 +54,7 @@ Parser::ParseAssignment() {
   DataType dataType = TokenTypeToDataType(ConsumeDataType()->getTokenType());
   Expect(TK_ASSIGN);
 
-  return std::make_shared<Assignment>(identifier, dataType, ParseAddExpression());
+  return std::make_shared<Assignment>(identifier, dataType, ParseEqualityExpression());
 }
 
 std::shared_ptr<AstNode>
@@ -78,10 +83,10 @@ Parser::ParseAddExpression() {
 
 std::shared_ptr<AstNode>
 Parser::ParseMulExpression() {
-  std::shared_ptr<AstNode> expression = ParseNumber();
+  std::shared_ptr<AstNode> expression = ParsePrimaryExpression();
 
   if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_STAR, TK_SLASH, TK_PERCENT})) {
-    BinaryOperation binaryOperationNode{*operatorToken, expression, ParseNumber()};
+    BinaryOperation binaryOperationNode{*operatorToken, expression, ParsePrimaryExpression()};
     return std::make_shared<BinaryOperation>(binaryOperationNode);
   }
 
@@ -89,11 +94,17 @@ Parser::ParseMulExpression() {
 }
 
 std::shared_ptr<AstNode>
-Parser::ParseNumber() {
-  std::shared_ptr<Token> numberNode = Consume(TK_NUMBER);
-  NumberLiteral numberLiteralNode{numberNode->getStr()};
+Parser::ParsePrimaryExpression() {
+  if(std::shared_ptr<Token> numberNode = Consume(TK_NUMBER)) {
+    NumberLiteral numberLiteralNode{numberNode->getStr()};
+    return std::make_shared<NumberLiteral>(numberLiteralNode);
+  }
+  else if(std::shared_ptr<Token> numberNode = Consume(TK_IDENTIFIER)) {
+    Variable numberLiteralNode{numberNode->getStr()};
+    return std::make_shared<Variable>(numberLiteralNode);
+  }
 
-  return std::make_shared<NumberLiteral>(numberLiteralNode);
+  return nullptr;
 }
 
 std::unique_ptr<Token>

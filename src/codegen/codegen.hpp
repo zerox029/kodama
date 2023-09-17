@@ -18,7 +18,7 @@ class Codegen : public AstVisitor {
   std::unique_ptr<llvm::LLVMContext> context;
   std::unique_ptr<llvm::IRBuilder<>> builder;
   std::unique_ptr<llvm::Module> module;
-  std::map<std::string, llvm::Value*> namedValues;
+  std::map<std::string, llvm::AllocaInst*> namedValues;
 
   bool handlingUnsignedVariable;
 
@@ -34,8 +34,9 @@ class Codegen : public AstVisitor {
   llvm::Value* Visit(const Program* element);
   llvm::Value* Visit(const Return* element);
   llvm::Value* Visit(const Assignment* element);
-  llvm::Value* Visit(const NumberLiteral* element);
   llvm::Value* Visit(const BinaryOperation* element);
+  llvm::Value* Visit(const NumberLiteral* element);
+  llvm::Value* Visit(const Variable* element);
 };
 
 #endif //KODAMA_SRC_CODEGEN_CODEGEN_HPP_

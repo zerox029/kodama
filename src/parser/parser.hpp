@@ -28,7 +28,7 @@ class Parser {
   std::shared_ptr<AstNode> ParseEqualityExpression();
   std::shared_ptr<AstNode> ParseAddExpression();
   std::shared_ptr<AstNode> ParseMulExpression();
-  std::shared_ptr<AstNode> ParseNumber();
+  std::shared_ptr<AstNode> ParsePrimaryExpression();
 
   std::unique_ptr<Token> Consume(TokenType tokenType);
   std::unique_ptr<Token> ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes);

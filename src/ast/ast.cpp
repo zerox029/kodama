@@ -67,3 +67,13 @@ NumberLiteral::GetValue() const { return value; }
 
 AstNodeKind
 NumberLiteral::GetKind() const { return AST_NUMBER_LITERAL; }
+
+
+/// Variable
+Variable::Variable(std::string_view identifier) : identifier{identifier} {}
+
+std::string
+Variable::GetIdentifier() const { return identifier; }
+
+AstNodeKind
+Variable::GetKind() const { return AST_VARIABLE; }
