@@ -6,7 +6,7 @@
 
 void
 run() {
-  Lexer lexer{"let var: i16 = 5 - 10"};
+  Lexer lexer{"let a: i16 = 5 - 10; let b: i16 = 6 * 2;"};
   std::vector<Token> tokens = lexer.Tokenize();
 
   Parser parser{tokens};

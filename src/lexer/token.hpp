@@ -15,8 +15,9 @@ enum TokenType {
   TK_STAR,
   TK_SLASH,
   TK_PERCENT,
-  TK_COLON,
   TK_ASSIGN,
+  TK_COLON,
+  TK_SEMICOLON,
 
   TK_LET,
 

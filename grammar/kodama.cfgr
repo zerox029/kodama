@@ -2,7 +2,9 @@ module kodama;
 
 import dataType;
 
-expression : assignment ';';
+program : { expression [';'] };
+
+expression : assignment | add_expression;
 
 assignment : 'let' identifier ':' integer_data_type '=' add_expression;
 

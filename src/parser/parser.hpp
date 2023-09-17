@@ -32,6 +32,8 @@ class Parser {
   std::unique_ptr<Token> ConsumeDataType();
   void Expect(TokenType tokenType);
   void advance();
+
+  bool IsFinishedParsing();
 };
 
 #endif //KODAMA_SRC_PARSER_PARSER_HPP_

@@ -6,6 +6,15 @@
 
 #include <utility>
 
+/// Program
+Program::Program(std::vector<std::shared_ptr<AstNode>> statements) : statements{statements} {}
+
+std::vector<std::shared_ptr<AstNode>>
+Program::GetStatements() const { return statements; }
+
+AstNodeKind
+Program::GetKind() const { return AST_PROGRAM; }
+
 /// Assignment
 Assignment::Assignment(std::string  identifier, DataType dataType, std::shared_ptr<AstNode> value)
   : identifier{std::move(identifier)}, dataType(dataType), value{std::move(value)} {}

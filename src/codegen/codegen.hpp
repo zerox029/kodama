@@ -31,6 +31,7 @@ class Codegen : public AstVisitor {
   void Print();
   void Generate(const std::shared_ptr<AstNode>& ast);
 
+  llvm::Value* Visit(const Program* element);
   llvm::Value* Visit(const Assignment* element);
   llvm::Value* Visit(const NumberLiteral* element);
   llvm::Value* Visit(const BinaryOperation* element);

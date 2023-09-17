@@ -13,12 +13,24 @@ Parser::Parser(std::vector<Token> tokensVec) : tokens{std::move(tokensVec)},
 
 std::shared_ptr<AstNode>
 Parser::Parse() {
-  return ParseAssignment();
+  std::vector<std::shared_ptr<AstNode>> statements;
+
+  while(!IsFinishedParsing()) {
+    if(Consume(TK_LET)) {
+      statements.push_back(ParseAssignment());
+    }
+    else {
+      statements.push_back(ParseAddExpression());
+    }
+
+    Consume(TK_SEMICOLON);
+  }
+
+  return std::make_shared<Program>(statements);
 }
 
 std::shared_ptr<AstNode>
 Parser::ParseAssignment() {
-  Expect(TK_LET);
   std::string identifier = Consume(TK_IDENTIFIER)->getStr();
   Expect(TK_COLON);
   DataType dataType = TokenTypeToDataType(ConsumeDataType()->getTokenType());
@@ -106,4 +118,9 @@ Parser::advance() {
   } else {
     std::cout << "No more tokens" << std::endl;
   }
+}
+
+bool
+Parser::IsFinishedParsing() {
+  return currentTokenIndex >= tokens.size() - 1;
 }

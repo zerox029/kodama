@@ -8,8 +8,8 @@
 #include <iostream>
 
 const std::map<std::string, TokenType> symbols = {
-    {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH}, {":", TK_COLON},
-    {"=", TK_ASSIGN}, {"%", TK_PERCENT}
+    {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH},
+    {"=", TK_ASSIGN}, {"%", TK_PERCENT}, {":", TK_COLON}, {";", TK_SEMICOLON}
 };
 
 const std::map<std::string, TokenType> keywords = {

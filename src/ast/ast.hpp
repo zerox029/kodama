@@ -11,6 +11,7 @@
 #include <llvm/IR/Value.h>
 
 enum AstNodeKind {
+  AST_PROGRAM,
   AST_ASSIGNMENT,
   AST_NUMBER_LITERAL,
   AST_BINARY_OPERATION
@@ -24,6 +25,19 @@ class AstNode {
 
   virtual AstNodeKind GetKind() const = 0;
   virtual llvm::Value* Accept(AstVisitor* visitor) const = 0;
+};
+
+class Program : public AstNode {
+ private:
+  std::vector<std::shared_ptr<AstNode>> statements;
+
+ public:
+  Program(std::vector<std::shared_ptr<AstNode>> statements);
+
+  std::vector<std::shared_ptr<AstNode>> GetStatements() const;
+
+  AstNodeKind GetKind() const;
+  llvm::Value* Accept(AstVisitor* visitor) const;
 };
 
 class Assignment : public AstNode {

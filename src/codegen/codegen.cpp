@@ -26,6 +26,15 @@ Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
 }
 
 llvm::Value*
+Codegen::Visit(const Program* element) {
+  for(const std::shared_ptr<AstNode>& node : element->GetStatements()) {
+    node->Accept(this);
+  }
+
+  return nullptr;
+}
+
+llvm::Value*
 Codegen::Visit(const Assignment* element) {
   handlingUnsignedVariable = IsUnsigned(element->GetDataType());
 
@@ -35,11 +44,9 @@ Codegen::Visit(const Assignment* element) {
   llvm::Value* initialValue = element->GetValue()->Accept(this);
   initialValue->mutateType(varType);
 
-  builder->CreateStore(initialValue, variableAllocation);
-
   handlingUnsignedVariable = false;
 
-  return nullptr;
+  return builder->CreateStore(initialValue, variableAllocation);
 }
 
 llvm::Value*
