@@ -23,6 +23,11 @@ class Parser {
   Token currentToken;
 
   std::shared_ptr<AstNode> ParseStatement();
+  std::shared_ptr<AstNode> ParseIfElseStatement();
+  std::shared_ptr<AstNode> ParseBlock();
+  std::shared_ptr<AstNode> ParseReturn();
+  std::shared_ptr<AstNode> ParseWhileLoop();
+  std::shared_ptr<AstNode> ParseDoWhileLoop();
   std::shared_ptr<AstNode> ParseExpression();
   std::shared_ptr<AstNode> ParseAssignment();
   std::shared_ptr<AstNode> ParseEqualityExpression();
