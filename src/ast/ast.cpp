@@ -6,14 +6,14 @@
 
 #include <utility>
 
-/// Program
-Program::Program(std::vector<std::shared_ptr<AstNode>> statements) : statements{statements} {}
+/// Block
+Block::Block(std::vector<std::shared_ptr<AstNode>> statements) : statements{statements} {}
 
 std::vector<std::shared_ptr<AstNode>>
-Program::GetStatements() const { return statements; }
+Block::GetStatements() const { return statements; }
 
 AstNodeKind
-Program::GetKind() const { return AST_PROGRAM; }
+Block::GetKind() const { return AST_BLOCK; }
 
 
 /// ReturnStatement

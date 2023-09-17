@@ -11,7 +11,7 @@
 #include <llvm/IR/Value.h>
 
 enum AstNodeKind {
-  AST_PROGRAM,
+  AST_BLOCK,
   AST_RETURN,
   AST_IF,
   AST_IF_ELSE,
@@ -33,12 +33,12 @@ class AstNode {
   virtual llvm::Value* Accept(AstVisitor* visitor) const = 0;
 };
 
-class Program : public AstNode {
+class Block : public AstNode {
  private:
   std::vector<std::shared_ptr<AstNode>> statements;
 
  public:
-  explicit Program(std::vector<std::shared_ptr<AstNode>> statements);
+  explicit Block(std::vector<std::shared_ptr<AstNode>> statements);
 
   std::vector<std::shared_ptr<AstNode>> GetStatements() const;
 

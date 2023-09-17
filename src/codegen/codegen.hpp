@@ -31,7 +31,7 @@ class Codegen : public AstVisitor {
   void Print();
   void Generate(const std::shared_ptr<AstNode>& ast);
 
-  llvm::Value* Visit(const Program* element) override;
+  llvm::Value* Visit(const Block* element) override;
   llvm::Value* Visit(const ReturnStatement* element) override;
   llvm::Value* Visit(const IfStatement* element) override;
   llvm::Value* Visit(const IfElseStatement* element) override;

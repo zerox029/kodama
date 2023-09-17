@@ -6,6 +6,7 @@ import terminal;
 program : { statement };
 
 statement : expression [';']
+          | '{' statement '}'
           | 'if' '(' equality ')' statement ['else' statement]
           | 'while' '(' equality ')' statement
           | 'do' statement 'while' '(' condition ')'

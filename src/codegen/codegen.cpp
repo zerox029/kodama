@@ -25,7 +25,7 @@ Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
 }
 
 llvm::Value*
-Codegen::Visit(const Program* element) {
+Codegen::Visit(const Block* element) {
   for (const std::shared_ptr<AstNode>& node : element->GetStatements()) {
     node->Accept(this);
   }

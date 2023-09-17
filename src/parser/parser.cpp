@@ -18,7 +18,7 @@ Parser::Parse() {
     statements.push_back(ParseStatement());
   }
 
-  return std::make_shared<Program>(statements);
+  return std::make_shared<Block>(statements);
 }
 
 std::shared_ptr<AstNode>
@@ -28,6 +28,15 @@ Parser::ParseStatement() {
     Consume(TK_SEMICOLON);
 
     return std::make_shared<ReturnStatement>(returnValue);
+  }
+  else if(Consume(TK_OPEN_CURLY)) {
+    std::vector<std::shared_ptr<AstNode>> statements;
+
+    while(!Consume(TK_CLOSED_CURLY)) {
+      statements.push_back(ParseStatement());
+    }
+
+    return std::make_shared<Block>(statements);
   }
   else if(Consume(TK_IF)) {
     Expect(TK_OPEN_PAREN);

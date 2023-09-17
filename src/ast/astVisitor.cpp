@@ -5,7 +5,7 @@
 #include "astVisitor.hpp"
 
 llvm::Value*
-Program::Accept(AstVisitor* visitor) const {
+Block::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 

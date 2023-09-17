@@ -14,7 +14,8 @@ const std::unordered_map<std::string, TokenType> dualCharacterSymbols = {
 const std::unordered_map<std::string, TokenType> singleCharacterSymbols = {
     {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH},
     {"=", TK_ASSIGN}, {"%", TK_PERCENT}, {":", TK_COLON}, {";", TK_SEMICOLON},
-    {"(", TK_OPEN_PAREN}, {")", TK_CLOSED_PAREN}
+    {"(", TK_OPEN_PAREN}, {")", TK_CLOSED_PAREN}, {"{", TK_OPEN_CURLY},
+    {"}", TK_CLOSED_CURLY}
 };
 
 const std::unordered_map<std::string, TokenType> keywords = {
