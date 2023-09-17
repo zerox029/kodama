@@ -44,6 +44,28 @@ Codegen::Visit(const IfStatement* element) {
 
   llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
   llvm::BasicBlock* alternative = llvm::BasicBlock::Create(*context, "alternative", fn);
+
+  llvm::Value* ifStatement = builder->CreateCondBr(element->GetCondition()->Accept(this),
+                                                   consequent,
+                                                   alternative);
+
+  // Generate the consequent
+  builder->SetInsertPoint(consequent);
+  element->GetConsequent()->Accept(this);
+  builder->CreateBr(alternative);
+
+  // Go to the merge point
+  builder->SetInsertPoint(alternative);
+
+  return ifStatement;
+}
+
+llvm::Value*
+Codegen::Visit(const IfElseStatement* element) {
+  llvm::Function* fn = module->getFunction("main");
+
+  llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
+  llvm::BasicBlock* alternative = llvm::BasicBlock::Create(*context, "alternative", fn);
   llvm::BasicBlock* merge = llvm::BasicBlock::Create(*context, "merge", fn);
 
   llvm::Value* ifStatement = builder->CreateCondBr(element->GetCondition()->Accept(this),
@@ -55,11 +77,10 @@ Codegen::Visit(const IfStatement* element) {
   element->GetConsequent()->Accept(this);
   builder->CreateBr(merge);
 
-  // Generate the alternative if it exists
-  if(element->GetAlternative()) {
-    element->GetAlternative()->Accept(this);
-    builder->CreateBr(merge);
-  }
+  // Generate the alternative
+  builder->SetInsertPoint(alternative);
+  element->GetAlternative()->Accept(this);
+  builder->CreateBr(merge);
 
   // Generate the merge block
   builder->SetInsertPoint(merge);

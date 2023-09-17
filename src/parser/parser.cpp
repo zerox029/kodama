@@ -35,7 +35,12 @@ Parser::ParseStatement() {
     Expect(TK_CLOSED_PAREN);
     std::shared_ptr<AstNode> consequent{ParseStatement()};
 
-    return std::make_shared<IfStatement>(condition, consequent, nullptr);
+    if(Consume(TK_ELSE)) {
+      std::shared_ptr<AstNode> alternative{ParseStatement()};
+      return std::make_shared<IfElseStatement>(condition, consequent, alternative);
+    }
+
+    return std::make_shared<IfStatement>(condition, consequent);
   }
   else {
     std::shared_ptr<AstNode> expression = ParseExpression();
@@ -107,7 +112,7 @@ Parser::ParsePrimaryExpression() {
     NumberLiteral numberLiteralNode{numberNode->getStr()};
     return std::make_shared<NumberLiteral>(numberLiteralNode);
   }
-  else if(std::shared_ptr<Token> numberNode = Consume(TK_IDENTIFIER)) {
+  else if(std::shared_ptr<Token> identifierNode = Consume(TK_IDENTIFIER)) {
     Variable numberLiteralNode{numberNode->getStr()};
     return std::make_shared<Variable>(numberLiteralNode);
   }

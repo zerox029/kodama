@@ -28,9 +28,7 @@ ReturnStatement::GetKind() const { return AST_RETURN; }
 
 /// If Statement
 IfStatement::IfStatement(std::shared_ptr<AstNode> condition,
-                         std::shared_ptr<AstNode> consequent,
-                         std::shared_ptr<AstNode> alternative)
-    : condition{condition}, consequent{consequent}, alternative{alternative} {}
+                         std::shared_ptr<AstNode> consequent) : condition{condition}, consequent{consequent} {}
 
 std::shared_ptr<AstNode>
 IfStatement::GetCondition() const { return condition; }
@@ -38,11 +36,27 @@ IfStatement::GetCondition() const { return condition; }
 std::shared_ptr<AstNode>
 IfStatement::GetConsequent() const { return consequent; }
 
-std::shared_ptr<AstNode>
-IfStatement::GetAlternative() const { return alternative; }
-
 AstNodeKind
 IfStatement::GetKind() const { return AST_IF; }
+
+
+/// IfElse Statement
+IfElseStatement::IfElseStatement(std::shared_ptr<AstNode> condition,
+                                 std::shared_ptr<AstNode> consequent,
+                                 std::shared_ptr<AstNode> alternative)
+    : condition{condition}, consequent{consequent}, alternative{alternative} {}
+
+std::shared_ptr<AstNode>
+IfElseStatement::GetCondition() const { return condition; }
+
+std::shared_ptr<AstNode>
+IfElseStatement::GetConsequent() const { return consequent; }
+
+std::shared_ptr<AstNode>
+IfElseStatement::GetAlternative() const { return alternative; }
+
+AstNodeKind
+IfElseStatement::GetKind() const { return AST_IFELSE; }
 
 
 /// AssignmentExpression

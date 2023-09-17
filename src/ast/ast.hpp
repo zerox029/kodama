@@ -14,6 +14,7 @@ enum AstNodeKind {
   AST_PROGRAM,
   AST_RETURN,
   AST_IF,
+  AST_IFELSE,
   AST_ASSIGNMENT,
   AST_BINARY_OPERATION,
   AST_NUMBER_LITERAL,
@@ -60,12 +61,28 @@ class IfStatement : public AstNode {
  private:
   std::shared_ptr<AstNode> condition;
   std::shared_ptr<AstNode> consequent;
-  std::shared_ptr<AstNode> alternative;
 
  public:
   IfStatement(std::shared_ptr<AstNode> condition,
-              std::shared_ptr<AstNode> consequent,
-              std::shared_ptr<AstNode> alternative);
+                  std::shared_ptr<AstNode> consequent);
+
+  std::shared_ptr<AstNode> GetCondition() const;
+  std::shared_ptr<AstNode> GetConsequent() const;
+
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
+};
+
+class IfElseStatement : public AstNode {
+ private:
+  std::shared_ptr<AstNode> condition;
+  std::shared_ptr<AstNode> consequent;
+  std::shared_ptr<AstNode> alternative;
+
+ public:
+  IfElseStatement(std::shared_ptr<AstNode> condition,
+                  std::shared_ptr<AstNode> consequent,
+                  std::shared_ptr<AstNode> alternative);
 
   std::shared_ptr<AstNode> GetCondition() const;
   std::shared_ptr<AstNode> GetConsequent() const;
@@ -114,7 +131,7 @@ class NumberLiteral : public AstNode {
   std::string value;
 
  public:
-  NumberLiteral(std::string_view val);
+  explicit NumberLiteral(std::string_view val);
 
   std::string GetValue() const;
 
@@ -127,7 +144,7 @@ class Variable : public AstNode {
   std::string identifier;
 
  public:
-  Variable(std::string_view identifier);
+   explicit Variable(std::string_view identifier);
 
   std::string GetIdentifier() const;
 

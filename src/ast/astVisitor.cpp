@@ -19,6 +19,12 @@ IfStatement::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
+
+llvm::Value*
+IfElseStatement::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
 llvm::Value*
 AssignmentExpression::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);

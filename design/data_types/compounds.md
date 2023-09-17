@@ -47,4 +47,4 @@ print(dict["one"]) // prints 1
 
 ## Open questions
 - Do we really want dynamic size arrays?
-- Do we want a way to initialize large arrays with custom values? IfStatement so, with what syntax?
+- Do we want a way to initialize large arrays with custom values? IfElseStatement so, with what syntax?

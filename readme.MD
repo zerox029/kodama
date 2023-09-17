@@ -79,7 +79,7 @@ The name of each argument must be specified when calling functions
 setSize(width: 20, height: 50)
 ```
 There are two exceptions to this:
-- IfStatement the parameter in the function declaration is declared as anon, omitting the argument label is allowed.
+- IfElseStatement the parameter in the function declaration is declared as anon, omitting the argument label is allowed.
 - When passing a variable with the same name as the parameter.
 
 ## Classes and structs
