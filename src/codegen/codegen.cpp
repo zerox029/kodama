@@ -19,6 +19,14 @@ Codegen::Print() {
 }
 
 void
+Codegen::saveModuleToFile(const std::string& fileName) {
+  std::error_code errorCode;
+  llvm::raw_fd_ostream outLL(fileName, errorCode);
+  module->print(outLL, nullptr);
+}
+
+
+void
 Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
   llvm::Function* fn = CreateFunction("main", llvm::FunctionType::get(builder->getInt64Ty(), false));
   ast->Accept(this);

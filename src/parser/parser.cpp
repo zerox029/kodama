@@ -48,64 +48,77 @@ Parser::ParseStatement() {
 
 std::shared_ptr<AstNode>
 Parser::ParseReturn() {
-  Consume(TK_RET);
+  if(Consume(TK_RET)) {
+    std::shared_ptr<AstNode> returnValue{ParseEqualityExpression()};
+    Consume(TK_SEMICOLON);
 
-  std::shared_ptr<AstNode> returnValue{ParseEqualityExpression()};
-  Consume(TK_SEMICOLON);
+    return std::make_shared<ReturnStatement>(returnValue);
+  }
 
-  return std::make_shared<ReturnStatement>(returnValue);
+  return nullptr;
 }
 
 std::shared_ptr<AstNode>
 Parser::ParseBlock() {
-  Consume(TK_OPEN_CURLY);
+  if(Consume(TK_OPEN_CURLY)) {
+    std::vector<std::shared_ptr<AstNode>> statements;
 
-  std::vector<std::shared_ptr<AstNode>> statements;
+    while(!Consume(TK_CLOSED_CURLY)) {
+      statements.push_back(ParseStatement());
+    }
 
-  while(!Consume(TK_CLOSED_CURLY)) {
-    statements.push_back(ParseStatement());
+    return std::make_shared<Block>(statements);
   }
 
-  return std::make_shared<Block>(statements);
+  return nullptr;
 }
 
 std::shared_ptr<AstNode>
 Parser::ParseIfElseStatement() {
-  Consume(TK_IF);
-  Expect(TK_OPEN_PAREN);
-  std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
-  Expect(TK_CLOSED_PAREN);
-  std::shared_ptr<AstNode> consequent{ParseStatement()};
+  if(Consume(TK_IF)) {
+    Expect(TK_OPEN_PAREN);
+    std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
+    Expect(TK_CLOSED_PAREN);
+    std::shared_ptr<AstNode> consequent{ParseStatement()};
 
-  if(Consume(TK_ELSE)) {
-    std::shared_ptr<AstNode> alternative{ParseStatement()};
-    return std::make_shared<IfElseStatement>(condition, consequent, alternative);
+    if(Consume(TK_ELSE)) {
+      std::shared_ptr<AstNode> alternative{ParseStatement()};
+      return std::make_shared<IfElseStatement>(condition, consequent, alternative);
+    }
+
+    return std::make_shared<IfStatement>(condition, consequent);
   }
 
-  return std::make_shared<IfStatement>(condition, consequent);
+  return nullptr;
 }
 
 std::shared_ptr<AstNode>
 Parser::ParseWhileLoop() {
-  Consume(TK_WHILE);
-  Expect(TK_OPEN_PAREN);
-  std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
-  Expect(TK_CLOSED_PAREN);
-  std::shared_ptr<AstNode> consequent{ParseStatement()};
+  if(Consume(TK_WHILE)) {
+    Expect(TK_OPEN_PAREN);
+    std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
+    Expect(TK_CLOSED_PAREN);
+    std::shared_ptr<AstNode> consequent{ParseStatement()};
 
-  return std::make_shared<WhileLoop>(condition, consequent);
+    return std::make_shared<WhileLoop>(condition, consequent);
+  }
+
+  return nullptr;
 }
 
 std::shared_ptr<AstNode>
 Parser::ParseDoWhileLoop() {
-  Consume(TK_DO);
-  std::shared_ptr<AstNode> consequent{ParseStatement()};
-  Expect(TK_WHILE);
-  Expect(TK_OPEN_PAREN);
-  std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
-  Expect(TK_CLOSED_PAREN);
+  if(Consume(TK_DO)) {
+    std::shared_ptr<AstNode> consequent{ParseStatement()};
+    Expect(TK_WHILE);
+    Expect(TK_OPEN_PAREN);
+    std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
+    Expect(TK_CLOSED_PAREN);
 
-  return std::make_shared<DoWhileLoop>(condition, consequent);
+    return std::make_shared<DoWhileLoop>(condition, consequent);
+  }
+
+  return nullptr;
 }
 
 std::shared_ptr<AstNode>

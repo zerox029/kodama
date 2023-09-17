@@ -6,7 +6,7 @@
 
 void
 run() {
-  Lexer lexer{"do {return 1;} while(1==1)"};
+  Lexer lexer{"if(1==1) return 10;"};
   std::vector<Token> tokens = lexer.Tokenize();
 
   Parser parser{tokens};
@@ -15,6 +15,7 @@ run() {
   Codegen codegen{};
   codegen.Generate(tree);
   codegen.Print();
+  codegen.saveModuleToFile("../out/out.ll");
 }
 
 int

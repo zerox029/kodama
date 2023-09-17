@@ -29,6 +29,7 @@ class Codegen : public AstVisitor {
   Codegen();
 
   void Print();
+  void saveModuleToFile(const std::string& fileName);
   void Generate(const std::shared_ptr<AstNode>& ast);
 
   llvm::Value* Visit(const Block* element) override;
