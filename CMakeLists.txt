@@ -32,8 +32,7 @@ add_executable(Kodama
         src/ast/datatypes.cpp
         src/ast/datatypes.hpp
         src/codegen/irtransform.cpp
-        src/codegen/irtransform.hpp
-        test/test.cpp)
+        src/codegen/irtransform.hpp)
 
 # Find the libraries that correspond to the LLVM components
 # that you wish to use
@@ -57,7 +56,6 @@ add_dependencies(run_llvm Kodama)
 include(FetchContent)
 FetchContent_Declare(
         googletest
-        # Specify the commit you depend on and update it regularly.
         URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
@@ -65,5 +63,5 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_executable(tests test/test.cpp)
-target_link_libraries(tests gtest_main)
-add_test(NAME example_test COMMAND example)
+target_link_libraries(tests gtest gtest_main)
+add_test(NAME SquareTest COMMAND SquareTest)

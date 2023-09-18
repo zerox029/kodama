@@ -18,6 +18,7 @@ enum TokenType {
   TK_ASSIGN,
   TK_COLON,
   TK_SEMICOLON,
+  TK_ARROW,
 
   TK_OPEN_PAREN,
   TK_CLOSED_PAREN,
@@ -29,6 +30,7 @@ enum TokenType {
 
   TK_LET,
   TK_RET,
+  TK_FN,
 
   TK_U8,
   TK_U16,

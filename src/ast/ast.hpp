@@ -11,6 +11,7 @@
 #include <llvm/IR/Value.h>
 
 enum AstNodeKind {
+  AST_FUNC_DEC,
   AST_BLOCK,
   AST_RETURN,
   AST_IF,
@@ -33,14 +34,33 @@ class AstNode {
   virtual llvm::Value* Accept(AstVisitor* visitor) const = 0;
 };
 
-class Block : public AstNode {
+typedef std::shared_ptr<AstNode> AstNodePtr;
+
+class FunctionDeclaration : public AstNode {
  private:
-  std::vector<std::shared_ptr<AstNode>> statements;
+  std::string identifier;
+  DataType returnType;
+  AstNodePtr body;
 
  public:
-  explicit Block(std::vector<std::shared_ptr<AstNode>> statements);
+  explicit FunctionDeclaration(std::string identifier, DataType returnType, AstNodePtr body);
 
-  std::vector<std::shared_ptr<AstNode>> GetStatements() const;
+  std::string GetIdentifier() const;
+  DataType GetReturnType() const;
+  AstNodePtr GetBody() const;
+
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
+};
+
+class Block : public AstNode {
+ private:
+  std::vector<AstNodePtr> statements;
+
+ public:
+  explicit Block(std::vector<AstNodePtr> statements);
+
+  std::vector<AstNodePtr> GetStatements() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
@@ -48,12 +68,12 @@ class Block : public AstNode {
 
 class ReturnStatement : public AstNode {
  private:
-  std::shared_ptr<AstNode> returnValue;
+  AstNodePtr returnValue;
 
  public:
-  explicit ReturnStatement(std::shared_ptr<AstNode> returnValue);
+  explicit ReturnStatement(AstNodePtr returnValue);
 
-  std::shared_ptr<AstNode> GetReturnValue() const;
+  AstNodePtr GetReturnValue() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
@@ -61,15 +81,15 @@ class ReturnStatement : public AstNode {
 
 class IfStatement : public AstNode {
  private:
-  std::shared_ptr<AstNode> condition;
-  std::shared_ptr<AstNode> consequent;
+  AstNodePtr condition;
+  AstNodePtr consequent;
 
  public:
-  IfStatement(std::shared_ptr<AstNode> condition,
-              std::shared_ptr<AstNode> consequent);
+  IfStatement(AstNodePtr condition,
+              AstNodePtr consequent);
 
-  std::shared_ptr<AstNode> GetCondition() const;
-  std::shared_ptr<AstNode> GetConsequent() const;
+  AstNodePtr GetCondition() const;
+  AstNodePtr GetConsequent() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
@@ -77,18 +97,18 @@ class IfStatement : public AstNode {
 
 class IfElseStatement : public AstNode {
  private:
-  std::shared_ptr<AstNode> condition;
-  std::shared_ptr<AstNode> consequent;
-  std::shared_ptr<AstNode> alternative;
+  AstNodePtr condition;
+  AstNodePtr consequent;
+  AstNodePtr alternative;
 
  public:
-  IfElseStatement(std::shared_ptr<AstNode> condition,
-                  std::shared_ptr<AstNode> consequent,
-                  std::shared_ptr<AstNode> alternative);
+  IfElseStatement(AstNodePtr condition,
+                  AstNodePtr consequent,
+                  AstNodePtr alternative);
 
-  std::shared_ptr<AstNode> GetCondition() const;
-  std::shared_ptr<AstNode> GetConsequent() const;
-  std::shared_ptr<AstNode> GetAlternative() const;
+  AstNodePtr GetCondition() const;
+  AstNodePtr GetConsequent() const;
+  AstNodePtr GetAlternative() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
@@ -96,15 +116,15 @@ class IfElseStatement : public AstNode {
 
 class WhileLoop : public AstNode {
  private:
-  std::shared_ptr<AstNode> condition;
-  std::shared_ptr<AstNode> consequent;
+  AstNodePtr condition;
+  AstNodePtr consequent;
 
  public:
-  WhileLoop(std::shared_ptr<AstNode> condition,
-            std::shared_ptr<AstNode> consequent);
+  WhileLoop(AstNodePtr condition,
+            AstNodePtr consequent);
 
-  std::shared_ptr<AstNode> GetCondition() const;
-  std::shared_ptr<AstNode> GetConsequent() const;
+  AstNodePtr GetCondition() const;
+  AstNodePtr GetConsequent() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
@@ -112,15 +132,15 @@ class WhileLoop : public AstNode {
 
 class DoWhileLoop : public AstNode {
  private:
-  std::shared_ptr<AstNode> condition;
-  std::shared_ptr<AstNode> consequent;
+  AstNodePtr condition;
+  AstNodePtr consequent;
 
  public:
-  DoWhileLoop(std::shared_ptr<AstNode> condition,
-              std::shared_ptr<AstNode> consequent);
+  DoWhileLoop(AstNodePtr condition,
+              AstNodePtr consequent);
 
-  std::shared_ptr<AstNode> GetCondition() const;
-  std::shared_ptr<AstNode> GetConsequent() const;
+  AstNodePtr GetCondition() const;
+  AstNodePtr GetConsequent() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
@@ -130,14 +150,14 @@ class AssignmentExpression : public AstNode {
  private:
   std::string identifier;
   DataType dataType;
-  std::shared_ptr<AstNode> value;
+  AstNodePtr value;
 
  public:
-  AssignmentExpression(std::string identifier, DataType type, std::shared_ptr<AstNode> value);
+  AssignmentExpression(std::string identifier, DataType type, AstNodePtr value);
 
   std::string GetIdentifier() const;
   DataType GetDataType() const;
-  std::shared_ptr<AstNode> GetValue() const;
+  AstNodePtr GetValue() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
@@ -146,14 +166,14 @@ class AssignmentExpression : public AstNode {
 class BinaryOperation : public AstNode {
  private:
   Token operatorToken;
-  std::shared_ptr<AstNode> lhs;
-  std::shared_ptr<AstNode> rhs;
+  AstNodePtr lhs;
+  AstNodePtr rhs;
 
  public:
-  BinaryOperation(Token operatorTok, std::shared_ptr<AstNode> lhs, std::shared_ptr<AstNode> rhs);
+  BinaryOperation(Token operatorTok, AstNodePtr lhs, AstNodePtr rhs);
 
-  std::shared_ptr<AstNode> GetLhs() const;
-  std::shared_ptr<AstNode> GetRhs() const;
+  AstNodePtr GetLhs() const;
+  AstNodePtr GetRhs() const;
   Token GetOperator() const;
 
   AstNodeKind GetKind() const override;

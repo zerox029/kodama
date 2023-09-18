@@ -6,10 +6,29 @@
 
 #include <utility>
 
-/// Block
-Block::Block(std::vector<std::shared_ptr<AstNode>> statements) : statements{statements} {}
+/// Function declaration
+FunctionDeclaration::FunctionDeclaration(std::string identifier,
+                                         DataType returnType,
+                                         AstNodePtr body)
+    : identifier{std::move(identifier)}, returnType{returnType}, body{std::move(body)} {}
 
-std::vector<std::shared_ptr<AstNode>>
+AstNodePtr
+FunctionDeclaration::GetBody() const { return body; }
+
+std::string
+FunctionDeclaration::GetIdentifier() const { return identifier; }
+
+DataType
+FunctionDeclaration::GetReturnType() const { return returnType; }
+
+AstNodeKind
+FunctionDeclaration::GetKind() const { return AST_FUNC_DEC; }
+
+
+/// Block
+Block::Block(std::vector<AstNodePtr> statements) : statements{std::move(statements)} {}
+
+std::vector<AstNodePtr>
 Block::GetStatements() const { return statements; }
 
 AstNodeKind
@@ -17,9 +36,9 @@ Block::GetKind() const { return AST_BLOCK; }
 
 
 /// ReturnStatement
-ReturnStatement::ReturnStatement(std::shared_ptr<AstNode> returnValue) : returnValue{returnValue} {}
+ReturnStatement::ReturnStatement(AstNodePtr returnValue) : returnValue{std::move(returnValue)} {}
 
-std::shared_ptr<AstNode>
+AstNodePtr
 ReturnStatement::GetReturnValue() const { return returnValue; }
 
 AstNodeKind
@@ -27,13 +46,13 @@ ReturnStatement::GetKind() const { return AST_RETURN; }
 
 
 /// If Statement
-IfStatement::IfStatement(std::shared_ptr<AstNode> condition,
-                         std::shared_ptr<AstNode> consequent) : condition{condition}, consequent{consequent} {}
+IfStatement::IfStatement(AstNodePtr condition, AstNodePtr consequent)
+    : condition{std::move(condition)}, consequent{std::move(consequent)} {}
 
-std::shared_ptr<AstNode>
+AstNodePtr
 IfStatement::GetCondition() const { return condition; }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 IfStatement::GetConsequent() const { return consequent; }
 
 AstNodeKind
@@ -41,18 +60,18 @@ IfStatement::GetKind() const { return AST_IF; }
 
 
 /// IfElse Statement
-IfElseStatement::IfElseStatement(std::shared_ptr<AstNode> condition,
-                                 std::shared_ptr<AstNode> consequent,
-                                 std::shared_ptr<AstNode> alternative)
-    : condition{condition}, consequent{consequent}, alternative{alternative} {}
+IfElseStatement::IfElseStatement(AstNodePtr condition,
+                                 AstNodePtr consequent,
+                                 AstNodePtr alternative)
+    : condition{std::move(condition)}, consequent{std::move(consequent)}, alternative{std::move(alternative)} {}
 
-std::shared_ptr<AstNode>
+AstNodePtr
 IfElseStatement::GetCondition() const { return condition; }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 IfElseStatement::GetConsequent() const { return consequent; }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 IfElseStatement::GetAlternative() const { return alternative; }
 
 AstNodeKind
@@ -60,13 +79,13 @@ IfElseStatement::GetKind() const { return AST_IF_ELSE; }
 
 
 /// While Loop
-WhileLoop::WhileLoop(std::shared_ptr<AstNode> condition,
-                     std::shared_ptr<AstNode> consequent) : condition{condition}, consequent{consequent} {}
+WhileLoop::WhileLoop(AstNodePtr condition, AstNodePtr consequent)
+    : condition{std::move(condition)}, consequent{std::move(consequent)} {}
 
-std::shared_ptr<AstNode>
+AstNodePtr
 WhileLoop::GetCondition() const { return condition; }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 WhileLoop::GetConsequent() const { return consequent; }
 
 AstNodeKind
@@ -74,13 +93,13 @@ WhileLoop::GetKind() const { return AST_WHILE; }
 
 
 /// Do While Loop
-DoWhileLoop::DoWhileLoop(std::shared_ptr<AstNode> condition,
-                         std::shared_ptr<AstNode> consequent) : condition{condition}, consequent{consequent} {}
+DoWhileLoop::DoWhileLoop(AstNodePtr condition, AstNodePtr consequent)
+    : condition{std::move(condition)}, consequent{std::move(consequent)} {}
 
-std::shared_ptr<AstNode>
+AstNodePtr
 DoWhileLoop::GetCondition() const { return condition; }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 DoWhileLoop::GetConsequent() const { return consequent; }
 
 AstNodeKind
@@ -88,7 +107,7 @@ DoWhileLoop::GetKind() const { return AST_DO_WHILE; }
 
 
 /// AssignmentExpression
-AssignmentExpression::AssignmentExpression(std::string identifier, DataType dataType, std::shared_ptr<AstNode> value)
+AssignmentExpression::AssignmentExpression(std::string identifier, DataType dataType, AstNodePtr value)
     : identifier{std::move(identifier)}, dataType(dataType), value{std::move(value)} {}
 
 std::string
@@ -97,7 +116,7 @@ AssignmentExpression::GetIdentifier() const { return identifier; }
 DataType
 AssignmentExpression::GetDataType() const { return dataType; }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 AssignmentExpression::GetValue() const { return value; }
 
 AstNodeKind
@@ -105,13 +124,13 @@ AssignmentExpression::GetKind() const { return AST_ASSIGNMENT; }
 
 
 /// Binary Operation
-BinaryOperation::BinaryOperation(Token tok, std::shared_ptr<AstNode> lhs, std::shared_ptr<AstNode> rhs)
+BinaryOperation::BinaryOperation(Token tok, AstNodePtr lhs, AstNodePtr rhs)
     : operatorToken{std::move(tok)}, lhs{std::move(lhs)}, rhs{std::move(rhs)} {}
 
-std::shared_ptr<AstNode>
+AstNodePtr
 BinaryOperation::GetLhs() const { return lhs; }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 BinaryOperation::GetRhs() const { return rhs; }
 
 Token

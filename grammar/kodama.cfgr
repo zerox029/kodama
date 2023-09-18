@@ -3,7 +3,9 @@ module kodama;
 import dataType;
 import terminal;
 
-program : { statement };
+program : { statement | function };
+
+function : 'fn' identifier '()' '->' integer_data_type { statement };
 
 statement : expression [';']
           | '{' statement '}'

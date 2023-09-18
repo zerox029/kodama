@@ -10,46 +10,62 @@ Parser::Parser(std::vector<Token> tokensVec) : tokens{std::move(tokensVec)},
                                                currentTokenIndex{0},
                                                currentToken{tokens.at(0)} {}
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::Parse() {
-  std::vector<std::shared_ptr<AstNode>> statements;
+  std::vector<AstNodePtr> statements;
 
   while(!IsFinishedParsing()) {
-    statements.push_back(ParseStatement());
+    statements.push_back(ParseFunctionDeclaration() ?: ParseStatement());
   }
 
   return std::make_shared<Block>(statements);
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
+Parser::ParseFunctionDeclaration() {
+  if(Consume(TK_FN)) {
+    std::string identifier = Consume(TK_IDENTIFIER)->getStr();
+    Expect(TK_OPEN_PAREN);
+    Expect(TK_CLOSED_PAREN);
+    Expect(TK_ARROW);
+    DataType dataType = TokenTypeToDataType(ConsumeDataType()->getTokenType());
+    AstNodePtr body = ParseStatement();
+
+    return std::make_shared<FunctionDeclaration>(identifier, dataType, body);
+  }
+
+  return nullptr;
+}
+
+AstNodePtr
 Parser::ParseStatement() {
-  if(std::shared_ptr<AstNode> ret = ParseReturn()) {
+  if(AstNodePtr ret = ParseReturn()) {
     return ret;
   }
-  else if(std::shared_ptr<AstNode> block = ParseBlock()) {
+  else if(AstNodePtr block = ParseBlock()) {
     return block;
   }
-  else if(std::shared_ptr<AstNode> ifElseStatement = ParseIfElseStatement()) {
+  else if(AstNodePtr ifElseStatement = ParseIfElseStatement()) {
     return ifElseStatement;
   }
-  else if(std::shared_ptr<AstNode> whileLoop = ParseWhileLoop()) {
+  else if(AstNodePtr whileLoop = ParseWhileLoop()) {
     return whileLoop;
   }
-  else if(std::shared_ptr<AstNode> doWhileLoop = ParseDoWhileLoop()) {
+  else if(AstNodePtr doWhileLoop = ParseDoWhileLoop()) {
     return doWhileLoop;
   }
   else {
-    std::shared_ptr<AstNode> expression = ParseExpression();
+    AstNodePtr expression = ParseExpression();
     Consume(TK_SEMICOLON);
 
     return expression;
   }
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::ParseReturn() {
   if(Consume(TK_RET)) {
-    std::shared_ptr<AstNode> returnValue{ParseEqualityExpression()};
+    AstNodePtr returnValue{ParseEqualityExpression()};
     Consume(TK_SEMICOLON);
 
     return std::make_shared<ReturnStatement>(returnValue);
@@ -58,10 +74,10 @@ Parser::ParseReturn() {
   return nullptr;
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::ParseBlock() {
   if(Consume(TK_OPEN_CURLY)) {
-    std::vector<std::shared_ptr<AstNode>> statements;
+    std::vector<AstNodePtr> statements;
 
     while(!Consume(TK_CLOSED_CURLY)) {
       statements.push_back(ParseStatement());
@@ -73,16 +89,16 @@ Parser::ParseBlock() {
   return nullptr;
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::ParseIfElseStatement() {
   if(Consume(TK_IF)) {
     Expect(TK_OPEN_PAREN);
-    std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
+    AstNodePtr condition{ParseEqualityExpression()};
     Expect(TK_CLOSED_PAREN);
-    std::shared_ptr<AstNode> consequent{ParseStatement()};
+    AstNodePtr consequent{ParseStatement()};
 
     if(Consume(TK_ELSE)) {
-      std::shared_ptr<AstNode> alternative{ParseStatement()};
+      AstNodePtr alternative{ParseStatement()};
       return std::make_shared<IfElseStatement>(condition, consequent, alternative);
     }
 
@@ -92,13 +108,13 @@ Parser::ParseIfElseStatement() {
   return nullptr;
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::ParseWhileLoop() {
   if(Consume(TK_WHILE)) {
     Expect(TK_OPEN_PAREN);
-    std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
+    AstNodePtr condition{ParseEqualityExpression()};
     Expect(TK_CLOSED_PAREN);
-    std::shared_ptr<AstNode> consequent{ParseStatement()};
+    AstNodePtr consequent{ParseStatement()};
 
     return std::make_shared<WhileLoop>(condition, consequent);
   }
@@ -106,13 +122,13 @@ Parser::ParseWhileLoop() {
   return nullptr;
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::ParseDoWhileLoop() {
   if(Consume(TK_DO)) {
-    std::shared_ptr<AstNode> consequent{ParseStatement()};
+    AstNodePtr consequent{ParseStatement()};
     Expect(TK_WHILE);
     Expect(TK_OPEN_PAREN);
-    std::shared_ptr<AstNode> condition{ParseEqualityExpression()};
+    AstNodePtr condition{ParseEqualityExpression()};
     Expect(TK_CLOSED_PAREN);
 
     return std::make_shared<DoWhileLoop>(condition, consequent);
@@ -121,7 +137,7 @@ Parser::ParseDoWhileLoop() {
   return nullptr;
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::ParseExpression() {
   if(Consume(TK_LET)) {
     return ParseAssignment();
@@ -131,7 +147,7 @@ Parser::ParseExpression() {
   }
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::ParseAssignment() {
   std::string identifier = Consume(TK_IDENTIFIER)->getStr();
   Expect(TK_COLON);
@@ -141,9 +157,9 @@ Parser::ParseAssignment() {
   return std::make_shared<AssignmentExpression>(identifier, dataType, ParseEqualityExpression());
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::ParseEqualityExpression() {
-  std::shared_ptr<AstNode> expression = ParseAddExpression();
+  AstNodePtr expression = ParseAddExpression();
 
   if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_EQUAL, TK_NOT_EQUAL})) {
     BinaryOperation binaryOperationNode{*operatorToken, expression, ParseAddExpression()};
@@ -153,9 +169,9 @@ Parser::ParseEqualityExpression() {
   return expression;
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::ParseAddExpression() {
-  std::shared_ptr<AstNode> expression = ParseMulExpression();
+  AstNodePtr expression = ParseMulExpression();
 
   if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_PLUS, TK_MINUS})) {
     BinaryOperation binaryOperationNode{*operatorToken, expression, ParseMulExpression()};
@@ -165,9 +181,9 @@ Parser::ParseAddExpression() {
   return expression;
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::ParseMulExpression() {
-  std::shared_ptr<AstNode> expression = ParsePrimaryExpression();
+  AstNodePtr expression = ParsePrimaryExpression();
 
   if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_STAR, TK_SLASH, TK_PERCENT})) {
     BinaryOperation binaryOperationNode{*operatorToken, expression, ParsePrimaryExpression()};
@@ -177,7 +193,7 @@ Parser::ParseMulExpression() {
   return expression;
 }
 
-std::shared_ptr<AstNode>
+AstNodePtr
 Parser::ParsePrimaryExpression() {
   if(std::shared_ptr<Token> numberNode = Consume(TK_NUMBER)) {
     NumberLiteral numberLiteralNode{numberNode->getStr()};

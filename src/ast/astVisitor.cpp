@@ -5,6 +5,11 @@
 #include "astVisitor.hpp"
 
 llvm::Value*
+FunctionDeclaration::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
+llvm::Value*
 Block::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }

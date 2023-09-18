@@ -29,16 +29,23 @@ Codegen::saveModuleToFile(const std::string& fileName) {
   module->print(outLL, nullptr);
 }
 
-
 void
-Codegen::Generate(const std::shared_ptr<AstNode>& ast) {
-  llvm::Function* fn = CreateFunction("main", llvm::FunctionType::get(builder->getInt64Ty(), false));
+Codegen::Generate(const AstNodePtr& ast) {
   ast->Accept(this);
 }
 
 llvm::Value*
+Codegen::Visit(const FunctionDeclaration* element) {
+  llvm::FunctionType* functionType = llvm::FunctionType::get(ResolveType(element->GetReturnType()), false);
+  llvm::Function* function = CreateFunction(element->GetIdentifier(), functionType);
+  element->GetBody()->Accept(this);
+
+  return function;
+}
+
+llvm::Value*
 Codegen::Visit(const Block* element) {
-  for (const std::shared_ptr<AstNode>& node : element->GetStatements()) {
+  for (const AstNodePtr& node : element->GetStatements()) {
     node->Accept(this);
   }
 
@@ -256,7 +263,7 @@ Codegen::CreateFunction(const std::string& fnName, llvm::FunctionType* fnType) {
     llvm::verifyFunction(*fn);
   }
 
-  auto entry = llvm::BasicBlock::Create(*context, "entry", fn);
+  llvm::BasicBlock* entry = llvm::BasicBlock::Create(*context, "entry", fn);
   builder->SetInsertPoint(entry);
 
   return fn;

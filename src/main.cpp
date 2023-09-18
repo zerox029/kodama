@@ -6,11 +6,11 @@
 
 void
 run() {
-  Lexer lexer{"if(1==1) return 10;"};
+  Lexer lexer{"fn main() -> i64 { return 0; }"};
   std::vector<Token> tokens = lexer.Tokenize();
 
   Parser parser{tokens};
-  std::shared_ptr<AstNode> tree = parser.Parse();
+  AstNodePtr tree = parser.Parse();
 
   Codegen codegen{};
   codegen.Generate(tree);

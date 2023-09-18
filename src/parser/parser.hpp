@@ -15,25 +15,26 @@
 class Parser {
  public:
   explicit Parser(std::vector<Token> tokens);
-  std::shared_ptr<AstNode> Parse();
+  AstNodePtr Parse();
 
  private:
   std::vector<Token> tokens;
   size_t currentTokenIndex;
   Token currentToken;
 
-  std::shared_ptr<AstNode> ParseStatement();
-  std::shared_ptr<AstNode> ParseIfElseStatement();
-  std::shared_ptr<AstNode> ParseBlock();
-  std::shared_ptr<AstNode> ParseReturn();
-  std::shared_ptr<AstNode> ParseWhileLoop();
-  std::shared_ptr<AstNode> ParseDoWhileLoop();
-  std::shared_ptr<AstNode> ParseExpression();
-  std::shared_ptr<AstNode> ParseAssignment();
-  std::shared_ptr<AstNode> ParseEqualityExpression();
-  std::shared_ptr<AstNode> ParseAddExpression();
-  std::shared_ptr<AstNode> ParseMulExpression();
-  std::shared_ptr<AstNode> ParsePrimaryExpression();
+  AstNodePtr ParseFunctionDeclaration();
+  AstNodePtr ParseStatement();
+  AstNodePtr ParseIfElseStatement();
+  AstNodePtr ParseBlock();
+  AstNodePtr ParseReturn();
+  AstNodePtr ParseWhileLoop();
+  AstNodePtr ParseDoWhileLoop();
+  AstNodePtr ParseExpression();
+  AstNodePtr ParseAssignment();
+  AstNodePtr ParseEqualityExpression();
+  AstNodePtr ParseAddExpression();
+  AstNodePtr ParseMulExpression();
+  AstNodePtr ParsePrimaryExpression();
 
   std::unique_ptr<Token> Consume(TokenType tokenType);
   std::unique_ptr<Token> ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes);
