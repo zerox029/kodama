@@ -10,6 +10,11 @@ FunctionDeclaration::Accept(AstVisitor* visitor) const {
 }
 
 llvm::Value*
+FunctionParameter::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
+llvm::Value*
 Block::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }

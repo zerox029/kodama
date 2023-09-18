@@ -5,7 +5,9 @@ import terminal;
 
 program : { statement | function };
 
-function : 'fn' identifier '()' '->' integer_data_type { statement };
+function : 'fn' identifier '(' function_parameters ')' '->' integer_data_type { statement };
+
+function_parameters : {identifier ':' integer_data_type ','} identifier ':' integer_data_type;
 
 statement : expression [';']
           | '{' statement '}'

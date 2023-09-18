@@ -3,6 +3,7 @@
 //
 
 #include "lexer.hpp"
+#include "../errors/error.hpp"
 #include <sstream>
 #include <unordered_map>
 #include <iostream>
@@ -15,7 +16,7 @@ const std::unordered_map<std::string, TokenType> singleCharacterSymbols = {
     {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH},
     {"=", TK_ASSIGN}, {"%", TK_PERCENT}, {":", TK_COLON}, {";", TK_SEMICOLON},
     {"(", TK_OPEN_PAREN}, {")", TK_CLOSED_PAREN}, {"{", TK_OPEN_CURLY},
-    {"}", TK_CLOSED_CURLY}
+    {"}", TK_CLOSED_CURLY}, {",", TK_COMMA}
 };
 
 const std::unordered_map<std::string, TokenType> keywords = {
@@ -65,7 +66,10 @@ Lexer::Next() {
   token = ReadIdentifier();
   if (token.has_value()) return token.value();
 
-  throw std::invalid_argument{"Unexpected operatorToken"};
+  Error error{TOKENIZATION_ERROR, {0, 0}};
+  error.Throw(TOKENIZATION_ERROR);
+
+  throw std::invalid_argument("Invalid token");
 }
 
 std::optional<Token>

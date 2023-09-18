@@ -20,6 +20,8 @@ enum TokenType {
   TK_SEMICOLON,
   TK_ARROW,
 
+  TK_COMMA,
+
   TK_OPEN_PAREN,
   TK_CLOSED_PAREN,
   TK_OPEN_CURLY,

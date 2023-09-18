@@ -36,11 +36,32 @@ Codegen::Generate(const AstNodePtr& ast) {
 
 llvm::Value*
 Codegen::Visit(const FunctionDeclaration* element) {
-  llvm::FunctionType* functionType = llvm::FunctionType::get(ResolveType(element->GetReturnType()), false);
-  llvm::Function* function = CreateFunction(element->GetIdentifier(), functionType);
+  std::vector<AstNodePtr> parameterNodes = element->GetParameters();
+  std::vector<llvm::Type*> parameters{element->GetParameters().size()};
+  std::transform(parameterNodes.begin(),
+                 parameterNodes.end(),
+                 parameters.begin(),
+                 [this](const AstNodePtr& node) {
+    DataType type = (std::static_pointer_cast<FunctionParameter>(node))->GetDataType();
+    return ResolveType(type);
+  });
+
+  llvm::FunctionType* functionType = llvm::FunctionType::get(ResolveType(element->GetReturnType()),
+                                                             parameters,
+                                                             false);
+
+  llvm::Function* function = CreateFunction(element->GetIdentifier(),
+                                            functionType,
+                                            element->GetParameters());
+
   element->GetBody()->Accept(this);
 
   return function;
+}
+
+llvm::Value*
+Codegen::Visit(const FunctionParameter* element) {
+  return nullptr;
 }
 
 llvm::Value*
@@ -253,18 +274,25 @@ Codegen::ResolveType(const DataType type) {
   }
 }
 
-// Temporary
 llvm::Function*
-Codegen::CreateFunction(const std::string& fnName, llvm::FunctionType* fnType) {
-  llvm::Function* fn = module->getFunction(fnName);
+Codegen::CreateFunction(const std::string& fnName, llvm::FunctionType* fnType, std::vector<AstNodePtr> parameters) {
+  llvm::Function* function = module->getFunction(fnName);
 
-  if (fn == nullptr) {
-    fn = llvm::Function::Create(fnType, llvm::Function::ExternalLinkage, fnName, *module);
-    llvm::verifyFunction(*fn);
+  if (function == nullptr) {
+    function = llvm::Function::Create(fnType, llvm::Function::ExternalLinkage, fnName, *module);
+
+    unsigned idx = 0;
+    for (auto& parameter : function->args())
+    {
+      std::string identifier = (std::static_pointer_cast<FunctionParameter>((parameters.at(idx++))))->GetIdentifier();
+      parameter.setName(identifier);
+    }
+
+    llvm::verifyFunction(*function);
   }
 
-  llvm::BasicBlock* entry = llvm::BasicBlock::Create(*context, "entry", fn);
+  llvm::BasicBlock* entry = llvm::BasicBlock::Create(*context, "entry", function);
   builder->SetInsertPoint(entry);
 
-  return fn;
+  return function;
 }

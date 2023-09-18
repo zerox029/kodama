@@ -11,6 +11,7 @@
 class AstVisitor {
  public:
   virtual llvm::Value* Visit(const FunctionDeclaration* element) = 0;
+  virtual llvm::Value* Visit(const FunctionParameter* element) = 0;
   virtual llvm::Value* Visit(const Block* element) = 0;
   virtual llvm::Value* Visit(const ReturnStatement* element) = 0;
   virtual llvm::Value* Visit(const IfStatement* element) = 0;

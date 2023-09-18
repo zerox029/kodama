@@ -8,9 +8,13 @@
 
 /// Function declaration
 FunctionDeclaration::FunctionDeclaration(std::string identifier,
+                                         std::vector<AstNodePtr> parameters,
                                          DataType returnType,
                                          AstNodePtr body)
-    : identifier{std::move(identifier)}, returnType{returnType}, body{std::move(body)} {}
+    : identifier{std::move(identifier)},
+      parameters{std::move(parameters)},
+      returnType{returnType},
+      body{std::move(body)} {}
 
 AstNodePtr
 FunctionDeclaration::GetBody() const { return body; }
@@ -18,11 +22,28 @@ FunctionDeclaration::GetBody() const { return body; }
 std::string
 FunctionDeclaration::GetIdentifier() const { return identifier; }
 
+std::vector<AstNodePtr>
+FunctionDeclaration::GetParameters() const { return parameters; }
+
 DataType
 FunctionDeclaration::GetReturnType() const { return returnType; }
 
 AstNodeKind
 FunctionDeclaration::GetKind() const { return AST_FUNC_DEC; }
+
+
+/// Function Parameter
+FunctionParameter::FunctionParameter(std::string identifier, DataType dataType)
+    : identifier{std::move(identifier)}, datatype{dataType} {}
+
+std::string
+FunctionParameter::GetIdentifier() const { return identifier; }
+
+DataType
+FunctionParameter::GetDataType() const { return datatype; }
+
+AstNodeKind
+FunctionParameter::GetKind() const { return AST_FUNC_PARAM; }
 
 
 /// Block

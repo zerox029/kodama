@@ -32,7 +32,9 @@ add_executable(Kodama
         src/ast/datatypes.cpp
         src/ast/datatypes.hpp
         src/codegen/irtransform.cpp
-        src/codegen/irtransform.hpp)
+        src/codegen/irtransform.hpp
+        src/errors/error.cpp
+        src/errors/error.hpp)
 
 # Find the libraries that correspond to the LLVM components
 # that you wish to use

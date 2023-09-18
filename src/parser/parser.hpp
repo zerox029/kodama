@@ -23,6 +23,7 @@ class Parser {
   Token currentToken;
 
   AstNodePtr ParseFunctionDeclaration();
+  std::vector<AstNodePtr> ParseFunctionParameters();
   AstNodePtr ParseStatement();
   AstNodePtr ParseIfElseStatement();
   AstNodePtr ParseBlock();
@@ -39,6 +40,7 @@ class Parser {
   std::unique_ptr<Token> Consume(TokenType tokenType);
   std::unique_ptr<Token> ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes);
   std::unique_ptr<Token> ConsumeDataType();
+  bool Lookahead(TokenType tokenType, size_t lookaheadDistance);
   void Expect(TokenType tokenType);
   void advance();
 

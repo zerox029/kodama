@@ -25,16 +25,36 @@ AstNodePtr
 Parser::ParseFunctionDeclaration() {
   if(Consume(TK_FN)) {
     std::string identifier = Consume(TK_IDENTIFIER)->getStr();
+
     Expect(TK_OPEN_PAREN);
+    std::vector<AstNodePtr> parameters = ParseFunctionParameters();
     Expect(TK_CLOSED_PAREN);
+
     Expect(TK_ARROW);
     DataType dataType = TokenTypeToDataType(ConsumeDataType()->getTokenType());
     AstNodePtr body = ParseStatement();
 
-    return std::make_shared<FunctionDeclaration>(identifier, dataType, body);
+    return std::make_shared<FunctionDeclaration>(identifier, parameters, dataType, body);
   }
 
   return nullptr;
+}
+
+std::vector<AstNodePtr>
+Parser::ParseFunctionParameters() {
+  std::vector<AstNodePtr> parameters {};
+
+  do {
+    if(std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
+      Expect(TK_COLON);
+      DataType dataType = TokenTypeToDataType(ConsumeDataType()->getTokenType());
+
+      AstNodePtr parameter = std::make_shared<FunctionParameter>(identifier->getStr(), dataType);
+      parameters.push_back(parameter);
+    }
+  } while (Consume(TK_COMMA));
+
+  return parameters;
 }
 
 AstNodePtr
@@ -217,6 +237,12 @@ Parser::Consume(TokenType tokenType) {
   } else {
     return nullptr;
   }
+}
+
+bool
+Parser::Lookahead(TokenType tokenType, size_t lookaheadDistance) {
+  //TODO: Add bound check
+  return tokens.at(currentTokenIndex + lookaheadDistance).getTokenType() == tokenType;
 }
 
 std::unique_ptr<Token>

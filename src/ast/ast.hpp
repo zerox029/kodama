@@ -12,6 +12,7 @@
 
 enum AstNodeKind {
   AST_FUNC_DEC,
+  AST_FUNC_PARAM,
   AST_BLOCK,
   AST_RETURN,
   AST_IF,
@@ -39,15 +40,32 @@ typedef std::shared_ptr<AstNode> AstNodePtr;
 class FunctionDeclaration : public AstNode {
  private:
   std::string identifier;
+  std::vector<AstNodePtr> parameters;
   DataType returnType;
   AstNodePtr body;
 
  public:
-  explicit FunctionDeclaration(std::string identifier, DataType returnType, AstNodePtr body);
+  FunctionDeclaration(std::string identifier, std::vector<AstNodePtr> parameters, DataType returnType, AstNodePtr body);
 
   std::string GetIdentifier() const;
+  std::vector<AstNodePtr> GetParameters() const;
   DataType GetReturnType() const;
   AstNodePtr GetBody() const;
+
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
+};
+
+class FunctionParameter : public AstNode {
+ private:
+  std::string identifier;
+  DataType datatype;
+
+ public:
+  FunctionParameter(std::string  identifier, DataType dataType);
+
+  std::string GetIdentifier() const;
+  DataType GetDataType() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
