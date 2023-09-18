@@ -54,6 +54,17 @@ Codegen::Visit(const FunctionDeclaration* element) {
                                             functionType,
                                             element->GetParameters());
 
+  namedValues.clear();
+  for (auto &argument : function->args()) {
+    llvm::AllocaInst* alloca = builder->CreateAlloca(argument.getType(),
+                                                     nullptr,
+                                                     element->GetIdentifier());
+    builder->CreateStore(&argument, alloca);
+
+    // Add arguments to variable symbol table.
+    namedValues[std::string(argument.getName())] = alloca;
+  }
+
   element->GetBody()->Accept(this);
 
   return function;
