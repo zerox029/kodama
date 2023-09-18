@@ -3,8 +3,12 @@
 //
 
 #include "codegen.hpp"
+#include "irtransform.hpp"
 #include <iostream>
 #include <llvm/IR/Verifier.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/Instructions.h>
 
 Codegen::Codegen() {
   context = std::make_unique<llvm::LLVMContext>();
