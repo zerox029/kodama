@@ -55,11 +55,16 @@ BinaryOperation::Accept(AstVisitor* visitor) const {
 }
 
 llvm::Value*
-NumberLiteral::Accept(AstVisitor* visitor) const {
+FunctionCall::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
 llvm::Value*
 Variable::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
+llvm::Value*
+NumberLiteral::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }

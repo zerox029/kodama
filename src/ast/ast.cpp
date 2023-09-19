@@ -180,6 +180,16 @@ AstNodeKind
 NumberLiteral::GetKind() const { return AST_NUMBER_LITERAL; }
 
 
+/// Function call
+FunctionCall::FunctionCall(std::string_view identifier) : identifier{identifier} {}
+
+std::string
+FunctionCall::GetIdentifier() const { return identifier; }
+
+AstNodeKind
+FunctionCall::GetKind() const { return AST_FUNCTION_CALL; }
+
+
 /// Variable
 Variable::Variable(std::string_view identifier) : identifier{identifier} {}
 

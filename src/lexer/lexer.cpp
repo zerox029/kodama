@@ -40,7 +40,7 @@ Lexer::Peek() {
 Token
 Lexer::Next() {
   // Eliminate white spaces
-  while (isspace(static_cast<unsigned char>(input.at(index)))) {
+  while (isspace(static_cast<unsigned char>(input.at(index))) && index < input.length() - 1) {
     index++;
   }
 
@@ -65,6 +65,10 @@ Lexer::Next() {
   // Process identifiers
   token = ReadIdentifier();
   if (token.has_value()) return token.value();
+
+  if(index == input.length() - 1) {
+    return Token{TK_EOF, ""};
+  }
 
   Error error{TOKENIZATION_ERROR, {0, 0}};
   error.Throw(TOKENIZATION_ERROR);
@@ -137,6 +141,8 @@ Lexer::Tokenize() {
   while (index < input.length() && Peek().getTokenType() != TK_EOF) {
     tokens.push_back(Next());
   }
+
+  tokens.emplace_back(TK_EOF, "");
 
   return tokens;
 }

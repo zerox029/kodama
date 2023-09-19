@@ -244,6 +244,31 @@ Codegen::Visit(const BinaryOperation* element) {
 }
 
 llvm::Value*
+Codegen::Visit(const FunctionCall* element) {
+  // Look up the name in the global module table.
+  llvm::Function* callee = module->getFunction(element->GetIdentifier());
+  if (!callee) {
+    fprintf(stderr, "Error: %s\n", "Unknown function referenced");
+    return nullptr;
+  }
+
+  /*
+  // If argument mismatch error.
+  if (CalleeF->arg_size() != Args.size())
+    return LogErrorV("Incorrect # arguments passed");*/
+
+  /*
+  std::vector<llvm::Value *> args;
+  for (unsigned i = 0, e = element.GetArguments().size(); i != e; ++i) {
+    args.push_back(element.GetArguments().at(i)->codegen());
+    if (!args.back())
+      return nullptr;
+  }*/
+
+  return builder->CreateCall(callee, nullptr, "calltmp");
+}
+
+llvm::Value*
 Codegen::Visit(const Variable* element) {
   llvm::AllocaInst* alloca = namedValues.at(element->GetIdentifier());
 

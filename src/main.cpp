@@ -6,7 +6,7 @@
 
 void
 run() {
-  Lexer lexer{"fn main(test: i64, other: i8) -> i32 { let i: f64 = 10.5; return i; }"};
+  Lexer lexer{"fn add() -> i32 { return 2+2; } fn main() -> i32 { return add(); }     "};
   std::vector<Token> tokens = lexer.Tokenize();
 
   Parser parser{tokens};

@@ -5,9 +5,11 @@ import terminal;
 
 program : { statement | function };
 
-function : 'fn' identifier '(' function_parameters ')' '->' integer_data_type { statement };
+function : 'fn' identifier '(' function_parameters ')' '->' data_type { statement };
 
-function_parameters : {identifier ':' integer_data_type ','} identifier ':' integer_data_type;
+function_parameters : { identifier ':' data_type ',' } identifier ':' data_type;
+
+function_parameters : { identifier ':' equality ',' } identifier ':' equality;
 
 statement : expression [';']
           | '{' statement '}'
@@ -16,9 +18,9 @@ statement : expression [';']
           | 'do' statement 'while' '(' condition ')'
           | 'return' expression [';'];
 
-expression : assignment | add_expression;
+expression : assignment | equality;
 
-assignment : 'let' identifier ':' integer_data_type '=' add_expression;
+assignment : 'let' identifier ':' data_type '=' add_expression;
 
 equality : add_expression '==' equality
          | add_expression '!=' equality
@@ -33,4 +35,4 @@ mul_expression : number '*' mul_expression
                | number '%' mul_expression
                | primary;
 
-primary : number | identifier;
+primary : identifier '(' function_arguments ')' | number | identifier;

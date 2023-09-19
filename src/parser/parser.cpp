@@ -218,8 +218,25 @@ Parser::ParsePrimaryExpression() {
   if(AstNodePtr numberNode = ParseNumber()) {
     return numberNode;
   }
+
+  if(LookAhead(1, TK_OPEN_PAREN)) {
+    return ParseFunctionCall();
+  }
   else if(AstNodePtr identifierNode = ParseIdentifier()) {
     return identifierNode;
+  }
+
+  return nullptr;
+}
+
+AstNodePtr
+Parser::ParseFunctionCall() {
+  std::string identifier = Consume(TK_IDENTIFIER)->getStr();
+
+  if(Consume(TK_OPEN_PAREN)) {
+    Expect(TK_CLOSED_PAREN);
+
+    return std::make_shared<FunctionCall>(identifier);
   }
 
   return nullptr;
@@ -269,7 +286,7 @@ Parser::Consume(TokenType tokenType) {
 }
 
 bool
-Parser::LookAhead(TokenType tokenType, size_t lookaheadDistance) {
+Parser::LookAhead(size_t lookaheadDistance, TokenType tokenType) {
   //TODO: Add bound check
   return tokens.at(currentTokenIndex + lookaheadDistance).getTokenType() == tokenType;
 }

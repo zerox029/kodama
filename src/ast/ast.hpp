@@ -21,8 +21,9 @@ enum AstNodeKind {
   AST_DO_WHILE,
   AST_ASSIGNMENT,
   AST_BINARY_OPERATION,
+  AST_FUNCTION_CALL,
+  AST_VARIABLE,
   AST_NUMBER_LITERAL,
-  AST_VARIABLE
 };
 
 class AstVisitor;
@@ -198,18 +199,13 @@ class BinaryOperation : public AstNode {
   llvm::Value* Accept(AstVisitor* visitor) const override;
 };
 
-class NumberLiteral : public AstNode {
+class FunctionCall : public AstNode {
  private:
-  std::string integerValue;
-  std::string decimalValue;
+  std::string identifier;
 
  public:
-  explicit NumberLiteral(std::string_view integerValue);
-  NumberLiteral(std::string_view integerValue, std::string_view decimalValue);
-
-  std::string GetIntegerValue() const;
-  std::string GetDecimalValue() const;
-  std::string GetValue() const;
+  FunctionCall(std::string_view identifier);
+  std::string GetIdentifier() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
@@ -223,6 +219,23 @@ class Variable : public AstNode {
   explicit Variable(std::string_view identifier);
 
   std::string GetIdentifier() const;
+
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
+};
+
+class NumberLiteral : public AstNode {
+ private:
+  std::string integerValue;
+  std::string decimalValue;
+
+ public:
+  explicit NumberLiteral(std::string_view integerValue);
+  NumberLiteral(std::string_view integerValue, std::string_view decimalValue);
+
+  std::string GetIntegerValue() const;
+  std::string GetDecimalValue() const;
+  std::string GetValue() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
