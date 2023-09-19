@@ -1,0 +1,7 @@
+fn add() -> i32 {
+    return 2+2;
+}
+
+fn main() -> i32 {
+    return add();
+}

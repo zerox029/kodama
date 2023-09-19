@@ -1,12 +1,33 @@
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
 #include "codegen/codegen.hpp"
-#include <llvm/IR/Value.h>
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+std::string
+ReadFile() {
+  std::ifstream inputFile("../src/code.kdm");
+  if (!inputFile.is_open()) {
+    std::cerr << "Error opening the file.\n";
+    return "";
+  }
+
+  std::string line;
+  std::stringstream codeStream;
+  while (std::getline(inputFile, line)) {
+    codeStream << line << "\n";
+  }
+
+  inputFile.close();
+
+  return codeStream.str();
+}
 
 void
-run() {
-  Lexer lexer{"fn add() -> i32 { return 2+2; } fn main() -> i32 { return add(); }     "};
+Compile(const std::string& code) {
+  Lexer lexer{code};
   std::vector<Token> tokens = lexer.Tokenize();
 
   Parser parser{tokens};
@@ -20,6 +41,7 @@ run() {
 
 int
 main() {
-  run();
+  Compile(ReadFile());
+
   return 0;
 }
