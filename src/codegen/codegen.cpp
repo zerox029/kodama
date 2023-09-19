@@ -209,13 +209,6 @@ Codegen::Visit(const AssignmentExpression* element) {
 }
 
 llvm::Value*
-Codegen::Visit(const NumberLiteral* element) {
-  llvm::Value* val = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetValue(), 10));
-
-  return val;
-}
-
-llvm::Value*
 Codegen::Visit(const BinaryOperation* element) {
   llvm::Value* lhs = element->GetLhs()->Accept(this);
   llvm::Value* rhs = element->GetRhs()->Accept(this);
@@ -257,6 +250,16 @@ Codegen::Visit(const Variable* element) {
   return builder->CreateLoad(alloca->getAllocatedType(), alloca, element->GetIdentifier());
 }
 
+llvm::Value*
+Codegen::Visit(const NumberLiteral* element) {
+  if(element->GetDecimalValue().empty()) {
+    return llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetValue(), 10));
+  }
+  else {
+    return llvm::ConstantFP::get(*context, llvm::APFloat(std::stof(element->GetValue())));
+  }
+}
+
 llvm::Type*
 Codegen::ResolveType(const DataType type) {
   switch (type) {
@@ -280,6 +283,10 @@ Codegen::ResolveType(const DataType type) {
       return llvm::Type::getInt64Ty(*context);
     case I128:
       return llvm::Type::getInt128Ty(*context);
+    case F32:
+      return llvm::Type::getFloatTy(*context);
+    case F64:
+      return llvm::Type::getDoubleTy(*context);
     default:
       return nullptr;
   }

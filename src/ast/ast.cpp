@@ -162,10 +162,19 @@ BinaryOperation::GetKind() const { return AST_BINARY_OPERATION; }
 
 
 /// Number Literal
-NumberLiteral::NumberLiteral(std::string_view val) : value{val} {}
+NumberLiteral::NumberLiteral(std::string_view integerValue) : integerValue{integerValue} {}
+
+NumberLiteral::NumberLiteral(std::string_view integerValue, std::string_view decimalValue)
+    : integerValue{integerValue}, decimalValue{decimalValue} {}
 
 std::string
-NumberLiteral::GetValue() const { return value; }
+NumberLiteral::GetIntegerValue() const { return integerValue; }
+
+std::string
+NumberLiteral::GetDecimalValue() const { return decimalValue; }
+
+std::string
+NumberLiteral::GetValue() const { return integerValue + (decimalValue.empty() ? "" : ("." + decimalValue)); }
 
 AstNodeKind
 NumberLiteral::GetKind() const { return AST_NUMBER_LITERAL; }

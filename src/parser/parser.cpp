@@ -215,16 +215,45 @@ Parser::ParseMulExpression() {
 
 AstNodePtr
 Parser::ParsePrimaryExpression() {
-  if(std::shared_ptr<Token> numberNode = Consume(TK_NUMBER)) {
-    NumberLiteral numberLiteralNode{numberNode->getStr()};
-    return std::make_shared<NumberLiteral>(numberLiteralNode);
+  if(AstNodePtr numberNode = ParseNumber()) {
+    return numberNode;
   }
-  else if(std::shared_ptr<Token> identifierNode = Consume(TK_IDENTIFIER)) {
-    Variable numberLiteralNode{numberNode->getStr()};
-    return std::make_shared<Variable>(numberLiteralNode);
+  else if(AstNodePtr identifierNode = ParseIdentifier()) {
+    return identifierNode;
   }
 
   return nullptr;
+}
+
+AstNodePtr
+Parser::ParseNumber() {
+  if(std::shared_ptr<Token> integerPortion = Consume(TK_NUMBER)) {
+    if(Consume(TK_DOT)) { // Float value
+      std::shared_ptr<Token> decimalPortion = Consume(TK_NUMBER);
+      NumberLiteral numberLiteralNode{integerPortion->getStr(), decimalPortion->getStr()};
+
+      return std::make_shared<NumberLiteral>(numberLiteralNode);
+    } // Integer value
+    else {
+      NumberLiteral numberLiteralNode{integerPortion->getStr()};
+
+      return std::make_shared<NumberLiteral>(numberLiteralNode);
+    }
+  }
+  else {
+    return nullptr;
+  }
+}
+
+AstNodePtr
+Parser::ParseIdentifier() {
+  if(std::shared_ptr<Token> identifierNode = Consume(TK_IDENTIFIER)) {
+    Variable numberLiteralNode{identifierNode->getStr()};
+    return std::make_shared<Variable>(numberLiteralNode);
+  }
+  else {
+    return nullptr;
+  }
 }
 
 std::unique_ptr<Token>
@@ -240,14 +269,15 @@ Parser::Consume(TokenType tokenType) {
 }
 
 bool
-Parser::Lookahead(TokenType tokenType, size_t lookaheadDistance) {
+Parser::LookAhead(TokenType tokenType, size_t lookaheadDistance) {
   //TODO: Add bound check
   return tokens.at(currentTokenIndex + lookaheadDistance).getTokenType() == tokenType;
 }
 
 std::unique_ptr<Token>
 Parser::ConsumeDataType() {
-  return ConsumeOneOf({TK_U8, TK_U16, TK_U32, TK_U64, TK_U128, TK_I8, TK_I16, TK_I32, TK_I64, TK_I128});
+  return ConsumeOneOf({TK_U8, TK_U16, TK_U32, TK_U64, TK_U128,
+                                            TK_I8, TK_I16, TK_I32, TK_I64, TK_I128, TK_F32, TK_F64});
 }
 
 std::unique_ptr<Token>

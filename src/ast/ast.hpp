@@ -200,11 +200,15 @@ class BinaryOperation : public AstNode {
 
 class NumberLiteral : public AstNode {
  private:
-  std::string value;
+  std::string integerValue;
+  std::string decimalValue;
 
  public:
-  explicit NumberLiteral(std::string_view val);
+  explicit NumberLiteral(std::string_view integerValue);
+  NumberLiteral(std::string_view integerValue, std::string_view decimalValue);
 
+  std::string GetIntegerValue() const;
+  std::string GetDecimalValue() const;
   std::string GetValue() const;
 
   AstNodeKind GetKind() const override;

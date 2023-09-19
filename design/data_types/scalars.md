@@ -14,11 +14,8 @@ All integer literals can use the character `_` as a visual separator of units. T
 ## Floats
 | Size    | Type |
 |---------|------|
-| 8-bit   | f8   |
-| 16-bit  | f16  |
 | 32-bit  | f32  |
 | 64-bit  | f64  |
-| 128-bit | f128 |
 
 All floating-point data types are signed.
 

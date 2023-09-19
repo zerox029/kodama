@@ -36,11 +36,13 @@ class Parser {
   AstNodePtr ParseAddExpression();
   AstNodePtr ParseMulExpression();
   AstNodePtr ParsePrimaryExpression();
+  AstNodePtr ParseNumber();
+  AstNodePtr ParseIdentifier();
 
   std::unique_ptr<Token> Consume(TokenType tokenType);
   std::unique_ptr<Token> ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes);
   std::unique_ptr<Token> ConsumeDataType();
-  bool Lookahead(TokenType tokenType, size_t lookaheadDistance);
+  bool LookAhead(TokenType tokenType, size_t lookaheadDistance);
   void Expect(TokenType tokenType);
   void advance();
 

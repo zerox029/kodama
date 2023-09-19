@@ -16,6 +16,8 @@ const std::unordered_map<TokenType, DataType> dataTypeMapping{
     {TK_I32, I32},
     {TK_I64, I64},
     {TK_I128, I128},
+    {TK_F32, F32},
+    {TK_F64, F64}
 };
 
 DataType

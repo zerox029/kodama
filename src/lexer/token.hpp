@@ -21,6 +21,7 @@ enum TokenType {
   TK_ARROW,
 
   TK_COMMA,
+  TK_DOT,
 
   TK_OPEN_PAREN,
   TK_CLOSED_PAREN,
@@ -44,6 +45,8 @@ enum TokenType {
   TK_I32,
   TK_I64,
   TK_I128,
+  TK_F32,
+  TK_F64,
 
   TK_IF,
   TK_ELSE,
