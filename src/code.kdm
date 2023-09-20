@@ -1,7 +1,7 @@
-fn add() -> i32 {
-    return 2+2;
+fn addOne(value: i32) -> i32 {
+    return value+2;
 }
 
 fn main() -> i32 {
-    return add();
+    return addOne(value: 10);
 }

@@ -234,12 +234,30 @@ Parser::ParseFunctionCall() {
   std::string identifier = Consume(TK_IDENTIFIER)->getStr();
 
   if(Consume(TK_OPEN_PAREN)) {
+    std::vector<AstNodePtr> arguments = ParseFunctionArguments();
     Expect(TK_CLOSED_PAREN);
 
-    return std::make_shared<FunctionCall>(identifier);
+    return std::make_shared<FunctionCall>(identifier, arguments);
   }
 
   return nullptr;
+}
+
+std::vector<AstNodePtr>
+Parser::ParseFunctionArguments() {
+  std::vector<AstNodePtr> arguments {};
+
+  do {
+    if(std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
+      Expect(TK_COLON);
+      AstNodePtr value = ParseEqualityExpression();
+
+      AstNodePtr parameter = std::make_shared<FunctionArgument>(identifier->getStr(), value);
+      arguments.push_back(parameter);
+    }
+  } while (Consume(TK_COMMA));
+
+  return arguments;
 }
 
 AstNodePtr

@@ -60,6 +60,11 @@ FunctionCall::Accept(AstVisitor* visitor) const {
 }
 
 llvm::Value*
+FunctionArgument::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
+llvm::Value*
 Variable::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }

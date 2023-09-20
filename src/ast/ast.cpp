@@ -181,13 +181,31 @@ NumberLiteral::GetKind() const { return AST_NUMBER_LITERAL; }
 
 
 /// Function call
-FunctionCall::FunctionCall(std::string_view identifier) : identifier{identifier} {}
+FunctionCall::FunctionCall(std::string_view identifier, std::vector<AstNodePtr> arguments)
+    : identifier{identifier}, arguments{std::move(arguments)} {}
 
 std::string
 FunctionCall::GetIdentifier() const { return identifier; }
 
+std::vector<AstNodePtr>
+FunctionCall::GetArguments() const { return arguments; }
+
 AstNodeKind
 FunctionCall::GetKind() const { return AST_FUNCTION_CALL; }
+
+
+/// Function argument
+FunctionArgument::FunctionArgument(std::string_view identifier, AstNodePtr value)
+    : identifier{identifier}, value{std::move(value)} {}
+
+std::string
+FunctionArgument::GetIdentifier() const { return identifier; }
+
+AstNodePtr
+FunctionArgument::GetValue() const { return value; }
+
+AstNodeKind
+FunctionArgument::GetKind() const { return AST_FUNCTION_ARGUMENT; }
 
 
 /// Variable

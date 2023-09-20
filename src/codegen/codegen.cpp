@@ -252,20 +252,23 @@ Codegen::Visit(const FunctionCall* element) {
     return nullptr;
   }
 
-  /*
   // If argument mismatch error.
-  if (CalleeF->arg_size() != Args.size())
-    return LogErrorV("Incorrect # arguments passed");*/
+  if (callee->arg_size() != element->GetArguments().size()) {
+    fprintf(stderr,("Incorrect # arguments passed"));
+    return nullptr;
+  }
 
-  /*
   std::vector<llvm::Value *> args;
-  for (unsigned i = 0, e = element.GetArguments().size(); i != e; ++i) {
-    args.push_back(element.GetArguments().at(i)->codegen());
-    if (!args.back())
-      return nullptr;
-  }*/
+  for (auto & argument : element->GetArguments()) {
+    args.push_back(argument->Accept(this));
+  }
 
-  return builder->CreateCall(callee, nullptr, "calltmp");
+  return builder->CreateCall(callee, args, "calltmp");
+}
+
+llvm::Value*
+Codegen::Visit(const FunctionArgument* element) {
+  return element->GetValue()->Accept(this);
 }
 
 llvm::Value*

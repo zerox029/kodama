@@ -43,6 +43,7 @@ class Codegen : public AstVisitor {
   llvm::Value* Visit(const AssignmentExpression* element) override;
   llvm::Value* Visit(const BinaryOperation* element) override;
   llvm::Value* Visit(const FunctionCall* element) override;
+  llvm::Value* Visit(const FunctionArgument* element) override;
   llvm::Value* Visit(const Variable* element) override;
   llvm::Value* Visit(const NumberLiteral* element) override;
 };

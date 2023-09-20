@@ -22,6 +22,7 @@ enum AstNodeKind {
   AST_ASSIGNMENT,
   AST_BINARY_OPERATION,
   AST_FUNCTION_CALL,
+  AST_FUNCTION_ARGUMENT,
   AST_VARIABLE,
   AST_NUMBER_LITERAL,
 };
@@ -202,10 +203,27 @@ class BinaryOperation : public AstNode {
 class FunctionCall : public AstNode {
  private:
   std::string identifier;
+  std::vector<AstNodePtr> arguments;
 
  public:
-  FunctionCall(std::string_view identifier);
+  FunctionCall(std::string_view identifier, std::vector<AstNodePtr> arguments);
   std::string GetIdentifier() const;
+  std::vector<AstNodePtr> GetArguments() const;
+
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
+};
+
+class FunctionArgument : public AstNode {
+ private:
+  std::string identifier;
+  AstNodePtr value;
+
+ public:
+  FunctionArgument(std::string_view identifier, AstNodePtr value);
+
+  std::string GetIdentifier() const;
+  AstNodePtr GetValue() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
