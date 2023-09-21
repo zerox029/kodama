@@ -345,6 +345,8 @@ Codegen::ResolveLLVMType(const DataType type) {
       return llvm::Type::getFloatTy(*context);
     case F64:
       return llvm::Type::getDoubleTy(*context);
+    case BOOL:
+      return llvm::Type::getInt1Ty(*context);
     default:
       return nullptr;
   }

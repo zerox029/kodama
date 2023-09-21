@@ -20,7 +20,8 @@ enum DataType {
   I64,
   I128,
   F32,
-  F64
+  F64,
+  BOOL
 };
 
 DataType

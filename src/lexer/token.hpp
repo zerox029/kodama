@@ -48,6 +48,7 @@ enum TokenType {
   TK_I128,        // i128
   TK_F32,         // f32
   TK_F64,         // f64
+  TK_BOOL,        // bool
 
   // Reserved keywords
   TK_DEF,         // def
