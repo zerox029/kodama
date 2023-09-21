@@ -37,7 +37,8 @@ Lexer::Peek() {
   bool lastTokenIsStringOldValue = lastTokenIsString;
 
   Token token = Next();
-  index -= token.getStr().length();
+  index -= token.GetStr().length();
+  characterLineIndex -= token.GetStr().length();
 
   isLexingString = isLexingStringOldValue;
   lastTokenIsString = lastTokenIsStringOldValue;
@@ -49,6 +50,15 @@ Token
 Lexer::Next() {
   // Eliminate white spaces outside of strings
   while (!isLexingString && isspace(static_cast<unsigned char>(input.at(index))) && index < input.length() - 1) {
+    // Handle newlines
+    if(isNewline()) {
+      lineNumber++;
+      characterLineIndex = 0;
+    }
+    else {
+      characterLineIndex++;
+    }
+
     index++;
   }
 
@@ -59,14 +69,18 @@ Lexer::Next() {
   // Process symbols
   std::optional<Token> token = ReadSymbol();
   if (token.has_value()) {
-    index += token.value().getStr().length();
+    index += token.value().GetStr().length();
+    characterLineIndex += token.value().GetStr().length();
+
     return token.value();
   }
 
   // Process keywords
   token = ReadKeyword();
   if (token.has_value()) {
-    index += token.value().getStr().length();
+    index += token.value().GetStr().length();
+    characterLineIndex += token.value().GetStr().length();
+
     return token.value();
   }
 
@@ -79,7 +93,7 @@ Lexer::Next() {
   if (token.has_value()) return token.value();
 
   if(index == input.length() - 1) {
-    return Token{TK_EOF, ""};
+    return Token{TK_EOF, "", {lineNumber, characterLineIndex}};
   }
 
   Error error{TOKENIZATION_ERROR, {0, 0}};
@@ -92,7 +106,7 @@ std::optional<Token>
 Lexer::ReadSymbol() {
   for (const auto& symbol : dualCharacterSymbols) {
     if (input.substr(index).starts_with(symbol.first)) {
-      return Token{symbol.second, symbol.first};
+      return Token{symbol.second, symbol.first, {lineNumber, characterLineIndex}};
     }
   }
 
@@ -106,18 +120,24 @@ Lexer::ReadSymbol() {
         lastTokenIsString = false;
       }
 
-      return Token{symbol.second, symbol.first};
+      return Token{symbol.second, symbol.first, {lineNumber, characterLineIndex}};
     }
   }
 
   return {};
 }
 
+bool Lexer::isNewline() {
+  return input.substr(index).starts_with("\r\n")
+        || input.substr(index).starts_with('\n')
+        || input.substr(index).starts_with('\r');
+}
+
 std::optional<Token>
 Lexer::ReadKeyword() {
   for (const auto& symbol : keywords) {
     if (input.substr(index).starts_with(symbol.first)) {
-      return Token{symbol.second, symbol.first};
+      return Token{symbol.second, symbol.first, {lineNumber, characterLineIndex}};
     }
   }
 
@@ -131,12 +151,13 @@ Lexer::ReadNumber() {
   while (index < input.length() && isdigit(static_cast<unsigned char>(input.at(index)))) {
     numValue << input.at(index);
     index++;
+    characterLineIndex++;
   }
 
   if (numValue.str().length() == 0)
     return {};
 
-  return Token{TK_NUMBER, numValue.str()};
+  return Token{TK_NUMBER, numValue.str(), {lineNumber, characterLineIndex}};
 }
 
 std::optional<Token>
@@ -146,12 +167,15 @@ Lexer::ReadIdentifier() {
   while (index < input.length() && isalpha(static_cast<unsigned char>(input.at(index)))) {
     identifierValue << input.at(index);
     index++;
+    characterLineIndex++;
   }
 
   if (identifierValue.str().length() == 0)
     return {};
 
-  return Token{TK_IDENTIFIER, identifierValue.str()};
+  return Token{TK_IDENTIFIER,
+               identifierValue.str(),
+               {lineNumber, characterLineIndex - identifierValue.str().length()}};
 }
 
 Token
@@ -166,18 +190,20 @@ Lexer::ReadString() {
 
   lastTokenIsString = true;
 
-  return Token{TK_STRING, stringValue.str()};
+  return Token{TK_STRING,
+               stringValue.str(),
+               {lineNumber, characterLineIndex - stringValue.str().length()}};
 }
 
 std::vector<Token>
 Lexer::Tokenize() {
   std::vector<Token> tokens{};
 
-  while (index < input.length() && Peek().getTokenType() != TK_EOF) {
+  while (index < input.length() && Peek().GetTokenType() != TK_EOF) {
     tokens.push_back(Next());
   }
 
-  tokens.emplace_back(TK_EOF, "");
+  tokens.emplace_back(Token{TK_EOF, "", {lineNumber, characterLineIndex}});
 
   return tokens;
 }

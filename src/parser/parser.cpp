@@ -24,14 +24,14 @@ Parser::Parse() {
 AstNodePtr
 Parser::ParseFunctionDeclaration() {
   if(Consume(TK_FN)) {
-    std::string identifier = Consume(TK_IDENTIFIER)->getStr();
+    std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
 
     Expect(TK_OPEN_PAREN);
     std::vector<AstNodePtr> parameters = ParseFunctionParameters();
     Expect(TK_CLOSED_PAREN);
 
     Expect(TK_ARROW);
-    DataType dataType = TokenTypeToDataType(ConsumeDataType()->getTokenType());
+    DataType dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
     AstNodePtr body = ParseStatement();
 
     return std::make_shared<FunctionDeclaration>(identifier, parameters, dataType, body);
@@ -47,9 +47,9 @@ Parser::ParseFunctionParameters() {
   do {
     if(std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
       Expect(TK_COLON);
-      DataType dataType = TokenTypeToDataType(ConsumeDataType()->getTokenType());
+      DataType dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
 
-      AstNodePtr parameter = std::make_shared<FunctionParameter>(identifier->getStr(), dataType);
+      AstNodePtr parameter = std::make_shared<FunctionParameter>(identifier->GetStr(), dataType);
       parameters.push_back(parameter);
     }
   } while (Consume(TK_COMMA));
@@ -169,9 +169,9 @@ Parser::ParseExpression() {
 
 AstNodePtr
 Parser::ParseAssignment() {
-  std::string identifier = Consume(TK_IDENTIFIER)->getStr();
+  std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
   Expect(TK_COLON);
-  DataType dataType = TokenTypeToDataType(ConsumeDataType()->getTokenType());
+  DataType dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
   Expect(TK_ASSIGN);
 
   return std::make_shared<AssignmentExpression>(identifier, dataType, ParseEqualityExpression());
@@ -234,7 +234,7 @@ Parser::ParsePrimaryExpression() {
 AstNodePtr
 Parser::ParseFunctionCall() {
   bool isExtern = static_cast<bool>(Consume(TK_EXTERN));
-  std::string identifier = Consume(TK_IDENTIFIER)->getStr();
+  std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
 
   if(Consume(TK_OPEN_PAREN)) {
     std::vector<AstNodePtr> arguments = ParseFunctionArguments();
@@ -255,7 +255,7 @@ Parser::ParseFunctionArguments() {
       Expect(TK_COLON);
       AstNodePtr value = ParseEqualityExpression();
 
-      AstNodePtr parameter = std::make_shared<FunctionArgument>(identifier->getStr(), value);
+      AstNodePtr parameter = std::make_shared<FunctionArgument>(identifier->GetStr(), value);
       arguments.push_back(parameter);
     }
   } while (Consume(TK_COMMA));
@@ -269,10 +269,10 @@ Parser::ParseNumber() {
     if(Consume(TK_DOT)) { // Float value
       std::shared_ptr<Token> decimalPortion = Consume(TK_NUMBER);
 
-      return std::make_shared<NumberLiteral>(integerPortion->getStr(), decimalPortion->getStr());
+      return std::make_shared<NumberLiteral>(integerPortion->GetStr(), decimalPortion->GetStr());
     } // Integer value
     else {
-      return std::make_shared<NumberLiteral>(integerPortion->getStr());
+      return std::make_shared<NumberLiteral>(integerPortion->GetStr());
     }
   }
   else {
@@ -283,7 +283,7 @@ Parser::ParseNumber() {
 AstNodePtr
 Parser::ParseString() {
   if(Consume(TK_QUOTATION)) {
-    std::string stringValue = Consume(TK_STRING)->getStr();
+    std::string stringValue = Consume(TK_STRING)->GetStr();
     Expect(TK_QUOTATION);
 
     return std::make_shared<StringLiteral>(stringValue);
@@ -295,7 +295,7 @@ Parser::ParseString() {
 AstNodePtr
 Parser::ParseIdentifier() {
   if(std::shared_ptr<Token> identifierNode = Consume(TK_IDENTIFIER)) {
-    Variable numberLiteralNode{identifierNode->getStr()};
+    Variable numberLiteralNode{identifierNode->GetStr()};
     return std::make_shared<Variable>(numberLiteralNode);
   }
   else {
@@ -305,7 +305,7 @@ Parser::ParseIdentifier() {
 
 std::unique_ptr<Token>
 Parser::Consume(TokenType tokenType) {
-  if (currentToken.getTokenType() == tokenType) {
+  if (currentToken.GetTokenType() == tokenType) {
     std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
     advance();
 
@@ -318,7 +318,7 @@ Parser::Consume(TokenType tokenType) {
 bool
 Parser::LookAhead(size_t lookaheadDistance, TokenType tokenType) {
   //TODO: Add bound check
-  return tokens.at(currentTokenIndex + lookaheadDistance).getTokenType() == tokenType;
+  return tokens.at(currentTokenIndex + lookaheadDistance).GetTokenType() == tokenType;
 }
 
 std::unique_ptr<Token>
@@ -341,7 +341,7 @@ Parser::ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes) {
 
 void
 Parser::Expect(TokenType tokenType) {
-  if (currentToken.getTokenType() == tokenType) {
+  if (currentToken.GetTokenType() == tokenType) {
     std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
     advance();
   } else {

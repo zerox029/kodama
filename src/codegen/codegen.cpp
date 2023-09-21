@@ -219,7 +219,7 @@ Codegen::Visit(const BinaryOperation* element) {
   rhs->print(llvm::outs());
   std::cout << "\n";
 
-  switch (element->GetOperator().getTokenType()) {
+  switch (element->GetOperator().GetTokenType()) {
     case TK_PLUS:
       return builder->CreateAdd(lhs, rhs, "addtmp");
     case TK_MINUS:
@@ -296,7 +296,7 @@ Codegen::Visit(const NumberLiteral* element) {
 
 llvm::Value*
 Codegen::Visit(const StringLiteral* element) {
-  return builder->CreateGlobalStringPtr(element->GetValue() + "\n");
+  return builder->CreateGlobalStringPtr(element->GetValue());
 }
 
 llvm::Type*

@@ -13,19 +13,23 @@
 
 class Lexer {
  public:
-  explicit Lexer(std::string input) : input{std::move(input)}, index{0}, isLexingString{false}, lastTokenIsString{false} {}
+  explicit Lexer(std::string input) : input{std::move(input)} {}
 
   std::vector<Token> Tokenize();
 
  private:
   std::string input;
-  size_t index;
+  size_t index = 0;
 
-  bool isLexingString;
-  bool lastTokenIsString;
+  size_t lineNumber = 0;
+  size_t characterLineIndex = 0;
+
+  bool isLexingString = false;
+  bool lastTokenIsString = false;
 
   Token Peek();
   Token Next();
+  bool isNewline();
   std::optional<Token> ReadSymbol();
   std::optional<Token> ReadKeyword();
   std::optional<Token> ReadNumber();

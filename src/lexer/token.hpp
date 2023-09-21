@@ -64,16 +64,23 @@ enum TokenType {
   TK_EOF
 };
 
+struct Location {
+  size_t lineNumber;
+  size_t characterLineIndex;
+};
+
 class Token {
  public:
-  Token(TokenType type, std::string str) : type{type}, str{std::move(str)} {}
+  Token(TokenType type, std::string str, Location location) : type{type}, str{std::move(str)}, location{location} {}
 
-  [[nodiscard]] TokenType getTokenType() const { return type; }
-  [[nodiscard]] std::string getStr() const { return str; }
+  [[nodiscard]] TokenType GetTokenType() const { return type; }
+  [[nodiscard]] std::string GetStr() const { return str; }
+  [[nodiscard]] Location GetLocation() const { return location; }
 
  private:
   TokenType type;
   std::string str;
+  Location location;
 };
 
 #endif //KODAMA_SRC_LEXER_TOKEN_HPP_
