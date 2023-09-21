@@ -159,7 +159,7 @@ Parser::ParseDoWhileLoop() {
 
 AstNodePtr
 Parser::ParseExpression() {
-  if(Consume(TK_LET)) {
+  if(Consume(TK_DEF)) {
     return ParseAssignment();
   }
   else {
