@@ -19,15 +19,20 @@ x++ // Will cause a runtime error
 x++ // Will overflow without causing an error
 ```
 
-## Variables
-Variables in Kodama are declared using the `let` keyword. They are by default immutable and must be appended with the `mut` keyword to make them mutable.
+## Values and Variables
+Values represent the result of an expression. They are immutable and are declared with the `val` keyword.
+```
+// Creates an mutable variable x with value 5
+val x = 5+5
+x = 20-5 // This will not work
+```
+
+Variables in Kodama are declared using the `let` keyword. Unlike values, they can be freely reassigned to
 
 ```
-// Creates an unmutable variable x with value 5
-let x = 5
-
-// Creates a mutable variable y with value 5
-let mut y = 5
+// Creates an mutable variable x with value 5
+let x = 5+5
+x = 20-5 // This will work
 ```
 
 Data types can be specified by apending them to the variable name but will also be inferred by the compiler if left unspecified. 
@@ -42,6 +47,14 @@ let x: auto = 3.0
 
 // y is explicitely set to be f32
 let x: f32 = 3.0
+```
+
+Temporary variables nested within expressions can be created with the `val ... in` syntax. This ensures the variables are scoped to that specific block only.
+```
+let add =
+    val x = 10 in
+    val y = 25 in
+    x + y
 ```
 
 Variables are non-nullable by default. They can be made nullable by adding a question mark (?) to the dataType.
@@ -74,13 +87,17 @@ fn addOne(x: u64) => x + 1
 ```
 
 ## Function calls
-The name of each argument must be specified when calling functions
+Functions can be called by specifying each argument in the following way
+```
+setSize(20, 50)
+```
+
+Arguments can also be specified a name which allows them to be rearranged within the function call. If a function call contains both named and unnamed arguments, the unnamed arguments must come first and in the order specified in the function declaration.
 ```
 setSize(width: 20, height: 50)
+setSize(20, height: 50) // Works
+setSize(width:20, 50) // Does not work
 ```
-There are two exceptions to this:
-- If the parameter in the function declaration is declared as anon, omitting the argument label is allowed.
-- When passing a variable with the same name as the parameter.
 
 ## Classes and structs
 Structures in Kodama can be created with either `struct` or `class`
@@ -159,8 +176,19 @@ do {
 
 - `for`
 ```
-for value in (0...5) {
+// Prints numbers from 0 to 5 inclusively
+for value in 0 to 5 {
     print(value)
+}
+
+// Prints numbers from 0 to 5 exclusively
+for value in 0 until 5 {
+    print(value)
+}
+
+// Prints all values from a given list that are greater than 10
+for value in list where value > 10 {
+    print value
 }
 ```
 
@@ -179,7 +207,8 @@ let array: [i64] = [1, 2, 3, 4, 5]
 ```
 An array spanning a continuous range of integers can be created with the following shorthand
 ```
-let range: [i64] = 0...500
+// Create an i64 array from 0 to 100 in leaps of 2
+let range: [i64] = 0...100:2
 ```
 
 ## Sets
@@ -189,17 +218,17 @@ let set: {String} = {"one", "two", "three"}
 print(set.contains("one")) // prints true
 ```
 
-## Dictionaries
-Dictionaries can be created an accessed in the following way
+## Records
+Records can be created an accessed in the following way
 
 ```
-let dict: {String:i64} = {"one": 1, "two: 2, "three": 3}
-print(dict["one"]) // prints 1
+let record: {String:i64} = {"one": 1, "two: 2, "three": 3}
+print(record["one"]) // prints 1
 ```
 
 ## Tuples
-Tuples can be created and accessed in the following way
+Tuples can be created and accessed in the following way. Since tuples are immutable, they must be created with `val`, not `let`.
 ```
-let tuple: (String, bool, u64) = ("heya", true, 55)
+val tuple: (String, bool, u64) = ("heya", true, 55)
 print(tuple[1]) // prints true
 ```
