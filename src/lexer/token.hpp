@@ -19,6 +19,7 @@ enum TokenType {
   TK_COLON,
   TK_SEMICOLON,
   TK_ARROW,
+  TK_QUOTATION,
 
   TK_COMMA,
   TK_DOT,
@@ -34,6 +35,7 @@ enum TokenType {
   TK_LET,
   TK_RET,
   TK_FN,
+  TK_EXTERN,
 
   TK_U8,
   TK_U16,

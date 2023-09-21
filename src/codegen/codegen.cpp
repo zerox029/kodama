@@ -31,6 +31,7 @@ Codegen::saveModuleToFile(const std::string& fileName) {
 
 void
 Codegen::Generate(const AstNodePtr& ast) {
+  setupExternFunctions();
   ast->Accept(this);
 }
 
@@ -43,10 +44,10 @@ Codegen::Visit(const FunctionDeclaration* element) {
                  parameters.begin(),
                  [this](const AstNodePtr& node) {
     DataType type = (std::static_pointer_cast<FunctionParameter>(node))->GetDataType();
-    return ResolveType(type);
+    return ResolveLLVMType(type);
   });
 
-  llvm::FunctionType* functionType = llvm::FunctionType::get(ResolveType(element->GetReturnType()),
+  llvm::FunctionType* functionType = llvm::FunctionType::get(ResolveLLVMType(element->GetReturnType()),
                                                              parameters,
                                                              false);
 
@@ -195,7 +196,7 @@ llvm::Value*
 Codegen::Visit(const AssignmentExpression* element) {
   handlingUnsignedVariable = IsUnsigned(element->GetDataType());
 
-  llvm::Type* varType = ResolveType(element->GetDataType());
+  llvm::Type* varType = ResolveLLVMType(element->GetDataType());
   llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
 
   llvm::Value* initialValue = element->GetValue()->Accept(this);
@@ -212,6 +213,11 @@ llvm::Value*
 Codegen::Visit(const BinaryOperation* element) {
   llvm::Value* lhs = element->GetLhs()->Accept(this);
   llvm::Value* rhs = element->GetRhs()->Accept(this);
+
+  lhs->print(llvm::outs());
+  std::cout << "\n";
+  rhs->print(llvm::outs());
+  std::cout << "\n";
 
   switch (element->GetOperator().getTokenType()) {
     case TK_PLUS:
@@ -288,8 +294,13 @@ Codegen::Visit(const NumberLiteral* element) {
   }
 }
 
+llvm::Value*
+Codegen::Visit(const StringLiteral* element) {
+  return builder->CreateGlobalStringPtr(element->GetValue() + "\n");
+}
+
 llvm::Type*
-Codegen::ResolveType(const DataType type) {
+Codegen::ResolveLLVMType(const DataType type) {
   switch (type) {
     case U8:
       return llvm::Type::getInt8Ty(*context);
@@ -341,4 +352,10 @@ Codegen::CreateFunction(const std::string& fnName, llvm::FunctionType* fnType, s
   builder->SetInsertPoint(entry);
 
   return function;
+}
+
+void Codegen::setupExternFunctions() {
+  llvm::PointerType* bytePtrTy = builder->getInt8Ty()->getPointerTo();
+
+  module->getOrInsertFunction("printf", llvm::FunctionType::get(builder->getInt32Ty(), bytePtrTy, true));
 }

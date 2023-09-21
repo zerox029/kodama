@@ -215,11 +215,13 @@ Parser::ParseMulExpression() {
 
 AstNodePtr
 Parser::ParsePrimaryExpression() {
-  if(AstNodePtr numberNode = ParseNumber()) {
+  if(AstNodePtr stringNode = ParseString()) {
+    return stringNode;
+  }
+  else if(AstNodePtr numberNode = ParseNumber()) {
     return numberNode;
   }
-
-  if(LookAhead(1, TK_OPEN_PAREN)) {
+  else if(LookAhead(0, TK_EXTERN) || LookAhead(1, TK_OPEN_PAREN)) {
     return ParseFunctionCall();
   }
   else if(AstNodePtr identifierNode = ParseIdentifier()) {
@@ -231,13 +233,14 @@ Parser::ParsePrimaryExpression() {
 
 AstNodePtr
 Parser::ParseFunctionCall() {
+  bool isExtern = static_cast<bool>(Consume(TK_EXTERN));
   std::string identifier = Consume(TK_IDENTIFIER)->getStr();
 
   if(Consume(TK_OPEN_PAREN)) {
     std::vector<AstNodePtr> arguments = ParseFunctionArguments();
     Expect(TK_CLOSED_PAREN);
 
-    return std::make_shared<FunctionCall>(identifier, arguments);
+    return std::make_shared<FunctionCall>(identifier, arguments, isExtern);
   }
 
   return nullptr;
@@ -265,19 +268,28 @@ Parser::ParseNumber() {
   if(std::shared_ptr<Token> integerPortion = Consume(TK_NUMBER)) {
     if(Consume(TK_DOT)) { // Float value
       std::shared_ptr<Token> decimalPortion = Consume(TK_NUMBER);
-      NumberLiteral numberLiteralNode{integerPortion->getStr(), decimalPortion->getStr()};
 
-      return std::make_shared<NumberLiteral>(numberLiteralNode);
+      return std::make_shared<NumberLiteral>(integerPortion->getStr(), decimalPortion->getStr());
     } // Integer value
     else {
-      NumberLiteral numberLiteralNode{integerPortion->getStr()};
-
-      return std::make_shared<NumberLiteral>(numberLiteralNode);
+      return std::make_shared<NumberLiteral>(integerPortion->getStr());
     }
   }
   else {
     return nullptr;
   }
+}
+
+AstNodePtr
+Parser::ParseString() {
+  if(Consume(TK_QUOTATION)) {
+    std::string stringValue = Consume(TK_IDENTIFIER)->getStr();
+    Expect(TK_QUOTATION);
+
+    return std::make_shared<StringLiteral>(stringValue);
+  }
+
+  return nullptr;
 }
 
 AstNodePtr

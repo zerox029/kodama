@@ -1,7 +1,4 @@
-fn addOne(value: i32) -> i32 {
-    return value+2;
-}
-
-fn main() -> i32 {
-    return addOne(value: 10);
+fn main() -> i64 {
+    printf(message: "helloworld")
+    return 0
 }

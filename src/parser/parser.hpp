@@ -40,6 +40,7 @@ class Parser {
   std::vector<AstNodePtr> ParseFunctionArguments();
   AstNodePtr ParseIdentifier();
   AstNodePtr ParseNumber();
+  AstNodePtr ParseString();
 
   std::unique_ptr<Token> Consume(TokenType tokenType);
   std::unique_ptr<Token> ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes);

@@ -25,6 +25,7 @@ enum AstNodeKind {
   AST_FUNCTION_ARGUMENT,
   AST_VARIABLE,
   AST_NUMBER_LITERAL,
+  AST_STRING_LITERAL
 };
 
 class AstVisitor;
@@ -204,11 +205,13 @@ class FunctionCall : public AstNode {
  private:
   std::string identifier;
   std::vector<AstNodePtr> arguments;
+  bool isExtern;
 
  public:
-  FunctionCall(std::string_view identifier, std::vector<AstNodePtr> arguments);
+  FunctionCall(std::string_view identifier, std::vector<AstNodePtr> arguments, bool isExtern);
   std::string GetIdentifier() const;
   std::vector<AstNodePtr> GetArguments() const;
+  bool IsExtern() const;
 
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
@@ -253,6 +256,19 @@ class NumberLiteral : public AstNode {
 
   std::string GetIntegerValue() const;
   std::string GetDecimalValue() const;
+  std::string GetValue() const;
+
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
+};
+
+class StringLiteral : public AstNode {
+ private:
+  std::string value;
+
+ public:
+  explicit StringLiteral(std::string_view value);
+
   std::string GetValue() const;
 
   AstNodeKind GetKind() const override;

@@ -181,14 +181,17 @@ NumberLiteral::GetKind() const { return AST_NUMBER_LITERAL; }
 
 
 /// Function call
-FunctionCall::FunctionCall(std::string_view identifier, std::vector<AstNodePtr> arguments)
-    : identifier{identifier}, arguments{std::move(arguments)} {}
+FunctionCall::FunctionCall(std::string_view identifier, std::vector<AstNodePtr> arguments, bool isExtern)
+    : identifier{identifier}, arguments{std::move(arguments)}, isExtern{isExtern} {}
 
 std::string
 FunctionCall::GetIdentifier() const { return identifier; }
 
 std::vector<AstNodePtr>
 FunctionCall::GetArguments() const { return arguments; }
+
+bool
+FunctionCall::IsExtern() const { return isExtern; }
 
 AstNodeKind
 FunctionCall::GetKind() const { return AST_FUNCTION_CALL; }
@@ -216,3 +219,13 @@ Variable::GetIdentifier() const { return identifier; }
 
 AstNodeKind
 Variable::GetKind() const { return AST_VARIABLE; }
+
+
+/// String literal
+StringLiteral::StringLiteral(std::string_view value) : value{value} {}
+
+std::string
+StringLiteral::GetValue() const { return value; }
+
+AstNodeKind
+StringLiteral::GetKind() const { return AST_STRING_LITERAL; }

@@ -24,6 +24,7 @@ class AstVisitor {
   virtual llvm::Value* Visit(const FunctionArgument* element) = 0;
   virtual llvm::Value* Visit(const Variable* element) = 0;
   virtual llvm::Value* Visit(const NumberLiteral* element) = 0;
+  virtual llvm::Value* Visit(const StringLiteral* element) = 0;
 };
 
 #endif //KODAMA_SRC_CODEGEN_ASTVISITOR_HPP_

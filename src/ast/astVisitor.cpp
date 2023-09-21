@@ -73,3 +73,8 @@ llvm::Value*
 NumberLiteral::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
+
+llvm::Value*
+StringLiteral::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}

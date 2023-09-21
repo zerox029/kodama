@@ -16,7 +16,8 @@ const std::unordered_map<std::string, TokenType> singleCharacterSymbols = {
     {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH},
     {"=", TK_ASSIGN}, {"%", TK_PERCENT}, {":", TK_COLON}, {";", TK_SEMICOLON},
     {"(", TK_OPEN_PAREN}, {")", TK_CLOSED_PAREN}, {"{", TK_OPEN_CURLY},
-    {"}", TK_CLOSED_CURLY}, {",", TK_COMMA}, {".", TK_DOT}
+    {"}", TK_CLOSED_CURLY}, {",", TK_COMMA}, {".", TK_DOT},
+    {"\"", TK_QUOTATION}
 };
 
 const std::unordered_map<std::string, TokenType> keywords = {
@@ -26,7 +27,8 @@ const std::unordered_map<std::string, TokenType> keywords = {
     {"i128", TK_I128}, {"f32", TK_F32}, {"f64", TK_F64},
     {"let", TK_LET}, {"return", TK_RET}, {"if", TK_IF},
     {"else", TK_ELSE}, {"do", TK_DO}, {"while", TK_WHILE},
-    {"for", TK_FOR}, {"in", TK_IN}, {"fn", TK_FN}
+    {"for", TK_FOR}, {"in", TK_IN}, {"fn", TK_FN},
+    {"extern", TK_EXTERN}
 };
 
 Token

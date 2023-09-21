@@ -35,8 +35,10 @@ Compile(const std::string& code) {
 
   Codegen codegen{};
   codegen.Generate(tree);
-  codegen.Print();
+  //codegen.Print();
   codegen.saveModuleToFile("../out/out.ll");
+
+  system("lli ../out/out.ll");
 }
 
 int
