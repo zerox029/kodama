@@ -19,6 +19,10 @@ enum TokenType {
   TK_ASSIGN,      // =
   TK_EQUAL,       // ==
   TK_NOT_EQUAL,   // !=
+  TK_GREATER,     // >
+  TK_LESS,        // <
+  TK_GREATER_EQ,  // >=
+  TK_LESS_EQ,     // <=
   TK_COLON,       // :
   TK_SEMICOLON,   // ;
   TK_ARROW,       // ->

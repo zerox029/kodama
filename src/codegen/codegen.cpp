@@ -214,11 +214,6 @@ Codegen::Visit(const BinaryOperation* element) {
   llvm::Value* lhs = element->GetLhs()->Accept(this);
   llvm::Value* rhs = element->GetRhs()->Accept(this);
 
-  lhs->print(llvm::outs());
-  std::cout << "\n";
-  rhs->print(llvm::outs());
-  std::cout << "\n";
-
   switch (element->GetOperator().GetTokenType()) {
     case TK_PLUS:
       return builder->CreateAdd(lhs, rhs, "addtmp");
@@ -244,6 +239,30 @@ Codegen::Visit(const BinaryOperation* element) {
       return builder->CreateICmpEQ(lhs, rhs, "eqtmp");
     case TK_NOT_EQUAL:
       return builder->CreateICmpNE(lhs, rhs, "neqtmp");
+    case TK_GREATER:
+      if (handlingUnsignedVariable) {
+        return builder->CreateICmpUGT(lhs, rhs, "gttmp");
+      } else {
+        return builder->CreateICmpSGT(lhs, rhs, "gttmp");
+      }
+    case TK_LESS:
+      if (handlingUnsignedVariable) {
+        return builder->CreateICmpULT(lhs, rhs, "lttmp");
+      } else {
+        return builder->CreateICmpSLT(lhs, rhs, "lttmp");
+      }
+    case TK_GREATER_EQ:
+      if (handlingUnsignedVariable) {
+        return builder->CreateICmpUGE(lhs, rhs, "gtetmp");
+      } else {
+        return builder->CreateICmpSGE(lhs, rhs, "gtetmp");
+      }
+    case TK_LESS_EQ:
+      if (handlingUnsignedVariable) {
+        return builder->CreateICmpULE(lhs, rhs, "ltetmp");
+      } else {
+        return builder->CreateICmpSLE(lhs, rhs, "ltetmp");
+      }
     default:
       return nullptr;
   }

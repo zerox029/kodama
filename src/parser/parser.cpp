@@ -181,7 +181,12 @@ AstNodePtr
 Parser::ParseEqualityExpression() {
   AstNodePtr expression = ParseAddExpression();
 
-  if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_EQUAL, TK_NOT_EQUAL})) {
+  if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_EQUAL,
+                                                           TK_NOT_EQUAL,
+                                                           TK_GREATER,
+                                                           TK_LESS,
+                                                           TK_GREATER_EQ,
+                                                           TK_LESS_EQ})) {
     BinaryOperation binaryOperationNode{*operatorToken, expression, ParseAddExpression()};
     return std::make_shared<BinaryOperation>(binaryOperationNode);
   }

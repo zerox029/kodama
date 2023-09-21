@@ -1,9 +1,7 @@
-
-
-
-
-
 fn main() -> i64 {
-    printf(message: "hello world")
+    if(10 > 5) {
+        printf(message: "hello world")
+    }
+
     return 0
 }
