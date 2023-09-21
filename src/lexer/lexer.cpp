@@ -33,17 +33,27 @@ const std::unordered_map<std::string, TokenType> keywords = {
 
 Token
 Lexer::Peek() {
+  bool isLexingStringOldValue = isLexingString;
+  bool lastTokenIsStringOldValue = lastTokenIsString;
+
   Token token = Next();
   index -= token.getStr().length();
+
+  isLexingString = isLexingStringOldValue;
+  lastTokenIsString = lastTokenIsStringOldValue;
 
   return token;
 }
 
 Token
 Lexer::Next() {
-  // Eliminate white spaces
-  while (isspace(static_cast<unsigned char>(input.at(index))) && index < input.length() - 1) {
+  // Eliminate white spaces outside of strings
+  while (!isLexingString && isspace(static_cast<unsigned char>(input.at(index))) && index < input.length() - 1) {
     index++;
+  }
+
+  if(isLexingString && !lastTokenIsString) {
+    return ReadString();
   }
 
   // Process symbols
@@ -88,6 +98,14 @@ Lexer::ReadSymbol() {
 
   for (const auto& symbol : singleCharacterSymbols) {
     if (input.substr(index).starts_with(symbol.first)) {
+      if(symbol.second == TK_QUOTATION && !lastTokenIsString) { //TODO: Find a better way to handle this
+        isLexingString = true;
+      }
+      else if(symbol.second == TK_QUOTATION && lastTokenIsString) {
+        isLexingString = false;
+        lastTokenIsString = false;
+      }
+
       return Token{symbol.second, symbol.first};
     }
   }
@@ -134,6 +152,21 @@ Lexer::ReadIdentifier() {
     return {};
 
   return Token{TK_IDENTIFIER, identifierValue.str()};
+}
+
+Token
+Lexer::ReadString() {
+  std::stringstream stringValue{};
+
+  //TODO: Allow for escaped quotation marks
+  while (index < input.length() && input.at(index) != '\"') {
+    stringValue << input.at(index);
+    index++;
+  }
+
+  lastTokenIsString = true;
+
+  return Token{TK_STRING, stringValue.str()};
 }
 
 std::vector<Token>

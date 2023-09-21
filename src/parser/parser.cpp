@@ -283,7 +283,7 @@ Parser::ParseNumber() {
 AstNodePtr
 Parser::ParseString() {
   if(Consume(TK_QUOTATION)) {
-    std::string stringValue = Consume(TK_IDENTIFIER)->getStr();
+    std::string stringValue = Consume(TK_STRING)->getStr();
     Expect(TK_QUOTATION);
 
     return std::make_shared<StringLiteral>(stringValue);

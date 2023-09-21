@@ -59,6 +59,7 @@ enum TokenType {
 
   TK_NUMBER,
   TK_IDENTIFIER,
+  TK_STRING,
 
   TK_EOF
 };
