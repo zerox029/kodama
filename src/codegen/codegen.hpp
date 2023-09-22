@@ -21,6 +21,7 @@ class Codegen : public AstVisitor {
   std::map<std::string, llvm::AllocaInst*> namedValues;
 
   bool handlingUnsignedVariable;
+  llvm::Type* currentVariableDataType;
 
   llvm::Type* ResolveLLVMType(const DataType type);
   llvm::Function* CreateFunction(const std::string& fnName, llvm::FunctionType* fnType, std::vector<AstNodePtr> parameters);
@@ -48,6 +49,7 @@ class Codegen : public AstVisitor {
   llvm::Value* Visit(const Variable* element) override;
   llvm::Value* Visit(const NumberLiteral* element) override;
   llvm::Value* Visit(const StringLiteral* element) override;
+  llvm::Value* Visit(const NullValue* element) override;
 };
 
 #endif //KODAMA_SRC_CODEGEN_CODEGEN_HPP_

@@ -61,6 +61,7 @@ enum TokenType {
   TK_WHILE,       // while
   TK_FOR,         // for
   TK_IN,          // in
+  TK_NULL,        // null
 
   // Value types
   TK_NUMBER,

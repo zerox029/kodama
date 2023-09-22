@@ -197,6 +197,7 @@ Codegen::Visit(const AssignmentExpression* element) {
   handlingUnsignedVariable = IsUnsigned(element->GetDataType());
 
   llvm::Type* varType = ResolveLLVMType(element->GetDataType());
+  currentVariableDataType = varType;
   llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
 
   llvm::Value* initialValue = element->GetValue()->Accept(this);
@@ -205,6 +206,7 @@ Codegen::Visit(const AssignmentExpression* element) {
   namedValues[element->GetIdentifier()] = variableAllocation;
 
   handlingUnsignedVariable = false;
+  currentVariableDataType = nullptr;
 
   return builder->CreateStore(initialValue, variableAllocation);
 }
@@ -316,6 +318,12 @@ Codegen::Visit(const NumberLiteral* element) {
 llvm::Value*
 Codegen::Visit(const StringLiteral* element) {
   return builder->CreateGlobalStringPtr(element->GetValue());
+}
+
+llvm::Value*
+Codegen::Visit(const NullValue* element) {
+  llvm::Value* nullPtr = llvm::ConstantPointerNull::get(currentVariableDataType->getPointerTo());
+  return nullPtr;
 }
 
 llvm::Type*

@@ -25,7 +25,8 @@ enum AstNodeKind {
   AST_FUNCTION_ARGUMENT,
   AST_VARIABLE,
   AST_NUMBER_LITERAL,
-  AST_STRING_LITERAL
+  AST_STRING_LITERAL,
+  AST_NULL_VALUE
 };
 
 class AstVisitor;
@@ -271,6 +272,14 @@ class StringLiteral : public AstNode {
 
   std::string GetValue() const;
 
+  AstNodeKind GetKind() const override;
+  llvm::Value* Accept(AstVisitor* visitor) const override;
+};
+
+class NullValue : public AstNode {
+ private:
+
+ public:
   AstNodeKind GetKind() const override;
   llvm::Value* Accept(AstVisitor* visitor) const override;
 };

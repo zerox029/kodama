@@ -229,3 +229,8 @@ StringLiteral::GetValue() const { return value; }
 
 AstNodeKind
 StringLiteral::GetKind() const { return AST_STRING_LITERAL; }
+
+
+/// Null value
+AstNodeKind
+NullValue::GetKind() const { return AST_NULL_VALUE; }

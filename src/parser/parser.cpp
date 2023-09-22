@@ -223,6 +223,8 @@ Parser::ParsePrimaryExpression() {
     return ParseFunctionCall();
   } else if (AstNodePtr identifierNode = ParseIdentifier()) {
     return identifierNode;
+  } else if (Consume(TK_NULL)) {
+    return std::make_shared<NullValue>();
   }
 
   return nullptr;
