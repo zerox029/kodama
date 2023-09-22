@@ -27,11 +27,11 @@ Parser::ParseFunctionDeclaration() {
   if (Consume(TK_FN)) {
     std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
 
-    Expect(TK_OPEN_PAREN);
+    Expect(TK_OPEN_PAREN, "missing opening delimiter '(' in function declaration");
     std::vector<AstNodePtr> parameters = ParseFunctionParameters();
-    Expect(TK_CLOSED_PAREN);
+    Expect(TK_CLOSED_PAREN, "missing closing delimiter ')' in function declaration");
 
-    Expect(TK_ARROW);
+    Expect(TK_ARROW, "missing return type arrow '->' in function declaration");
     DataType dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
     AstNodePtr body = ParseStatement();
 
@@ -47,7 +47,7 @@ Parser::ParseFunctionParameters() {
 
   do {
     if (std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
-      Expect(TK_COLON);
+      Expect(TK_COLON, "expected ':'");
       DataType dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
 
       AstNodePtr parameter = std::make_shared<FunctionParameter>(identifier->GetStr(), dataType);
@@ -108,9 +108,9 @@ Parser::ParseBlock() {
 AstNodePtr
 Parser::ParseIfElseStatement() {
   if (Consume(TK_IF)) {
-    Expect(TK_OPEN_PAREN);
+    Expect(TK_OPEN_PAREN, "missing opening delimiter '(' in conditional");
     AstNodePtr condition{ParseEqualityExpression()};
-    Expect(TK_CLOSED_PAREN);
+    Expect(TK_CLOSED_PAREN, "missing closing delimiter ')' in conditional");
     AstNodePtr consequent{ParseStatement()};
 
     if (Consume(TK_ELSE)) {
@@ -127,9 +127,9 @@ Parser::ParseIfElseStatement() {
 AstNodePtr
 Parser::ParseWhileLoop() {
   if (Consume(TK_WHILE)) {
-    Expect(TK_OPEN_PAREN);
+    Expect(TK_OPEN_PAREN, "missing opening delimiter '(' in loop condition");
     AstNodePtr condition{ParseEqualityExpression()};
-    Expect(TK_CLOSED_PAREN);
+    Expect(TK_CLOSED_PAREN, "missing opening delimiter '(' in loop condition");
     AstNodePtr consequent{ParseStatement()};
 
     return std::make_shared<WhileLoop>(condition, consequent);
@@ -142,10 +142,10 @@ AstNodePtr
 Parser::ParseDoWhileLoop() {
   if (Consume(TK_DO)) {
     AstNodePtr consequent{ParseStatement()};
-    Expect(TK_WHILE);
-    Expect(TK_OPEN_PAREN);
+    Expect(TK_WHILE, "missing 'while' condition");
+    Expect(TK_OPEN_PAREN, "missing opening delimiter '(' in loop condition");
     AstNodePtr condition{ParseEqualityExpression()};
-    Expect(TK_CLOSED_PAREN);
+    Expect(TK_CLOSED_PAREN, "missing opening delimiter '(' in loop condition");
 
     return std::make_shared<DoWhileLoop>(condition, consequent);
   }
@@ -165,9 +165,9 @@ Parser::ParseExpression() {
 AstNodePtr
 Parser::ParseAssignment() {
   std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
-  Expect(TK_COLON);
+  Expect(TK_COLON, "expected ':'");
   DataType dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
-  Expect(TK_ASSIGN);
+  Expect(TK_ASSIGN, "expected '='");
 
   return std::make_shared<AssignmentExpression>(identifier, dataType, ParseEqualityExpression());
 }
@@ -237,7 +237,7 @@ Parser::ParseFunctionCall() {
 
   if (Consume(TK_OPEN_PAREN)) {
     std::vector<AstNodePtr> arguments = ParseFunctionArguments();
-    Expect(TK_CLOSED_PAREN);
+    Expect(TK_CLOSED_PAREN, "missing closing delimiter ')' in function call");
 
     return std::make_shared<FunctionCall>(identifier, arguments, isExtern);
   }
@@ -251,7 +251,7 @@ Parser::ParseFunctionArguments() {
 
   do {
     if (std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
-      Expect(TK_COLON);
+      Expect(TK_COLON, "expected ':'");
       AstNodePtr value = ParseEqualityExpression();
 
       AstNodePtr parameter = std::make_shared<FunctionArgument>(identifier->GetStr(), value);
@@ -282,7 +282,7 @@ AstNodePtr
 Parser::ParseString() {
   if (Consume(TK_QUOTATION)) {
     std::string stringValue = Consume(TK_STRING)->GetStr();
-    Expect(TK_QUOTATION);
+    Expect(TK_QUOTATION, "unterminated string");
 
     return std::make_shared<StringLiteral>(stringValue);
   }
@@ -320,8 +320,19 @@ Parser::LookAhead(size_t lookaheadDistance, TokenType tokenType) {
 
 std::unique_ptr<Token>
 Parser::ConsumeDataType() {
-  return ConsumeOneOf({TK_BOOL, TK_U8, TK_U16, TK_U32, TK_U64, TK_U128,
-                       TK_I8, TK_I16, TK_I32, TK_I64, TK_I128, TK_F32, TK_F64});
+  std::unique_ptr<Token> consumedToken = ConsumeOneOf({TK_BOOL, TK_U8, TK_U16, TK_U32, TK_U64, TK_U128,
+                                                       TK_I8, TK_I16, TK_I32, TK_I64, TK_I128, TK_F32, TK_F64});
+
+  if(consumedToken) {
+    return consumedToken;
+  }
+  else {
+    std::string codeLine = code.at(currentToken.GetLocation().lineNumber);
+    Location errorLocation = currentToken.GetLocation();
+    errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
+    Error error{"syntax error", "expected data type", errorLocation, codeLine};
+    error.Throw();
+  }
 }
 
 std::unique_ptr<Token>
@@ -337,18 +348,16 @@ Parser::ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes) {
 }
 
 void
-Parser::Expect(TokenType tokenType) {
+Parser::Expect(TokenType tokenType, std::string errorMessage) {
   if (currentToken.GetTokenType() == tokenType) {
     std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
     advance();
   } else {
 
-    std::string symbol = Lexer::GetSymbolFromTokenType(tokenType);
-    std::string errorMessage = "expected token '" + symbol + "'";
     std::string codeLine = code.at(currentToken.GetLocation().lineNumber);
     Location errorLocation = currentToken.GetLocation();
     errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
-    Error error{"syntax error", errorMessage, errorLocation, codeLine};
+    Error error{"syntax error", std::move(errorMessage), errorLocation, codeLine};
     error.Throw();
   }
 }
