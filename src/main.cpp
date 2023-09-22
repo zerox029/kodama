@@ -1,6 +1,7 @@
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
 #include "codegen/codegen.hpp"
+#include "utils/stringUtils.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -27,10 +28,10 @@ ReadFile() {
 
 void
 Compile(const std::string& code) {
-  Lexer lexer{code};
+  Lexer lexer{code, "/home/emma/Desktop/Kodama/src/code.kdm"};
   std::vector<Token> tokens = lexer.Tokenize();
 
-  Parser parser{tokens};
+  Parser parser{SplitString(code, "\n"), tokens};
   AstNodePtr tree = parser.Parse();
 
   Codegen codegen{};
@@ -43,6 +44,8 @@ Compile(const std::string& code) {
 int
 main() {
   Compile(ReadFile());
+  //Error error{"syntax error", "expected '('", {"/a/file/location/code.kdm", 4,20}, "printf(\"hello world\""};
+  //error.Throw();
 
   return 0;
 }

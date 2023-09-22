@@ -71,13 +71,14 @@ enum TokenType {
 };
 
 struct Location {
+  std::string filePath;
   size_t lineNumber;
   size_t characterLineIndex;
 };
 
 class Token {
  public:
-  Token(TokenType type, std::string str, Location location) : type{type}, str{std::move(str)}, location{location} {}
+  Token(TokenType type, std::string str, Location location) : type{type}, str{std::move(str)}, location{std::move(location)} {}
 
   [[nodiscard]] TokenType GetTokenType() const { return type; }
   [[nodiscard]] std::string GetStr() const { return str; }

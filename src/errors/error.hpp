@@ -5,25 +5,23 @@
 #ifndef KODAMA_SRC_ERRORS_ERROR_HPP_
 #define KODAMA_SRC_ERRORS_ERROR_HPP_
 
+#include "../lexer/lexer.hpp"
 #include <string>
 
 enum ErrorType {
   TOKENIZATION_ERROR
 };
 
-struct ErrorLocation {
-  size_t lineNumber;
-  size_t characterNumber;
-};
-
 class Error {
  private:
-  ErrorType errorType;
-  ErrorLocation errorLocation;
+  std::string errorType;
+  std::string errorMessage;
+  Location errorLocation;
+  std::string codeLine;
 
  public:
-  Error(ErrorType errorType, ErrorLocation errorLocation);
-  void Throw(ErrorType error_type);
+  Error(std::string errorType, std::string errorMessage, Location errorLocation, std::string codeLine);
+  void Throw();
 };
 
 #endif //KODAMA_SRC_ERRORS_ERROR_HPP_

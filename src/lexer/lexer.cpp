@@ -8,30 +8,6 @@
 #include <unordered_map>
 #include <iostream>
 
-const std::unordered_map<std::string, TokenType> dualCharacterSymbols = {
-    {"==", TK_EQUAL}, {"!=", TK_NOT_EQUAL}, {"->", TK_ARROW},
-    {">=", TK_GREATER_EQ}, {"<=", TK_LESS_EQ}
-};
-
-const std::unordered_map<std::string, TokenType> singleCharacterSymbols = {
-    {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH},
-    {"=", TK_ASSIGN}, {"%", TK_PERCENT}, {":", TK_COLON}, {";", TK_SEMICOLON},
-    {"(", TK_OPEN_PAREN}, {")", TK_CLOSED_PAREN}, {"{", TK_OPEN_CURLY},
-    {"}", TK_CLOSED_CURLY}, {",", TK_COMMA}, {".", TK_DOT},
-    {"\"", TK_QUOTATION}, {">", TK_GREATER}, {"<", TK_LESS}
-};
-
-const std::unordered_map<std::string, TokenType> keywords = {
-    {"u8", TK_U8}, {"u16", TK_U16}, {"u32", TK_U32},
-    {"u64", TK_U64}, {"u128", TK_U128}, {"i8", TK_I8},
-    {"i16", TK_I16}, {"i32", TK_I32}, {"i64", TK_I64},
-    {"i128", TK_I128}, {"f32", TK_F32}, {"f64", TK_F64},
-    {"let", TK_DEF}, {"return", TK_RET}, {"if", TK_IF},
-    {"else", TK_ELSE}, {"do", TK_DO}, {"while", TK_WHILE},
-    {"for", TK_FOR}, {"in", TK_IN}, {"def", TK_FN},
-    {"extern", TK_EXTERN}, {"bool", TK_BOOL}
-};
-
 Token
 Lexer::Peek() {
   bool isLexingStringOldValue = isLexingString;
@@ -52,18 +28,17 @@ Lexer::Next() {
   // Eliminate white spaces outside of strings
   while (!isLexingString && isspace(static_cast<unsigned char>(input.at(index))) && index < input.length() - 1) {
     // Handle newlines
-    if(isNewline()) {
+    if (isNewline()) {
       lineNumber++;
       characterLineIndex = 0;
-    }
-    else {
+    } else {
       characterLineIndex++;
     }
 
     index++;
   }
 
-  if(isLexingString && !lastTokenIsString) {
+  if (isLexingString && !lastTokenIsString) {
     return ReadString();
   }
 
@@ -93,52 +68,43 @@ Lexer::Next() {
   token = ReadIdentifier();
   if (token.has_value()) return token.value();
 
-  if(index == input.length() - 1) {
-    return Token{TK_EOF, "", {lineNumber, characterLineIndex}};
+  if (index == input.length() - 1) {
+    return Token{TK_EOF, "", {filePath, lineNumber, characterLineIndex}};
   }
-
-  Error error{TOKENIZATION_ERROR, {0, 0}};
-  error.Throw(TOKENIZATION_ERROR);
 
   throw std::invalid_argument("Invalid token");
 }
 
 std::optional<Token>
 Lexer::ReadSymbol() {
-  for (const auto& symbol : dualCharacterSymbols) {
+  for (const auto& symbol : symbols) {
     if (input.substr(index).starts_with(symbol.first)) {
-      return Token{symbol.second, symbol.first, {lineNumber, characterLineIndex}};
-    }
-  }
-
-  for (const auto& symbol : singleCharacterSymbols) {
-    if (input.substr(index).starts_with(symbol.first)) {
-      if(symbol.second == TK_QUOTATION && !lastTokenIsString) { //TODO: Find a better way to handle this
+      if (symbol.second == TK_QUOTATION && !lastTokenIsString) { //TODO: Find a better way to handle this
         isLexingString = true;
-      }
-      else if(symbol.second == TK_QUOTATION && lastTokenIsString) {
+      } else if (symbol.second == TK_QUOTATION && lastTokenIsString) {
         isLexingString = false;
         lastTokenIsString = false;
       }
 
-      return Token{symbol.second, symbol.first, {lineNumber, characterLineIndex}};
+      return Token{symbol.second, symbol.first, {filePath, lineNumber, characterLineIndex}};
     }
   }
 
   return {};
 }
 
-bool Lexer::isNewline() {
+bool
+Lexer::isNewline() {
   return input.substr(index).starts_with("\r\n")
-        || input.substr(index).starts_with('\n')
-        || input.substr(index).starts_with('\r');
+      || input.substr(index).starts_with('\n')
+      || input.substr(index).starts_with('\r');
 }
 
 std::optional<Token>
 Lexer::ReadKeyword() {
   for (const auto& symbol : keywords) {
     if (input.substr(index).starts_with(symbol.first)) {
-      return Token{symbol.second, symbol.first, {lineNumber, characterLineIndex}};
+      return Token{symbol.second, symbol.first, {filePath, lineNumber, characterLineIndex}};
     }
   }
 
@@ -158,7 +124,7 @@ Lexer::ReadNumber() {
   if (numValue.str().length() == 0)
     return {};
 
-  return Token{TK_NUMBER, numValue.str(), {lineNumber, characterLineIndex}};
+  return Token{TK_NUMBER, numValue.str(), {filePath, lineNumber, characterLineIndex}};
 }
 
 std::optional<Token>
@@ -176,7 +142,7 @@ Lexer::ReadIdentifier() {
 
   return Token{TK_IDENTIFIER,
                identifierValue.str(),
-               {lineNumber, characterLineIndex - identifierValue.str().length()}};
+               {filePath, lineNumber, characterLineIndex - identifierValue.str().length()}};
 }
 
 Token
@@ -193,7 +159,7 @@ Lexer::ReadString() {
 
   return Token{TK_STRING,
                stringValue.str(),
-               {lineNumber, characterLineIndex - stringValue.str().length()}};
+               {filePath, lineNumber, characterLineIndex - stringValue.str().length()}};
 }
 
 std::vector<Token>
@@ -204,7 +170,16 @@ Lexer::Tokenize() {
     tokens.push_back(Next());
   }
 
-  tokens.emplace_back(Token{TK_EOF, "", {lineNumber, characterLineIndex}});
+  tokens.emplace_back(Token{TK_EOF, "", {filePath, lineNumber, characterLineIndex}});
 
   return tokens;
+}
+
+std::string
+Lexer::GetSymbolFromTokenType(TokenType tokenType) {
+  for (const auto& symbol : symbols) {
+    if (symbol.second == tokenType) return symbol.first;
+  }
+
+  return "";
 }

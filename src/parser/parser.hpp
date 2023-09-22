@@ -14,12 +14,13 @@
 
 class Parser {
  public:
-  explicit Parser(std::vector<Token> tokens);
+  explicit Parser(std::vector<std::string> code, std::vector<Token> tokens);
   AstNodePtr Parse();
 
  private:
+  std::vector<std::string> code;
   std::vector<Token> tokens;
-  size_t currentTokenIndex;
+  size_t currentTokenIndex = 0;
   Token currentToken;
 
   AstNodePtr ParseFunctionDeclaration();
