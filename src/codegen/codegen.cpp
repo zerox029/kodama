@@ -35,7 +35,7 @@ Codegen::Generate(const AstNodePtr& ast) {
   ast->Accept(this);
 }
 
-llvm::Value*
+void
 Codegen::Visit(const FunctionDeclaration* element) {
   std::vector<AstNodePtr> parameterNodes = element->GetParameters();
   std::vector<llvm::Type*> parameters{element->GetParameters().size()};
@@ -43,9 +43,9 @@ Codegen::Visit(const FunctionDeclaration* element) {
                  parameterNodes.end(),
                  parameters.begin(),
                  [this](const AstNodePtr& node) {
-    DataType type = (std::static_pointer_cast<FunctionParameter>(node))->GetDataType();
-    return ResolveLLVMType(type);
-  });
+                   DataType type = (std::static_pointer_cast<FunctionParameter>(node))->GetDataType();
+                   return ResolveLLVMType(type);
+                 });
 
   llvm::FunctionType* functionType = llvm::FunctionType::get(ResolveLLVMType(element->GetReturnType()),
                                                              parameters,
@@ -56,7 +56,7 @@ Codegen::Visit(const FunctionDeclaration* element) {
                                             element->GetParameters());
 
   namedValues.clear();
-  for (auto &argument : function->args()) {
+  for (auto& argument : function->args()) {
     llvm::AllocaInst* alloca = builder->CreateAlloca(argument.getType(),
                                                      nullptr,
                                                      argument.getName());
@@ -68,36 +68,39 @@ Codegen::Visit(const FunctionDeclaration* element) {
 
   element->GetBody()->Accept(this);
 
-  return function;
+  lastGeneratedValue = function;
 }
 
-llvm::Value*
+void
 Codegen::Visit(const FunctionParameter* element) {
-  return nullptr;
+
 }
 
-llvm::Value*
+void
 Codegen::Visit(const Block* element) {
   for (const AstNodePtr& node : element->GetStatements()) {
     node->Accept(this);
   }
-
-  return nullptr;
 }
 
-llvm::Value*
+void
 Codegen::Visit(const ReturnStatement* element) {
-  return builder->CreateRet(element->GetReturnValue()->Accept(this));
+  element->GetReturnValue()->Accept(this);
+  llvm::Value* returnValue = lastGeneratedValue;
+
+  lastGeneratedValue = builder->CreateRet(returnValue);
 }
 
-llvm::Value*
+void
 Codegen::Visit(const IfStatement* element) {
   llvm::Function* fn = module->getFunction("main");
 
   llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
   llvm::BasicBlock* alternative = llvm::BasicBlock::Create(*context, "alternative", fn);
 
-  llvm::Value* ifStatement = builder->CreateCondBr(element->GetCondition()->Accept(this),
+  element->GetCondition()->Accept(this);
+  llvm::Value* conditionValue = lastGeneratedValue;
+  llvm::Value* ifStatement = builder->CreateCondBr(conditionValue,
                                                    consequent,
                                                    alternative);
 
@@ -109,10 +112,10 @@ Codegen::Visit(const IfStatement* element) {
   // Go to the merge point
   builder->SetInsertPoint(alternative);
 
-  return ifStatement;
+  lastGeneratedValue = ifStatement;
 }
 
-llvm::Value*
+void
 Codegen::Visit(const IfElseStatement* element) {
   llvm::Function* fn = module->getFunction("main");
 
@@ -120,7 +123,9 @@ Codegen::Visit(const IfElseStatement* element) {
   llvm::BasicBlock* alternative = llvm::BasicBlock::Create(*context, "alternative", fn);
   llvm::BasicBlock* merge = llvm::BasicBlock::Create(*context, "merge", fn);
 
-  llvm::Value* ifStatement = builder->CreateCondBr(element->GetCondition()->Accept(this),
+  element->GetCondition()->Accept(this);
+  llvm::Value* conditionValue = lastGeneratedValue;
+  llvm::Value* ifStatement = builder->CreateCondBr(conditionValue,
                                                    consequent,
                                                    alternative);
 
@@ -137,10 +142,10 @@ Codegen::Visit(const IfElseStatement* element) {
   // Generate the merge block
   builder->SetInsertPoint(merge);
 
-  return ifStatement;
+  lastGeneratedValue = ifStatement;
 }
 
-llvm::Value*
+void
 Codegen::Visit(const WhileLoop* element) {
   llvm::Function* fn = module->getFunction("main");
 
@@ -151,9 +156,13 @@ Codegen::Visit(const WhileLoop* element) {
   // Generate the condition
   builder->CreateBr(condition);
   builder->SetInsertPoint(condition);
-  llvm::Value* ifStatement = builder->CreateCondBr(element->GetCondition()->Accept(this),
-                                                   consequent,
-                                                   alternative);
+
+  element->GetCondition()->Accept(this);
+  llvm::Value* conditionValue = lastGeneratedValue;
+
+  llvm::Value* whileLoop = builder->CreateCondBr(conditionValue,
+                                                 consequent,
+                                                 alternative);
 
   // Generate the consequent
   builder->SetInsertPoint(consequent);
@@ -163,10 +172,10 @@ Codegen::Visit(const WhileLoop* element) {
   // Go to the merge point
   builder->SetInsertPoint(alternative);
 
-  return ifStatement;
+  lastGeneratedValue = whileLoop;
 }
 
-llvm::Value*
+void
 Codegen::Visit(const DoWhileLoop* element) {
   llvm::Function* fn = module->getFunction("main");
 
@@ -177,9 +186,14 @@ Codegen::Visit(const DoWhileLoop* element) {
   // Generate the condition
   builder->CreateBr(consequent);
   builder->SetInsertPoint(condition);
-  llvm::Value* ifStatement = builder->CreateCondBr(element->GetCondition()->Accept(this),
-                                                   consequent,
-                                                   alternative);
+
+  element->GetCondition()->Accept(this);
+  llvm::Value* conditionValue = lastGeneratedValue;
+
+  builder->CreateCondBr(conditionValue,
+                        consequent,
+                        alternative);
+  llvm::Value* whileLoop = lastGeneratedValue;
 
   // Generate the consequent
   builder->SetInsertPoint(consequent);
@@ -189,10 +203,10 @@ Codegen::Visit(const DoWhileLoop* element) {
   // Go to the merge point
   builder->SetInsertPoint(alternative);
 
-  return ifStatement;
+  lastGeneratedValue = whileLoop;
 }
 
-llvm::Value*
+void
 Codegen::Visit(const AssignmentExpression* element) {
   handlingUnsignedVariable = IsUnsigned(element->GetDataType());
 
@@ -200,7 +214,8 @@ Codegen::Visit(const AssignmentExpression* element) {
   currentVariableDataType = varType;
   llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
 
-  llvm::Value* initialValue = element->GetValue()->Accept(this);
+  element->GetValue()->Accept(this);
+  llvm::Value* initialValue = lastGeneratedValue;
   initialValue->mutateType(varType);
 
   namedValues[element->GetIdentifier()] = variableAllocation;
@@ -208,122 +223,141 @@ Codegen::Visit(const AssignmentExpression* element) {
   handlingUnsignedVariable = false;
   currentVariableDataType = nullptr;
 
-  return builder->CreateStore(initialValue, variableAllocation);
+  lastGeneratedValue = builder->CreateStore(initialValue, variableAllocation);
 }
 
-llvm::Value*
+void
 Codegen::Visit(const BinaryOperation* element) {
-  llvm::Value* lhs = element->GetLhs()->Accept(this);
-  llvm::Value* rhs = element->GetRhs()->Accept(this);
+  element->GetLhs()->Accept(this);
+  llvm::Value* lhs = lastGeneratedValue;
+  element->GetRhs()->Accept(this);
+  llvm::Value* rhs = lastGeneratedValue;
 
   switch (element->GetOperator().GetTokenType()) {
     case TK_PLUS:
-      return builder->CreateAdd(lhs, rhs, "addtmp");
+      lastGeneratedValue = builder->CreateAdd(lhs, rhs, "addtmp");
+      break;
     case TK_MINUS:
-      return builder->CreateSub(lhs, rhs, "subtmp");
+      lastGeneratedValue = builder->CreateSub(lhs, rhs, "subtmp");
+      break;
     case TK_STAR:
-      return builder->CreateMul(lhs, rhs, "multmp");
+      lastGeneratedValue = builder->CreateMul(lhs, rhs, "multmp");
+      break;
     case TK_SLASH: {
       if (handlingUnsignedVariable) {
-        return builder->CreateUDiv(lhs, rhs, "divtmp");
+        lastGeneratedValue = builder->CreateUDiv(lhs, rhs, "divtmp");
+        break;
       } else {
-        return builder->CreateSDiv(lhs, rhs, "divtmp");
+        lastGeneratedValue = builder->CreateSDiv(lhs, rhs, "divtmp");
+        break;
       }
     }
     case TK_PERCENT: {
       if (handlingUnsignedVariable) {
-        return builder->CreateURem(lhs, rhs, "modtmp");
+        lastGeneratedValue = builder->CreateURem(lhs, rhs, "modtmp");
+        break;
       } else {
-        return builder->CreateSRem(lhs, rhs, "modtmp");
+        lastGeneratedValue = builder->CreateSRem(lhs, rhs, "modtmp");
+        break;
       }
     }
     case TK_EQUAL:
-      return builder->CreateICmpEQ(lhs, rhs, "eqtmp");
+      lastGeneratedValue = builder->CreateICmpEQ(lhs, rhs, "eqtmp");
+      break;
     case TK_NOT_EQUAL:
-      return builder->CreateICmpNE(lhs, rhs, "neqtmp");
+      lastGeneratedValue = builder->CreateICmpNE(lhs, rhs, "neqtmp");
+      break;
     case TK_GREATER:
       if (handlingUnsignedVariable) {
-        return builder->CreateICmpUGT(lhs, rhs, "gttmp");
+        lastGeneratedValue = builder->CreateICmpUGT(lhs, rhs, "gttmp");
+        break;
       } else {
-        return builder->CreateICmpSGT(lhs, rhs, "gttmp");
+        lastGeneratedValue = builder->CreateICmpSGT(lhs, rhs, "gttmp");
+        break;
       }
     case TK_LESS:
       if (handlingUnsignedVariable) {
-        return builder->CreateICmpULT(lhs, rhs, "lttmp");
+        lastGeneratedValue = builder->CreateICmpULT(lhs, rhs, "lttmp");
+        break;
       } else {
-        return builder->CreateICmpSLT(lhs, rhs, "lttmp");
+        lastGeneratedValue = builder->CreateICmpSLT(lhs, rhs, "lttmp");
+        break;
       }
     case TK_GREATER_EQ:
       if (handlingUnsignedVariable) {
-        return builder->CreateICmpUGE(lhs, rhs, "gtetmp");
+        lastGeneratedValue = builder->CreateICmpUGE(lhs, rhs, "gtetmp");
+        break;
       } else {
-        return builder->CreateICmpSGE(lhs, rhs, "gtetmp");
+        lastGeneratedValue = builder->CreateICmpSGE(lhs, rhs, "gtetmp");
+        break;
       }
     case TK_LESS_EQ:
       if (handlingUnsignedVariable) {
-        return builder->CreateICmpULE(lhs, rhs, "ltetmp");
+        lastGeneratedValue = builder->CreateICmpULE(lhs, rhs, "ltetmp");
+        break;
       } else {
-        return builder->CreateICmpSLE(lhs, rhs, "ltetmp");
+        lastGeneratedValue = builder->CreateICmpSLE(lhs, rhs, "ltetmp");
+        break;
       }
     default:
-      return nullptr;
+      break;
   }
 }
 
-llvm::Value*
+void
 Codegen::Visit(const FunctionCall* element) {
   // Look up the name in the global module table.
   llvm::Function* callee = module->getFunction(element->GetIdentifier());
   if (!callee) {
     fprintf(stderr, "Error: %s\n", "Unknown function referenced");
-    return nullptr;
+    exit(1);
   }
 
   // If argument mismatch error.
   if (callee->arg_size() != element->GetArguments().size()) {
-    fprintf(stderr,("Incorrect # arguments passed"));
-    return nullptr;
+    fprintf(stderr, ("Incorrect # arguments passed"));
+    exit(1);
   }
 
-  std::vector<llvm::Value *> args;
-  for (auto & argument : element->GetArguments()) {
-    args.push_back(argument->Accept(this));
+  std::vector<llvm::Value*> args;
+  for (auto& argument : element->GetArguments()) {
+    argument->Accept(this);
+    args.push_back(lastGeneratedValue);
   }
 
-  return builder->CreateCall(callee, args, "calltmp");
+  lastGeneratedValue = builder->CreateCall(callee, args, "calltmp");
 }
 
-llvm::Value*
+void
 Codegen::Visit(const FunctionArgument* element) {
-  return element->GetValue()->Accept(this);
+  element->GetValue()->Accept(this);
 }
 
-llvm::Value*
+void
 Codegen::Visit(const Variable* element) {
   llvm::AllocaInst* alloca = namedValues.at(element->GetIdentifier());
 
-  return builder->CreateLoad(alloca->getAllocatedType(), alloca, element->GetIdentifier());
+  lastGeneratedValue = builder->CreateLoad(alloca->getAllocatedType(), alloca, element->GetIdentifier());
 }
 
-llvm::Value*
+void
 Codegen::Visit(const NumberLiteral* element) {
-  if(element->GetDecimalValue().empty()) {
-    return llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetValue(), 10));
-  }
-  else {
-    return llvm::ConstantFP::get(*context, llvm::APFloat(std::stof(element->GetValue())));
+  if (element->GetDecimalValue().empty()) {
+    lastGeneratedValue = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetValue(), 10));
+  } else {
+    lastGeneratedValue = llvm::ConstantFP::get(*context, llvm::APFloat(std::stof(element->GetValue())));
   }
 }
 
-llvm::Value*
+void
 Codegen::Visit(const StringLiteral* element) {
-  return builder->CreateGlobalStringPtr(element->GetValue());
+  lastGeneratedValue = builder->CreateGlobalStringPtr(element->GetValue());
 }
 
-llvm::Value*
+void
 Codegen::Visit(const NullValue* element) {
   llvm::Value* nullPtr = llvm::ConstantPointerNull::get(currentVariableDataType->getPointerTo());
-  return nullPtr;
+  lastGeneratedValue = nullPtr;
 }
 
 llvm::Type*
@@ -368,8 +402,7 @@ Codegen::CreateFunction(const std::string& fnName, llvm::FunctionType* fnType, s
     function = llvm::Function::Create(fnType, llvm::Function::ExternalLinkage, fnName, *module);
 
     unsigned idx = 0;
-    for (auto& parameter : function->args())
-    {
+    for (auto& parameter : function->args()) {
       std::string identifier = (std::static_pointer_cast<FunctionParameter>((parameters.at(idx++))))->GetIdentifier();
       parameter.setName(identifier);
     }
@@ -383,7 +416,8 @@ Codegen::CreateFunction(const std::string& fnName, llvm::FunctionType* fnType, s
   return function;
 }
 
-void Codegen::setupExternFunctions() {
+void
+Codegen::setupExternFunctions() {
   llvm::PointerType* bytePtrTy = builder->getInt8Ty()->getPointerTo();
 
   module->getOrInsertFunction("printf", llvm::FunctionType::get(builder->getInt32Ty(), bytePtrTy, true));

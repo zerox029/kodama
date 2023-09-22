@@ -4,82 +4,82 @@
 
 #include "astVisitor.hpp"
 
-llvm::Value*
+void
 FunctionDeclaration::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 FunctionParameter::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 Block::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 ReturnStatement::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 IfStatement::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 IfElseStatement::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 WhileLoop::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 DoWhileLoop::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 AssignmentExpression::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 BinaryOperation::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 FunctionCall::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 FunctionArgument::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 Variable::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 NumberLiteral::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 StringLiteral::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 
-llvm::Value*
+void
 NullValue::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }

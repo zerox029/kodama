@@ -13,17 +13,19 @@
 #include <llvm/IR/Function.h>
 #include <map>
 
-class Codegen : public AstVisitor {
+ class Codegen : public AstVisitor {
  private:
   std::unique_ptr<llvm::LLVMContext> context;
   std::unique_ptr<llvm::IRBuilder<>> builder;
   std::unique_ptr<llvm::Module> module;
   std::map<std::string, llvm::AllocaInst*> namedValues;
 
+  llvm::Value* lastGeneratedValue;
+
   bool handlingUnsignedVariable;
   llvm::Type* currentVariableDataType;
 
-  llvm::Type* ResolveLLVMType(const DataType type);
+  llvm::Type* ResolveLLVMType(DataType type);
   llvm::Function* CreateFunction(const std::string& fnName, llvm::FunctionType* fnType, std::vector<AstNodePtr> parameters);
   void setupExternFunctions();
 
@@ -34,22 +36,22 @@ class Codegen : public AstVisitor {
   void saveModuleToFile(const std::string& fileName);
   void Generate(const AstNodePtr& ast);
 
-  llvm::Value* Visit(const FunctionDeclaration* element) override;
-  llvm::Value* Visit(const FunctionParameter* element) override;
-  llvm::Value* Visit(const Block* element) override;
-  llvm::Value* Visit(const ReturnStatement* element) override;
-  llvm::Value* Visit(const IfStatement* element) override;
-  llvm::Value* Visit(const IfElseStatement* element) override;
-  llvm::Value* Visit(const WhileLoop* element) override;
-  llvm::Value* Visit(const DoWhileLoop* element) override;
-  llvm::Value* Visit(const AssignmentExpression* element) override;
-  llvm::Value* Visit(const BinaryOperation* element) override;
-  llvm::Value* Visit(const FunctionCall* element) override;
-  llvm::Value* Visit(const FunctionArgument* element) override;
-  llvm::Value* Visit(const Variable* element) override;
-  llvm::Value* Visit(const NumberLiteral* element) override;
-  llvm::Value* Visit(const StringLiteral* element) override;
-  llvm::Value* Visit(const NullValue* element) override;
+  void Visit(const FunctionDeclaration* element) override;
+  void Visit(const FunctionParameter* element) override;
+  void Visit(const Block* element) override;
+  void Visit(const ReturnStatement* element) override;
+  void Visit(const IfStatement* element) override;
+  void Visit(const IfElseStatement* element) override;
+  void Visit(const WhileLoop* element) override;
+  void Visit(const DoWhileLoop* element) override;
+  void Visit(const AssignmentExpression* element) override;
+  void Visit(const BinaryOperation* element) override;
+  void Visit(const FunctionCall* element) override;
+  void Visit(const FunctionArgument* element) override;
+  void Visit(const Variable* element) override;
+  void Visit(const NumberLiteral* element) override;
+  void Visit(const StringLiteral* element) override;
+  void Visit(const NullValue* element) override;
 };
 
 #endif //KODAMA_SRC_CODEGEN_CODEGEN_HPP_

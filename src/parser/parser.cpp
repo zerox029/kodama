@@ -332,6 +332,8 @@ Parser::ConsumeDataType() {
     errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
     Error error{"syntax error", "expected data type", errorLocation, codeLine};
     error.Throw();
+
+    return nullptr;
   }
 }
 

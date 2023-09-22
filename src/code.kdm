@@ -1,5 +1,5 @@
 def main() -> i64 {
-    let x: = null;
+    let x: i64 = 10;
 
-    return 0
+    return x
 }

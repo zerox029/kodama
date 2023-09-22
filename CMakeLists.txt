@@ -36,7 +36,9 @@ add_executable(Kodama
         src/errors/error.cpp
         src/errors/error.hpp
         src/utils/stringUtils.cpp
-        src/utils/stringUtils.hpp)
+        src/utils/stringUtils.hpp
+        src/analyzer/typeChecker.cpp
+        src/analyzer/typeChecker.hpp)
 
 # Find the libraries that correspond to the LLVM components
 # that you wish to use
