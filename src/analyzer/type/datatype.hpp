@@ -47,7 +47,7 @@ const std::unordered_map<TokenType, TypeCategory> dataTypeMapping{
 class Datatype {
  public:
   virtual TypeCategory GetTypeCategory() const = 0;
-  virtual bool IsCastableTo(Datatype& castType) const = 0;
+  virtual bool IsCastableTo(TypeCategory castType) const = 0;
   virtual AstNodePtr GetDefaultValue() const = 0;
 
   virtual bool operator==(const Datatype& type) const {
@@ -59,10 +59,104 @@ class Datatype {
   }
 };
 
+class U8Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class U16Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class U32Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class U64Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class U128Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class I8Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class I16Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class I32Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class I64Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class I128Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class F32Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class F64Type : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
+class BoolType : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  bool IsCastableTo(TypeCategory castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
+
 TypeCategory
 TokenTypeToDataType(TokenType tokenType);
 
 bool
 IsUnsigned(TypeCategory dataType);
+
+bool
+IsNumericType(TypeCategory dataType);
 
 #endif //KODAMA_SRC_ANALYZER_TYPE_DATATYPE_HPP_
