@@ -48,6 +48,7 @@ class Parser {
   std::unique_ptr<Token> ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes);
   std::unique_ptr<Token> ConsumeDataType();
   bool LookAhead(size_t lookaheadDistance, TokenType tokenType);
+  bool LookAheadWithError(size_t lookaheadDistance, TokenType tokenType, std::string errorMessage);
   void Expect(TokenType tokenType, std::string errorMessage);
   void advance();
 

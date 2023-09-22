@@ -262,14 +262,7 @@ Parser::ParseFunctionArguments() {
   } while (Consume(TK_COMMA));
 
   // If there are no more arguments, generate an error if the next token isn't a closing parenthesis
-  // TODO: Move this to its own function or something
-  if (!LookAhead(0, TK_CLOSED_PAREN)) {
-    std::string codeLine = code.at(currentToken.GetLocation().lineNumber);
-    Location errorLocation = currentToken.GetLocation();
-    errorLocation.characterLineIndex = errorLocation.characterLineIndex;
-    Error error{"syntax error", "expected value or identifier", errorLocation, codeLine};
-    error.Throw();
-  }
+  LookAheadWithError(0, TK_CLOSED_PAREN, "expected value or identifier");
 
   return arguments;
 }
@@ -337,6 +330,22 @@ bool
 Parser::LookAhead(size_t lookaheadDistance, TokenType tokenType) {
   //TODO: Add bound check
   return tokens.at(currentTokenIndex + lookaheadDistance).GetTokenType() == tokenType;
+}
+
+bool
+Parser::LookAheadWithError(size_t lookaheadDistance, TokenType tokenType, std::string errorMessage) {
+  if(LookAhead(lookaheadDistance, tokenType)) {
+    return true;
+  }
+  else {
+    std::string codeLine = code.at(currentToken.GetLocation().lineNumber);
+    Location errorLocation = currentToken.GetLocation();
+    errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
+    Error error{"syntax error", std::move(errorMessage), errorLocation, codeLine};
+    error.Throw();
+
+    exit(1);
+  }
 }
 
 std::unique_ptr<Token>
