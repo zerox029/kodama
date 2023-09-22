@@ -2,7 +2,7 @@ def main() -> i64 {
     let x: bool = false;
 
     if(x) {
-        printf(message: "ok");
+        printf("ok");
     }
 
     return 0
