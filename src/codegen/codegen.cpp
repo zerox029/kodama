@@ -43,7 +43,7 @@ Codegen::Visit(const FunctionDeclaration* element) {
                  parameterNodes.end(),
                  parameters.begin(),
                  [this](const AstNodePtr& node) {
-                   DataType type = (std::static_pointer_cast<FunctionParameter>(node))->GetDataType();
+                   TypeCategory type = (std::static_pointer_cast<FunctionParameter>(node))->GetDataType();
                    return ResolveLLVMType(type);
                  });
 
@@ -361,7 +361,7 @@ Codegen::Visit(const NullValue* element) {
 }
 
 llvm::Type*
-Codegen::ResolveLLVMType(const DataType type) {
+Codegen::ResolveLLVMType(const TypeCategory type) {
   switch (type) {
     case U8:
       return llvm::Type::getInt8Ty(*context);

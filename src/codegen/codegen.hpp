@@ -25,7 +25,7 @@
   bool handlingUnsignedVariable;
   llvm::Type* currentVariableDataType;
 
-  llvm::Type* ResolveLLVMType(DataType type);
+  llvm::Type* ResolveLLVMType(TypeCategory type);
   llvm::Function* CreateFunction(const std::string& fnName, llvm::FunctionType* fnType, std::vector<AstNodePtr> parameters);
   void setupExternFunctions();
 

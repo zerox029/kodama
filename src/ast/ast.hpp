@@ -6,7 +6,7 @@
 #define KODAMA_SRC_EXPRESSION_H_
 
 #include "../lexer/token.hpp"
-#include "datatypes.hpp"
+#include "../analyzer/type/datatype.hpp"
 #include <memory>
 #include <llvm/IR/Value.h>
 
@@ -45,15 +45,15 @@ class FunctionDeclaration : public AstNode {
  private:
   std::string identifier;
   std::vector<AstNodePtr> parameters;
-  DataType returnType;
+  TypeCategory returnType;
   AstNodePtr body;
 
  public:
-  FunctionDeclaration(std::string identifier, std::vector<AstNodePtr> parameters, DataType returnType, AstNodePtr body);
+  FunctionDeclaration(std::string identifier, std::vector<AstNodePtr> parameters, TypeCategory returnType, AstNodePtr body);
 
   std::string GetIdentifier() const;
   std::vector<AstNodePtr> GetParameters() const;
-  DataType GetReturnType() const;
+  TypeCategory GetReturnType() const;
   AstNodePtr GetBody() const;
 
   AstNodeKind GetKind() const override;
@@ -63,13 +63,13 @@ class FunctionDeclaration : public AstNode {
 class FunctionParameter : public AstNode {
  private:
   std::string identifier;
-  DataType datatype;
+  TypeCategory datatype;
 
  public:
-  FunctionParameter(std::string  identifier, DataType dataType);
+  FunctionParameter(std::string  identifier, TypeCategory dataType);
 
   std::string GetIdentifier() const;
-  DataType GetDataType() const;
+  TypeCategory GetDataType() const;
 
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) const override;
@@ -171,14 +171,14 @@ class DoWhileLoop : public AstNode {
 class AssignmentExpression : public AstNode {
  private:
   std::string identifier;
-  DataType dataType;
+  TypeCategory dataType;
   AstNodePtr value;
 
  public:
-  AssignmentExpression(std::string identifier, DataType type, AstNodePtr value);
+  AssignmentExpression(std::string identifier, TypeCategory type, AstNodePtr value);
 
   std::string GetIdentifier() const;
-  DataType GetDataType() const;
+  TypeCategory GetDataType() const;
   AstNodePtr GetValue() const;
 
   AstNodeKind GetKind() const override;

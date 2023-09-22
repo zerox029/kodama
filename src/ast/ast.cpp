@@ -9,7 +9,7 @@
 /// Function declaration
 FunctionDeclaration::FunctionDeclaration(std::string identifier,
                                          std::vector<AstNodePtr> parameters,
-                                         DataType returnType,
+                                         TypeCategory returnType,
                                          AstNodePtr body)
     : identifier{std::move(identifier)},
       parameters{std::move(parameters)},
@@ -25,7 +25,7 @@ FunctionDeclaration::GetIdentifier() const { return identifier; }
 std::vector<AstNodePtr>
 FunctionDeclaration::GetParameters() const { return parameters; }
 
-DataType
+TypeCategory
 FunctionDeclaration::GetReturnType() const { return returnType; }
 
 AstNodeKind
@@ -33,13 +33,13 @@ FunctionDeclaration::GetKind() const { return AST_FUNC_DEC; }
 
 
 /// Function Parameter
-FunctionParameter::FunctionParameter(std::string identifier, DataType dataType)
+FunctionParameter::FunctionParameter(std::string identifier, TypeCategory dataType)
     : identifier{std::move(identifier)}, datatype{dataType} {}
 
 std::string
 FunctionParameter::GetIdentifier() const { return identifier; }
 
-DataType
+TypeCategory
 FunctionParameter::GetDataType() const { return datatype; }
 
 AstNodeKind
@@ -128,13 +128,13 @@ DoWhileLoop::GetKind() const { return AST_DO_WHILE; }
 
 
 /// AssignmentExpression
-AssignmentExpression::AssignmentExpression(std::string identifier, DataType dataType, AstNodePtr value)
+AssignmentExpression::AssignmentExpression(std::string identifier, TypeCategory dataType, AstNodePtr value)
     : identifier{std::move(identifier)}, dataType(dataType), value{std::move(value)} {}
 
 std::string
 AssignmentExpression::GetIdentifier() const { return identifier; }
 
-DataType
+TypeCategory
 AssignmentExpression::GetDataType() const { return dataType; }
 
 AstNodePtr

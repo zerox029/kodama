@@ -29,16 +29,16 @@ add_executable(Kodama
         src/ast/astVisitor.hpp
         src/codegen/codegen.cpp
         src/codegen/codegen.hpp
-        src/ast/datatypes.cpp
-        src/ast/datatypes.hpp
         src/codegen/irtransform.cpp
         src/codegen/irtransform.hpp
         src/errors/error.cpp
         src/errors/error.hpp
         src/utils/stringUtils.cpp
         src/utils/stringUtils.hpp
-        src/analyzer/typeChecker.cpp
-        src/analyzer/typeChecker.hpp)
+        src/analyzer/type/typeChecker.cpp
+        src/analyzer/type/typeChecker.hpp
+        src/analyzer/type/datatype.cpp
+        src/analyzer/type/datatype.hpp)
 
 # Find the libraries that correspond to the LLVM components
 # that you wish to use
