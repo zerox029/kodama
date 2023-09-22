@@ -9,11 +9,11 @@
 /// Function declaration
 FunctionDeclaration::FunctionDeclaration(std::string identifier,
                                          std::vector<AstNodePtr> parameters,
-                                         TypeCategory returnType,
+                                         TypePtr returnType,
                                          AstNodePtr body)
     : identifier{std::move(identifier)},
       parameters{std::move(parameters)},
-      returnType{returnType},
+      returnType{std::move(returnType)},
       body{std::move(body)} {}
 
 AstNodePtr
@@ -25,7 +25,7 @@ FunctionDeclaration::GetIdentifier() const { return identifier; }
 std::vector<AstNodePtr>
 FunctionDeclaration::GetParameters() const { return parameters; }
 
-TypeCategory
+TypePtr
 FunctionDeclaration::GetReturnType() const { return returnType; }
 
 AstNodeKind
@@ -33,13 +33,13 @@ FunctionDeclaration::GetKind() const { return AST_FUNC_DEC; }
 
 
 /// Function Parameter
-FunctionParameter::FunctionParameter(std::string identifier, TypeCategory dataType)
-    : identifier{std::move(identifier)}, datatype{dataType} {}
+FunctionParameter::FunctionParameter(std::string identifier, TypePtr dataType)
+    : identifier{std::move(identifier)}, datatype{std::move(dataType)} {}
 
 std::string
 FunctionParameter::GetIdentifier() const { return identifier; }
 
-TypeCategory
+TypePtr
 FunctionParameter::GetDataType() const { return datatype; }
 
 AstNodeKind
@@ -128,13 +128,13 @@ DoWhileLoop::GetKind() const { return AST_DO_WHILE; }
 
 
 /// AssignmentExpression
-AssignmentExpression::AssignmentExpression(std::string identifier, TypeCategory dataType, AstNodePtr value)
-    : identifier{std::move(identifier)}, dataType(dataType), value{std::move(value)} {}
+AssignmentExpression::AssignmentExpression(std::string identifier, TypePtr dataType, AstNodePtr value)
+    : identifier{std::move(identifier)}, dataType(std::move(dataType)), value{std::move(value)} {}
 
 std::string
 AssignmentExpression::GetIdentifier() const { return identifier; }
 
-TypeCategory
+TypePtr
 AssignmentExpression::GetDataType() const { return dataType; }
 
 AstNodePtr

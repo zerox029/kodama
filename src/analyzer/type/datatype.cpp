@@ -5,9 +5,28 @@
 #include "datatype.hpp"
 #include "../../ast/ast.hpp"
 
+const std::unordered_map<TokenType, TypePtr> dataTypeMapping{
+    {TK_U8, std::make_shared<U8Type>()},
+    {TK_U16, std::make_shared<U16Type>()},
+    {TK_U32, std::make_shared<U32Type>()},
+    {TK_U64, std::make_shared<U64Type>()},
+    {TK_U128, std::make_shared<U128Type>()},
+    {TK_I8, std::make_shared<I8Type>()},
+    {TK_I16, std::make_shared<I16Type>()},
+    {TK_I32, std::make_shared<I32Type>()},
+    {TK_I64, std::make_shared<I64Type>()},
+    {TK_I128, std::make_shared<I128Type>()},
+    {TK_F32, std::make_shared<F32Type>()},
+    {TK_F64, std::make_shared<F64Type>()},
+    {TK_BOOL, std::make_shared<BoolType>()}
+};
+
 /// U8
 TypeCategory
-U8Type::GetTypeCategory() const { return U8; }
+U8Type::GetTypeCategory() const { return UINTEGER; }
+
+llvm::Type*
+U8Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt8Ty(context); }
 
 AstNodePtr
 U8Type::GetDefaultValue() const {
@@ -15,14 +34,17 @@ U8Type::GetDefaultValue() const {
 }
 
 bool
-U8Type::IsCastableTo(TypeCategory castType) const {
+U8Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 
 /// U16
 TypeCategory
-U16Type::GetTypeCategory() const { return U16; }
+U16Type::GetTypeCategory() const { return UINTEGER; }
+
+llvm::Type*
+U16Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt16Ty(context); }
 
 AstNodePtr
 U16Type::GetDefaultValue() const {
@@ -30,14 +52,17 @@ U16Type::GetDefaultValue() const {
 }
 
 bool
-U16Type::IsCastableTo(TypeCategory castType) const {
+U16Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 
 /// U32
 TypeCategory
-U32Type::GetTypeCategory() const { return U32; }
+U32Type::GetTypeCategory() const { return UINTEGER; }
+
+llvm::Type*
+U32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt32Ty(context); }
 
 AstNodePtr
 U32Type::GetDefaultValue() const {
@@ -45,14 +70,17 @@ U32Type::GetDefaultValue() const {
 }
 
 bool
-U32Type::IsCastableTo(TypeCategory castType) const {
+U32Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 
 /// U64
 TypeCategory
-U64Type::GetTypeCategory() const { return U64; }
+U64Type::GetTypeCategory() const { return UINTEGER; }
+
+llvm::Type*
+U64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt64Ty(context); }
 
 AstNodePtr
 U64Type::GetDefaultValue() const {
@@ -60,14 +88,17 @@ U64Type::GetDefaultValue() const {
 }
 
 bool
-U64Type::IsCastableTo(TypeCategory castType) const {
+U64Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 
 /// U128
 TypeCategory
-U128Type::GetTypeCategory() const { return U128; }
+U128Type::GetTypeCategory() const { return UINTEGER; }
+
+llvm::Type*
+U128Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt128Ty(context); }
 
 AstNodePtr
 U128Type::GetDefaultValue() const {
@@ -75,13 +106,16 @@ U128Type::GetDefaultValue() const {
 }
 
 bool
-U128Type::IsCastableTo(TypeCategory castType) const {
+U128Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 /// I8
 TypeCategory
-I8Type::GetTypeCategory() const { return I8; }
+I8Type::GetTypeCategory() const { return INTEGER; }
+
+llvm::Type*
+I8Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt8Ty(context); }
 
 AstNodePtr
 I8Type::GetDefaultValue() const {
@@ -89,14 +123,17 @@ I8Type::GetDefaultValue() const {
 }
 
 bool
-I8Type::IsCastableTo(TypeCategory castType) const {
+I8Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 
 /// I16
 TypeCategory
-I16Type::GetTypeCategory() const { return I16; }
+I16Type::GetTypeCategory() const { return INTEGER; }
+
+llvm::Type*
+I16Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt16Ty(context); }
 
 AstNodePtr
 I16Type::GetDefaultValue() const {
@@ -104,14 +141,17 @@ I16Type::GetDefaultValue() const {
 }
 
 bool
-I16Type::IsCastableTo(TypeCategory castType) const {
+I16Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 
 /// I32
 TypeCategory
-I32Type::GetTypeCategory() const { return I32; }
+I32Type::GetTypeCategory() const { return INTEGER; }
+
+llvm::Type*
+I32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt32Ty(context); }
 
 AstNodePtr
 I32Type::GetDefaultValue() const {
@@ -119,14 +159,17 @@ I32Type::GetDefaultValue() const {
 }
 
 bool
-I32Type::IsCastableTo(TypeCategory castType) const {
+I32Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 
 /// I64
 TypeCategory
-I64Type::GetTypeCategory() const { return I64; }
+I64Type::GetTypeCategory() const { return INTEGER; }
+
+llvm::Type*
+I64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt64Ty(context); }
 
 AstNodePtr
 I64Type::GetDefaultValue() const {
@@ -134,14 +177,17 @@ I64Type::GetDefaultValue() const {
 }
 
 bool
-I64Type::IsCastableTo(TypeCategory castType) const {
+I64Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 
 /// I128
 TypeCategory
-I128Type::GetTypeCategory() const { return I128; }
+I128Type::GetTypeCategory() const { return INTEGER; }
+
+llvm::Type*
+I128Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt128Ty(context); }
 
 AstNodePtr
 I128Type::GetDefaultValue() const {
@@ -149,14 +195,17 @@ I128Type::GetDefaultValue() const {
 }
 
 bool
-I128Type::IsCastableTo(TypeCategory castType) const {
+I128Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 
 /// F32
 TypeCategory
-F32Type::GetTypeCategory() const { return F32; }
+F32Type::GetTypeCategory() const { return DECIMAL; }
+
+llvm::Type*
+F32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getFloatTy(context); }
 
 AstNodePtr
 F32Type::GetDefaultValue() const {
@@ -164,14 +213,17 @@ F32Type::GetDefaultValue() const {
 }
 
 bool
-F32Type::IsCastableTo(TypeCategory castType) const {
+F32Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 
 /// F64
 TypeCategory
-F64Type::GetTypeCategory() const { return F64; }
+F64Type::GetTypeCategory() const { return DECIMAL; }
+
+llvm::Type*
+F64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getDoubleTy(context); }
 
 AstNodePtr
 F64Type::GetDefaultValue() const {
@@ -179,40 +231,36 @@ F64Type::GetDefaultValue() const {
 }
 
 bool
-F64Type::IsCastableTo(TypeCategory castType) const {
+F64Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
 
-/// F64
+/// Bool
 TypeCategory
 BoolType::GetTypeCategory() const { return BOOL; }
 
+llvm::Type*
+BoolType::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt1Ty(context); }
+
 AstNodePtr
 BoolType::GetDefaultValue() const {
-  /// TODO: Create boolean literals
-  return std::make_shared<NumberLiteral>("0", "0");
+  return std::make_shared<BoolValue>(false);
 }
 
 bool
-BoolType::IsCastableTo(TypeCategory castType) const {
+BoolType::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
-
-TypeCategory
+TypePtr
 TokenTypeToDataType(TokenType tokenType) {
   return dataTypeMapping.at(tokenType);
 }
 
 bool
-IsUnsigned(TypeCategory dataType) {
-  return dataType == U8 || dataType == U16 || dataType == U32 || dataType == U64 || dataType == U128;
-}
-
-bool
-IsNumericType(TypeCategory dataType) {
-  return dataType == U8 || dataType == U16 || dataType == U32 || dataType == U64 || dataType == U128
-      || dataType == I8 || dataType == I16 || dataType == I32 || dataType == I64 || dataType == I128
-      || dataType == F32 || dataType == F64;
+IsNumericType(Datatype& dataType) {
+  return dataType.GetTypeCategory() == INTEGER
+      || dataType.GetTypeCategory() == UINTEGER
+      || dataType.GetTypeCategory() == DECIMAL;
 }

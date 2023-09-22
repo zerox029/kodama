@@ -43,11 +43,10 @@ Codegen::Visit(const FunctionDeclaration* element) {
                  parameterNodes.end(),
                  parameters.begin(),
                  [this](const AstNodePtr& node) {
-                   TypeCategory type = (std::static_pointer_cast<FunctionParameter>(node))->GetDataType();
-                   return ResolveLLVMType(type);
+                   return (std::static_pointer_cast<FunctionParameter>(node))->GetDataType()->GetLLVMType(*context);
                  });
 
-  llvm::FunctionType* functionType = llvm::FunctionType::get(ResolveLLVMType(element->GetReturnType()),
+  llvm::FunctionType* functionType = llvm::FunctionType::get(element->GetReturnType()->GetLLVMType(*context),
                                                              parameters,
                                                              false);
 
@@ -208,9 +207,9 @@ Codegen::Visit(const DoWhileLoop* element) {
 
 void
 Codegen::Visit(const AssignmentExpression* element) {
-  handlingUnsignedVariable = IsUnsigned(element->GetDataType());
+  handlingUnsignedVariable = element->GetDataType()->GetTypeCategory() == UINTEGER;
 
-  llvm::Type* varType = ResolveLLVMType(element->GetDataType());
+  llvm::Type* varType = element->GetDataType()->GetLLVMType(*context);
   currentVariableDataType = varType;
   llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
 
@@ -363,40 +362,6 @@ void
 Codegen::Visit(const NullValue* element) {
   llvm::Value* nullPtr = llvm::ConstantPointerNull::get(currentVariableDataType->getPointerTo());
   lastGeneratedValue = nullPtr;
-}
-
-llvm::Type*
-Codegen::ResolveLLVMType(const TypeCategory type) {
-  switch (type) {
-    case U8:
-      return llvm::Type::getInt8Ty(*context);
-    case U16:
-      return llvm::Type::getInt16Ty(*context);
-    case U32:
-      return llvm::Type::getInt32Ty(*context);
-    case U64:
-      return llvm::Type::getInt64Ty(*context);
-    case U128:
-      return llvm::Type::getInt128Ty(*context);
-    case I8:
-      return llvm::Type::getInt8Ty(*context);
-    case I16:
-      return llvm::Type::getInt16Ty(*context);
-    case I32:
-      return llvm::Type::getInt32Ty(*context);
-    case I64:
-      return llvm::Type::getInt64Ty(*context);
-    case I128:
-      return llvm::Type::getInt128Ty(*context);
-    case F32:
-      return llvm::Type::getFloatTy(*context);
-    case F64:
-      return llvm::Type::getDoubleTy(*context);
-    case BOOL:
-      return llvm::Type::getInt1Ty(*context);
-    default:
-      return nullptr;
-  }
 }
 
 llvm::Function*

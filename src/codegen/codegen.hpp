@@ -25,7 +25,6 @@ class Codegen : public AstVisitor {
   bool handlingUnsignedVariable;
   llvm::Type* currentVariableDataType;
 
-  llvm::Type* ResolveLLVMType(TypeCategory type);
   llvm::Function* CreateFunction(const std::string& fnName,
                                  llvm::FunctionType* fnType,
                                  std::vector<AstNodePtr> parameters);

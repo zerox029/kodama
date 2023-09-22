@@ -32,7 +32,7 @@ Parser::ParseFunctionDeclaration() {
     Expect(TK_CLOSED_PAREN, "missing closing delimiter ')' in function declaration");
 
     Expect(TK_ARROW, "missing return type arrow '->' in function declaration");
-    TypeCategory dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
+    TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
     AstNodePtr body = ParseStatement();
 
     return std::make_shared<FunctionDeclaration>(identifier, parameters, dataType, body);
@@ -48,7 +48,7 @@ Parser::ParseFunctionParameters() {
   do {
     if (std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
       Expect(TK_COLON, "expected ':'");
-      TypeCategory dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
+      TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
 
       AstNodePtr parameter = std::make_shared<FunctionParameter>(identifier->GetStr(), dataType);
       parameters.push_back(parameter);
@@ -166,7 +166,7 @@ AstNodePtr
 Parser::ParseAssignment() {
   std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
   Expect(TK_COLON, "expected ':'");
-  TypeCategory dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
+  TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
   Expect(TK_ASSIGN, "expected '='");
 
   return std::make_shared<AssignmentExpression>(identifier, dataType, ParseEqualityExpression());
@@ -312,6 +312,8 @@ Parser::ParseBool() {
   } else if (Consume(TK_FALSE)) {
     return std::make_shared<BoolValue>(false);
   }
+
+  return nullptr;
 }
 
 std::unique_ptr<Token>

@@ -46,15 +46,15 @@ class FunctionDeclaration : public AstNode {
  private:
   std::string identifier;
   std::vector<AstNodePtr> parameters;
-  TypeCategory returnType;
+  TypePtr returnType;
   AstNodePtr body;
 
  public:
-  FunctionDeclaration(std::string identifier, std::vector<AstNodePtr> parameters, TypeCategory returnType, AstNodePtr body);
+  FunctionDeclaration(std::string identifier, std::vector<AstNodePtr> parameters, TypePtr returnType, AstNodePtr body);
 
   std::string GetIdentifier() const;
   std::vector<AstNodePtr> GetParameters() const;
-  TypeCategory GetReturnType() const;
+  TypePtr GetReturnType() const;
   AstNodePtr GetBody() const;
 
   AstNodeKind GetKind() const override;
@@ -64,13 +64,13 @@ class FunctionDeclaration : public AstNode {
 class FunctionParameter : public AstNode {
  private:
   std::string identifier;
-  TypeCategory datatype;
+  TypePtr datatype;
 
  public:
-  FunctionParameter(std::string  identifier, TypeCategory dataType);
+  FunctionParameter(std::string identifier, TypePtr dataType);
 
   std::string GetIdentifier() const;
-  TypeCategory GetDataType() const;
+  TypePtr GetDataType() const;
 
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) const override;
@@ -172,14 +172,14 @@ class DoWhileLoop : public AstNode {
 class AssignmentExpression : public AstNode {
  private:
   std::string identifier;
-  TypeCategory dataType;
+  TypePtr dataType;
   AstNodePtr value;
 
  public:
-  AssignmentExpression(std::string identifier, TypeCategory type, AstNodePtr value);
+  AssignmentExpression(std::string identifier, TypePtr type, AstNodePtr value);
 
   std::string GetIdentifier() const;
-  TypeCategory GetDataType() const;
+  TypePtr GetDataType() const;
   AstNodePtr GetValue() const;
 
   AstNodeKind GetKind() const override;
