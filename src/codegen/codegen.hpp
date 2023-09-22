@@ -13,7 +13,7 @@
 #include <llvm/IR/Function.h>
 #include <map>
 
- class Codegen : public AstVisitor {
+class Codegen : public AstVisitor {
  private:
   std::unique_ptr<llvm::LLVMContext> context;
   std::unique_ptr<llvm::IRBuilder<>> builder;
@@ -26,7 +26,9 @@
   llvm::Type* currentVariableDataType;
 
   llvm::Type* ResolveLLVMType(TypeCategory type);
-  llvm::Function* CreateFunction(const std::string& fnName, llvm::FunctionType* fnType, std::vector<AstNodePtr> parameters);
+  llvm::Function* CreateFunction(const std::string& fnName,
+                                 llvm::FunctionType* fnType,
+                                 std::vector<AstNodePtr> parameters);
   void setupExternFunctions();
 
  public:
@@ -51,6 +53,7 @@
   void Visit(const Variable* element) override;
   void Visit(const NumberLiteral* element) override;
   void Visit(const StringLiteral* element) override;
+  void Visit(const BoolValue* element) override;
   void Visit(const NullValue* element) override;
 };
 

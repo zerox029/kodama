@@ -26,7 +26,8 @@ enum AstNodeKind {
   AST_VARIABLE,
   AST_NUMBER_LITERAL,
   AST_STRING_LITERAL,
-  AST_NULL_VALUE
+  AST_NULL_VALUE,
+  AST_BOOL_VALUE
 };
 
 class AstVisitor;
@@ -271,6 +272,19 @@ class StringLiteral : public AstNode {
   explicit StringLiteral(std::string_view value);
 
   std::string GetValue() const;
+
+  AstNodeKind GetKind() const override;
+  void Accept(AstVisitor* visitor) const override;
+};
+
+class BoolValue : public AstNode {
+ private:
+  bool value;
+
+ public:
+  explicit BoolValue(bool value);
+
+  bool GetValue() const;
 
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) const override;

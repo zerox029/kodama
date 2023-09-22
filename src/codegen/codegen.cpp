@@ -355,6 +355,11 @@ Codegen::Visit(const StringLiteral* element) {
 }
 
 void
+Codegen::Visit(const BoolValue* element) {
+  lastGeneratedValue = llvm::ConstantInt::get(*context, llvm::APInt(1, element->GetValue()));
+}
+
+void
 Codegen::Visit(const NullValue* element) {
   llvm::Value* nullPtr = llvm::ConstantPointerNull::get(currentVariableDataType->getPointerTo());
   lastGeneratedValue = nullPtr;

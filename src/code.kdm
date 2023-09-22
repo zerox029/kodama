@@ -1,5 +1,9 @@
 def main() -> i64 {
-    let x: i64 = 10;
+    let x: bool = false;
 
-    return x
+    if(x) {
+        printf(message: "ok");
+    }
+
+    return 0
 }

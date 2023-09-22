@@ -80,6 +80,11 @@ StringLiteral::Accept(AstVisitor* visitor) const {
 }
 
 void
+BoolValue::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
+void
 NullValue::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }

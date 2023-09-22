@@ -62,6 +62,8 @@ enum TokenType {
   TK_FOR,         // for
   TK_IN,          // in
   TK_NULL,        // null
+  TK_TRUE,        // true
+  TK_FALSE,       // false
 
   // Value types
   TK_NUMBER,

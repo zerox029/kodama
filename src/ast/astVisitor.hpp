@@ -25,6 +25,7 @@ class AstVisitor {
   virtual void Visit(const Variable* element) = 0;
   virtual void Visit(const NumberLiteral* element) = 0;
   virtual void Visit(const StringLiteral* element) = 0;
+  virtual void Visit(const BoolValue* element) = 0;
   virtual void Visit(const NullValue* element) = 0;
 };
 

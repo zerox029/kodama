@@ -231,6 +231,16 @@ AstNodeKind
 StringLiteral::GetKind() const { return AST_STRING_LITERAL; }
 
 
+/// Bool value
+BoolValue::BoolValue(bool value) : value{value} {}
+
+bool
+BoolValue::GetValue() const { return value; }
+
+AstNodeKind
+BoolValue::GetKind() const { return AST_BOOL_VALUE; }
+
+
 /// Null value
 AstNodeKind
 NullValue::GetKind() const { return AST_NULL_VALUE; }

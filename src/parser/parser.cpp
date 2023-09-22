@@ -223,6 +223,8 @@ Parser::ParsePrimaryExpression() {
     return ParseFunctionCall();
   } else if (AstNodePtr identifierNode = ParseIdentifier()) {
     return identifierNode;
+  } else if (AstNodePtr boolNode = ParseBool()) {
+    return boolNode;
   } else if (Consume(TK_NULL)) {
     return std::make_shared<NullValue>();
   }
@@ -297,6 +299,16 @@ Parser::ParseIdentifier() {
     return std::make_shared<Variable>(numberLiteralNode);
   } else {
     return nullptr;
+  }
+}
+
+AstNodePtr
+Parser::ParseBool() {
+  if(Consume(TK_TRUE)) {
+    return std::make_shared<BoolValue>(true);
+  }
+  else if(Consume(TK_FALSE)) {
+    return std::make_shared<BoolValue>(false);
   }
 }
 
