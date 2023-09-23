@@ -37,7 +37,5 @@ Error::Throw() const {
             << "\033[0m\n";
 
   std::cout << trimmedCode << std::endl;
-  std::cout << AddSpace("^", errorLocation.characterLineIndex - removedSpaces + 1) << "^";
-
-  exit(1);
+  std::cout << AddSpace("", errorLocation.characterLineIndex - removedSpaces + 1) << "^" << "\n\n";
 }

@@ -5,7 +5,7 @@ import terminal;
 
 program : { statement | function };
 
-function : 'fn' identifier '(' function_parameters ')' '->' data_type { statement };
+function : 'fn' identifier '(' function_parameters ')' '->' data_type '{' statement '}';
 
 function_parameters : { identifier ':' data_type ',' } identifier ':' data_type;
 
