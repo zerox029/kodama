@@ -175,24 +175,32 @@ AstNodeKind
 BinaryOperation::GetKind() const { return AST_BINARY_OPERATION; }
 
 
-/// Number Literal
-NumberLiteral::NumberLiteral(Token token, std::string_view integerValue)
+/// Integer Literal
+IntegerLiteral::IntegerLiteral(Token token, std::string_view integerValue)
     : AstNode(token), integerValue{integerValue} {}
 
-NumberLiteral::NumberLiteral(Token token, std::string_view integerValue, std::string_view decimalValue)
+std::string
+IntegerLiteral::GetValue() const { return integerValue; }
+
+AstNodeKind
+IntegerLiteral::GetKind() const { return AST_INTEGER_LITERAL; }
+
+
+/// Decimal Literal
+DecimalLiteral::DecimalLiteral(Token token, std::string_view integerValue, std::string_view decimalValue)
     : AstNode(token), integerValue{integerValue}, decimalValue{decimalValue} {}
 
 std::string
-NumberLiteral::GetIntegerValue() const { return integerValue; }
+DecimalLiteral::GetIntegerValue() const { return integerValue; }
 
 std::string
-NumberLiteral::GetDecimalValue() const { return decimalValue; }
+DecimalLiteral::GetDecimalValue() const { return decimalValue; }
 
 std::string
-NumberLiteral::GetValue() const { return integerValue + (decimalValue.empty() ? "" : ("." + decimalValue)); }
+DecimalLiteral::GetValue() const { return integerValue + "." + decimalValue; }
 
 AstNodeKind
-NumberLiteral::GetKind() const { return AST_NUMBER_LITERAL; }
+DecimalLiteral::GetKind() const { return AST_DECIMAL_LITERAL; }
 
 
 /// Function call

@@ -70,7 +70,12 @@ Variable::Accept(AstVisitor* visitor) const {
 }
 
 void
-NumberLiteral::Accept(AstVisitor* visitor) const {
+IntegerLiteral::Accept(AstVisitor* visitor) const {
+  return visitor->Visit(this);
+}
+
+void
+DecimalLiteral::Accept(AstVisitor* visitor) const {
   return visitor->Visit(this);
 }
 

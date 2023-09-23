@@ -50,7 +50,8 @@ class Codegen : public AstVisitor {
   void Visit(const FunctionCall* element) override;
   void Visit(const FunctionArgument* element) override;
   void Visit(const Variable* element) override;
-  void Visit(const NumberLiteral* element) override;
+  void Visit(const IntegerLiteral* element) override;
+  void Visit(const DecimalLiteral* element) override;
   void Visit(const StringLiteral* element) override;
   void Visit(const BoolValue* element) override;
   void Visit(const NullValue* element) override;

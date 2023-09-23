@@ -37,7 +37,7 @@ U8Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getIn
 AstNodePtr
 U8Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -62,7 +62,7 @@ U16Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getI
 AstNodePtr
 U16Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -87,7 +87,7 @@ U32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getI
 AstNodePtr
 U32Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -112,7 +112,7 @@ U64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getI
 AstNodePtr
 U64Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -137,7 +137,7 @@ U128Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::get
 AstNodePtr
 U128Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -161,7 +161,7 @@ I8Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getIn
 AstNodePtr
 I8Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -186,7 +186,7 @@ I16Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getI
 AstNodePtr
 I16Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -211,7 +211,7 @@ I32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getI
 AstNodePtr
 I32Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -236,7 +236,7 @@ I64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getI
 AstNodePtr
 I64Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -261,7 +261,7 @@ I128Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::get
 AstNodePtr
 I128Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -286,7 +286,7 @@ F32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getF
 AstNodePtr
 F32Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -311,7 +311,7 @@ F64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getD
 AstNodePtr
 F64Type::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool
@@ -336,7 +336,7 @@ BoolType::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::get
 AstNodePtr
 BoolType::GetDefaultValue() const {
   Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
-  return std::make_shared<NumberLiteral>(dummyToken, "0");
+  return std::make_shared<IntegerLiteral>(dummyToken, "0");
 }
 
 bool

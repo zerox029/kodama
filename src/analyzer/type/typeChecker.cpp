@@ -121,13 +121,13 @@ TypeChecker::Visit(const Variable* element) {
 }
 
 void
-TypeChecker::Visit(const NumberLiteral* element) {
-  // 64-bit size by default
-  if (element->GetDecimalValue().empty()) {
-    lastVisitedType = std::make_shared<I64Type>();
-  } else {
-    lastVisitedType = std::make_shared<F64Type>();
-  }
+TypeChecker::Visit(const IntegerLiteral* element) {
+  lastVisitedType = std::make_shared<I64Type>();
+}
+
+void
+TypeChecker::Visit(const DecimalLiteral* element) {
+  lastVisitedType = std::make_shared<F64Type>();
 }
 
 void

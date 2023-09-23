@@ -24,7 +24,8 @@ enum AstNodeKind {
   AST_FUNCTION_CALL,
   AST_FUNCTION_ARGUMENT,
   AST_VARIABLE,
-  AST_NUMBER_LITERAL,
+  AST_INTEGER_LITERAL,
+  AST_DECIMAL_LITERAL,
   AST_STRING_LITERAL,
   AST_NULL_VALUE,
   AST_BOOL_VALUE
@@ -251,14 +252,26 @@ class Variable : public AstNode {
   void Accept(AstVisitor* visitor) const override;
 };
 
-class NumberLiteral : public AstNode {
+class IntegerLiteral : public AstNode {
+ private:
+  std::string integerValue;
+
+ public:
+  IntegerLiteral(Token token, std::string_view integerValue);
+
+  std::string GetValue() const;
+
+  AstNodeKind GetKind() const override;
+  void Accept(AstVisitor* visitor) const override;
+};
+
+class DecimalLiteral : public AstNode {
  private:
   std::string integerValue;
   std::string decimalValue;
 
  public:
-  NumberLiteral(Token token, std::string_view integerValue);
-  NumberLiteral(Token token, std::string_view integerValue, std::string_view decimalValue);
+  DecimalLiteral(Token token, std::string_view integerValue, std::string_view decimalValue);
 
   std::string GetIntegerValue() const;
   std::string GetDecimalValue() const;

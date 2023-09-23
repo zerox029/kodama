@@ -290,10 +290,10 @@ Parser::ParseNumber() {
     if (Consume(TK_DOT)) { // Float value
       std::shared_ptr<Token> decimalPortion = Consume(TK_NUMBER);
 
-      return std::make_shared<NumberLiteral>(*integerPortion, integerPortion->GetStr(), decimalPortion->GetStr());
+      return std::make_shared<DecimalLiteral>(*integerPortion, integerPortion->GetStr(), decimalPortion->GetStr());
     } // Integer value
     else {
-      return std::make_shared<NumberLiteral>(*integerPortion, integerPortion->GetStr());
+      return std::make_shared<IntegerLiteral>(*integerPortion, integerPortion->GetStr());
     }
   } else {
     return nullptr;

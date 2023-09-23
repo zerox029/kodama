@@ -340,12 +340,13 @@ Codegen::Visit(const Variable* element) {
 }
 
 void
-Codegen::Visit(const NumberLiteral* element) {
-  if (element->GetDecimalValue().empty()) {
-    lastGeneratedValue = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetValue(), 10));
-  } else {
-    lastGeneratedValue = llvm::ConstantFP::get(*context, llvm::APFloat(std::stof(element->GetValue())));
-  }
+Codegen::Visit(const IntegerLiteral* element) {
+  lastGeneratedValue = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetValue(), 10));
+}
+
+void
+Codegen::Visit(const DecimalLiteral* element) {
+  lastGeneratedValue = llvm::ConstantFP::get(*context, llvm::APFloat(std::stof(element->GetValue())));
 }
 
 void
