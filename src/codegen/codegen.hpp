@@ -22,8 +22,8 @@ class Codegen : public AstVisitor {
 
   llvm::Value* lastGeneratedValue;
 
-  bool handlingUnsignedVariable;
-  llvm::Type* currentVariableDataType;
+  TypePtr currentFunctionType;
+  TypePtr currentVariableType;
 
   llvm::Function* CreateFunction(const std::string& fnName,
                                  llvm::FunctionType* fnType,
@@ -37,24 +37,24 @@ class Codegen : public AstVisitor {
   void SaveModuleToFile(const std::string& fileName);
   void Generate(const AstNodePtr& ast);
 
-  void Visit(const FunctionDeclaration* element) override;
-  void Visit(const FunctionParameter* element) override;
-  void Visit(const Block* element) override;
-  void Visit(const ReturnStatement* element) override;
-  void Visit(const IfStatement* element) override;
-  void Visit(const IfElseStatement* element) override;
-  void Visit(const WhileLoop* element) override;
-  void Visit(const DoWhileLoop* element) override;
-  void Visit(const AssignmentExpression* element) override;
-  void Visit(const BinaryOperation* element) override;
-  void Visit(const FunctionCall* element) override;
-  void Visit(const FunctionArgument* element) override;
-  void Visit(const Variable* element) override;
-  void Visit(const IntegerLiteral* element) override;
-  void Visit(const DecimalLiteral* element) override;
-  void Visit(const StringLiteral* element) override;
-  void Visit(const BoolValue* element) override;
-  void Visit(const NullValue* element) override;
+  void Visit(FunctionDeclaration* element) override;
+  void Visit(FunctionParameter* element) override;
+  void Visit(Block* element) override;
+  void Visit(ReturnStatement* element) override;
+  void Visit(IfStatement* element) override;
+  void Visit(IfElseStatement* element) override;
+  void Visit(WhileLoop* element) override;
+  void Visit(DoWhileLoop* element) override;
+  void Visit(AssignmentExpression* element) override;
+  void Visit(BinaryOperation* element) override;
+  void Visit(FunctionCall* element) override;
+  void Visit(FunctionArgument* element) override;
+  void Visit(Variable* element) override;
+  void Visit(IntegerLiteral* element) override;
+  void Visit(DecimalLiteral* element) override;
+  void Visit(StringLiteral* element) override;
+  void Visit(BoolValue* element) override;
+  void Visit(NullValue* element) override;
 };
 
 #endif //KODAMA_SRC_CODEGEN_CODEGEN_HPP_

@@ -19,7 +19,7 @@ TypeChecker::TypeCheck(const AstNodePtr& ast) {
 }
 
 void
-TypeChecker::Visit(const FunctionDeclaration* element) {
+TypeChecker::Visit(FunctionDeclaration* element) {
   symbolTable.insert({element->GetIdentifier(), element->GetReturnType()});
   currentScopeType = element->GetReturnType();
 
@@ -31,23 +31,23 @@ TypeChecker::Visit(const FunctionDeclaration* element) {
 }
 
 void
-TypeChecker::Visit(const FunctionParameter* element) {
+TypeChecker::Visit(FunctionParameter* element) {
   symbolTable.insert({element->GetIdentifier(), element->GetDataType()});
 }
 
 void
-TypeChecker::Visit(const Block* element) {
+TypeChecker::Visit(Block* element) {
   for (const AstNodePtr& statement : element->GetStatements()) {
     statement->Accept(this);
   }
 }
 
 void
-TypeChecker::Visit(const ReturnStatement* element) {
+TypeChecker::Visit(ReturnStatement* element) {
   element->GetReturnValue()->Accept(this);
 
   // Return type mismatch
-  if (lastVisitedType != currentScopeType) {
+  if (lastVisitedType->GetTypeName() != currentScopeType->GetTypeName()) {
     std::string errorMessage = "expected " + currentScopeType->GetTypeNameString() + " return type but got " + lastVisitedType->GetTypeNameString();
     Location location = element->GetReturnValue()->GetToken().GetLocation();
     Error error{"type mismatch", errorMessage, location, code.at(location.lineNumber)};
@@ -56,39 +56,39 @@ TypeChecker::Visit(const ReturnStatement* element) {
 }
 
 void
-TypeChecker::Visit(const IfStatement* element) {
+TypeChecker::Visit(IfStatement* element) {
   CheckConditionType(element->GetCondition());
   element->GetConsequent()->Accept(this);
 }
 
 void
-TypeChecker::Visit(const IfElseStatement* element) {
+TypeChecker::Visit(IfElseStatement* element) {
   CheckConditionType(element->GetCondition());
   element->GetConsequent()->Accept(this);
   element->GetAlternative()->Accept(this);
 }
 
 void
-TypeChecker::Visit(const WhileLoop* element) {
+TypeChecker::Visit(WhileLoop* element) {
   CheckConditionType(element->GetCondition());
   element->GetConsequent()->Accept(this);
 }
 
 void
-TypeChecker::Visit(const DoWhileLoop* element) {
+TypeChecker::Visit(DoWhileLoop* element) {
   CheckConditionType(element->GetCondition());
   element->GetConsequent()->Accept(this);
 }
 
 void
-TypeChecker::Visit(const AssignmentExpression* element) {
+TypeChecker::Visit(AssignmentExpression* element) {
   TypePtr previousScopeType = currentScopeType;
   currentScopeType = element->GetDataType();
 
   element->GetValue()->Accept(this);
 
   // Variable value type mismatch
-  if (element->GetDataType()->GetTypeCategory() != lastVisitedType->GetTypeCategory()) {
+  if (element->GetDataType()->GetTypeName() != lastVisitedType->GetTypeName()) {
     std::string errorMessage = "expected " + element->GetDataType()->GetTypeNameString() + " but got " + lastVisitedType->GetTypeNameString();
     Location location = element->GetValue()->GetToken().GetLocation();
     Error error{"type mismatch", errorMessage, location, code.at(location.lineNumber)};
@@ -100,7 +100,7 @@ TypeChecker::Visit(const AssignmentExpression* element) {
 }
 
 void
-TypeChecker::Visit(const BinaryOperation* element) {
+TypeChecker::Visit(BinaryOperation* element) {
   element->GetLhs()->Accept(this);
   TypePtr lhs = lastVisitedType;
   element->GetRhs()->Accept(this);
@@ -115,27 +115,37 @@ TypeChecker::Visit(const BinaryOperation* element) {
 }
 
 void
-TypeChecker::Visit(const FunctionCall* element) {
+TypeChecker::Visit(FunctionCall* element) {
   lastVisitedType = symbolTable.at(element->GetIdentifier());
 }
 
 void
-TypeChecker::Visit(const FunctionArgument* element) {
+TypeChecker::Visit(FunctionArgument* element) {
   element->Accept(this);
 }
 
 void
-TypeChecker::Visit(const Variable* element) {
+TypeChecker::Visit(Variable* element) {
   lastVisitedType = symbolTable.at(element->GetIdentifier());
 }
 
 void
-TypeChecker::Visit(const IntegerLiteral* element) {
+TypeChecker::Visit(IntegerLiteral* element) {
+  if(element->GetDatatype()->GetTypeName() != currentScopeType->GetTypeName()
+  && element->GetDatatype()->GetTypeCategory() == currentScopeType->GetTypeCategory()) {
+    element->SetDatatype(currentScopeType);
+  }
+
   lastVisitedType = element->GetDatatype();
 }
 
 void
-TypeChecker::Visit(const DecimalLiteral* element) {
+TypeChecker::Visit(DecimalLiteral* element) {
+  if(element->GetDatatype()->GetTypeName() != currentScopeType->GetTypeName()
+      && element->GetDatatype()->GetTypeCategory() == currentScopeType->GetTypeCategory()) {
+    element->SetDatatype(currentScopeType);
+  }
+
   lastVisitedType = element->GetDatatype();
 }
 
@@ -152,16 +162,16 @@ TypeChecker::CheckConditionType(const AstNodePtr& condition) {
 }
 
 void
-TypeChecker::Visit(const StringLiteral* element) {
+TypeChecker::Visit(StringLiteral* element) {
 
 }
 
 void
-TypeChecker::Visit(const BoolValue* element) {
+TypeChecker::Visit(BoolValue* element) {
   lastVisitedType = std::make_shared<BoolType>();
 }
 
 void
-TypeChecker::Visit(const NullValue* element) {
+TypeChecker::Visit(NullValue* element) {
 
 }

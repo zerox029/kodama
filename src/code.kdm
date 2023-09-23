@@ -1,3 +1,5 @@
-def main( -> i64
-    return true
+def main() -> i64 {
+    let i: i32 = 12
+
+    return 0
 }

@@ -47,7 +47,7 @@ class Datatype {
   virtual bool IsCastableTo(Datatype& castType) const = 0;
   virtual AstNodePtr GetDefaultValue() const = 0;
 
-  virtual bool operator==(const Datatype& type) const {
+  bool operator==(const Datatype& type) const {
     return GetTypeName() == type.GetTypeName();
   }
 

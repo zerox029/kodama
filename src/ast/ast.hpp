@@ -40,7 +40,7 @@ class AstNode {
 
   const Token& GetToken() const { return token; };
   virtual AstNodeKind GetKind() const = 0;
-  virtual void Accept(AstVisitor* visitor) const = 0;
+  virtual void Accept(AstVisitor* visitor) = 0;
 
  protected:
   Token token;
@@ -68,7 +68,7 @@ class FunctionDeclaration : public AstNode {
   AstNodePtr GetBody() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class FunctionParameter : public AstNode {
@@ -83,7 +83,7 @@ class FunctionParameter : public AstNode {
   TypePtr GetDataType() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class Block : public AstNode {
@@ -97,7 +97,7 @@ class Block : public AstNode {
   std::vector<AstNodePtr> GetStatements() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class ReturnStatement : public AstNode {
@@ -110,7 +110,7 @@ class ReturnStatement : public AstNode {
   AstNodePtr GetReturnValue() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class IfStatement : public AstNode {
@@ -125,7 +125,7 @@ class IfStatement : public AstNode {
   AstNodePtr GetConsequent() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class IfElseStatement : public AstNode {
@@ -142,7 +142,7 @@ class IfElseStatement : public AstNode {
   AstNodePtr GetAlternative() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class WhileLoop : public AstNode {
@@ -157,7 +157,7 @@ class WhileLoop : public AstNode {
   AstNodePtr GetConsequent() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class DoWhileLoop : public AstNode {
@@ -172,7 +172,7 @@ class DoWhileLoop : public AstNode {
   AstNodePtr GetConsequent() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class AssignmentExpression : public AstNode {
@@ -189,7 +189,7 @@ class AssignmentExpression : public AstNode {
   AstNodePtr GetValue() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class BinaryOperation : public AstNode {
@@ -205,7 +205,7 @@ class BinaryOperation : public AstNode {
   Token GetOperator() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class FunctionCall : public AstNode {
@@ -221,7 +221,7 @@ class FunctionCall : public AstNode {
   bool IsExtern() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class FunctionArgument : public AstNode {
@@ -236,7 +236,7 @@ class FunctionArgument : public AstNode {
   AstNodePtr GetValue() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class Variable : public AstNode {
@@ -249,7 +249,7 @@ class Variable : public AstNode {
   std::string GetIdentifier() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class IntegerLiteral : public AstNode {
@@ -265,7 +265,7 @@ class IntegerLiteral : public AstNode {
   void SetDatatype(TypePtr dataype);
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class DecimalLiteral : public AstNode {
@@ -284,7 +284,7 @@ class DecimalLiteral : public AstNode {
   void SetDatatype(TypePtr dataype);
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class StringLiteral : public AstNode {
@@ -297,7 +297,7 @@ class StringLiteral : public AstNode {
   std::string GetValue() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class BoolValue : public AstNode {
@@ -310,7 +310,7 @@ class BoolValue : public AstNode {
   bool GetValue() const;
 
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 class NullValue : public AstNode {
@@ -319,7 +319,7 @@ class NullValue : public AstNode {
  public:
   explicit NullValue(Token token);
   AstNodeKind GetKind() const override;
-  void Accept(AstVisitor* visitor) const override;
+  void Accept(AstVisitor* visitor) override;
 };
 
 #endif //KODAMA_SRC_EXPRESSION_H_

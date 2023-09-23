@@ -41,9 +41,9 @@ Parser::ParseFunctionDeclaration() {
     Expect(TK_ARROW, "missing return type arrow '->' in function declaration");
     TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
 
-    Expect(TK_OPEN_CURLY, "missing opening delimiter '{' in function declaration");
+    //Expect(TK_OPEN_CURLY, "missing opening delimiter '{' in function declaration");
     AstNodePtr body = ParseStatement();
-    Expect(TK_CLOSED_CURLY, "missing closing delimiter '}' in function declaration");
+    //Expect(TK_CLOSED_CURLY, "missing closing delimiter '}' in function declaration");
 
     return std::make_shared<FunctionDeclaration>(*fnToken, identifier, parameters, dataType, body);
   }

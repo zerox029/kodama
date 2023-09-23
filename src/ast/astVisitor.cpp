@@ -5,91 +5,91 @@
 #include "astVisitor.hpp"
 
 void
-FunctionDeclaration::Accept(AstVisitor* visitor) const {
+FunctionDeclaration::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-FunctionParameter::Accept(AstVisitor* visitor) const {
+FunctionParameter::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-Block::Accept(AstVisitor* visitor) const {
+Block::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-ReturnStatement::Accept(AstVisitor* visitor) const {
+ReturnStatement::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-IfStatement::Accept(AstVisitor* visitor) const {
+IfStatement::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-IfElseStatement::Accept(AstVisitor* visitor) const {
+IfElseStatement::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-WhileLoop::Accept(AstVisitor* visitor) const {
+WhileLoop::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-DoWhileLoop::Accept(AstVisitor* visitor) const {
+DoWhileLoop::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-AssignmentExpression::Accept(AstVisitor* visitor) const {
+AssignmentExpression::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-BinaryOperation::Accept(AstVisitor* visitor) const {
+BinaryOperation::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-FunctionCall::Accept(AstVisitor* visitor) const {
+FunctionCall::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-FunctionArgument::Accept(AstVisitor* visitor) const {
+FunctionArgument::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-Variable::Accept(AstVisitor* visitor) const {
+Variable::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-IntegerLiteral::Accept(AstVisitor* visitor) const {
+IntegerLiteral::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-DecimalLiteral::Accept(AstVisitor* visitor) const {
+DecimalLiteral::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-StringLiteral::Accept(AstVisitor* visitor) const {
+StringLiteral::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-BoolValue::Accept(AstVisitor* visitor) const {
+BoolValue::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 
 void
-NullValue::Accept(AstVisitor* visitor) const {
+NullValue::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }

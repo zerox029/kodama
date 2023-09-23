@@ -177,7 +177,7 @@ BinaryOperation::GetKind() const { return AST_BINARY_OPERATION; }
 
 /// Integer Literal
 IntegerLiteral::IntegerLiteral(Token token, std::string_view integerValue)
-    : AstNode(token), integerValue{integerValue} {}
+    : AstNode(token), integerValue{integerValue}, datatype{std::make_shared<I64Type>()} {}
 
 std::string
 IntegerLiteral::GetValue() const { return integerValue; }
@@ -198,7 +198,7 @@ IntegerLiteral::GetKind() const { return AST_INTEGER_LITERAL; }
 
 /// Decimal Literal
 DecimalLiteral::DecimalLiteral(Token token, std::string_view integerValue, std::string_view decimalValue)
-    : AstNode(token), integerValue{integerValue}, decimalValue{decimalValue} {}
+    : AstNode(token), integerValue{integerValue}, decimalValue{decimalValue}, datatype{std::make_shared<F64Type>()} {}
 
 std::string
 DecimalLiteral::GetIntegerValue() const { return integerValue; }

@@ -10,24 +10,24 @@
 
 class AstVisitor {
  public:
-  virtual void Visit(const FunctionDeclaration* element) = 0;
-  virtual void Visit(const FunctionParameter* element) = 0;
-  virtual void Visit(const Block* element) = 0;
-  virtual void Visit(const ReturnStatement* element) = 0;
-  virtual void Visit(const IfStatement* element) = 0;
-  virtual void Visit(const IfElseStatement* element) = 0;
-  virtual void Visit(const WhileLoop* element) = 0;
-  virtual void Visit(const DoWhileLoop* element) = 0;
-  virtual void Visit(const AssignmentExpression* element) = 0;
-  virtual void Visit(const BinaryOperation* element) = 0;
-  virtual void Visit(const FunctionCall* element) = 0;
-  virtual void Visit(const FunctionArgument* element) = 0;
-  virtual void Visit(const Variable* element) = 0;
-  virtual void Visit(const IntegerLiteral* element) = 0;
-  virtual void Visit(const DecimalLiteral* element) = 0;
-  virtual void Visit(const StringLiteral* element) = 0;
-  virtual void Visit(const BoolValue* element) = 0;
-  virtual void Visit(const NullValue* element) = 0;
+  virtual void Visit(FunctionDeclaration* element) = 0;
+  virtual void Visit(FunctionParameter* element) = 0;
+  virtual void Visit(Block* element) = 0;
+  virtual void Visit(ReturnStatement* element) = 0;
+  virtual void Visit(IfStatement* element) = 0;
+  virtual void Visit(IfElseStatement* element) = 0;
+  virtual void Visit(WhileLoop* element) = 0;
+  virtual void Visit(DoWhileLoop* element) = 0;
+  virtual void Visit(AssignmentExpression* element) = 0;
+  virtual void Visit(BinaryOperation* element) = 0;
+  virtual void Visit(FunctionCall* element) = 0;
+  virtual void Visit(FunctionArgument* element) = 0;
+  virtual void Visit(Variable* element) = 0;
+  virtual void Visit(IntegerLiteral* element) = 0;
+  virtual void Visit(DecimalLiteral* element) = 0;
+  virtual void Visit(StringLiteral* element) = 0;
+  virtual void Visit(BoolValue* element) = 0;
+  virtual void Visit(NullValue* element) = 0;
 };
 
 #endif //KODAMA_SRC_CODEGEN_ASTVISITOR_HPP_
