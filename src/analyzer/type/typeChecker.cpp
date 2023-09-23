@@ -4,6 +4,7 @@
 
 #include "typeChecker.hpp"
 #include "../../errors/error.hpp"
+#include <sstream>
 
 TypeChecker::TypeChecker(const std::vector<std::string>& code, const std::vector<Token>& tokens)
     : symbolTable{},
@@ -75,7 +76,7 @@ void
 TypeChecker::Visit(const AssignmentExpression* element) {
   element->GetValue()->Accept(this);
 
-  symbolTable.insert({element->GetIdentifier(), lastVisitedType});
+  symbolTable.insert({element->GetIdentifier(), element->GetDataType()});
 
   if (element->GetDataType()->GetTypeCategory() != lastVisitedType->GetTypeCategory()) {
     fprintf(stderr, "Type mismatch in variable assignment\n");
@@ -90,7 +91,10 @@ TypeChecker::Visit(const BinaryOperation* element) {
   TypePtr rhs = lastVisitedType;
 
   if (lhs != rhs) {
-    Error error{"type mismatch", "expected u32 but got u64", {"test", 10, 10}, "This does not work yet lol"};
+    std::stringstream errorMessage;
+    errorMessage << "expected " << lhs->GetTypeNameString() << " but got " << rhs->GetTypeNameString();
+    Location location = element->GetRhs()->GetToken().GetLocation();
+    Error error{"type mismatch", errorMessage.str(), element->GetRhs()->GetToken().GetLocation(), code.at(location.lineNumber)};
     errors.push_back(error);
   }
 }

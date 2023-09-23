@@ -19,12 +19,13 @@ Parser::Parse() {
     statements.push_back(ParseFunctionDeclaration() ?: ParseStatement());
   }
 
-  return std::make_shared<Block>(statements);
+  Token dummyToken{TK_OPEN_CURLY, "", {"", 0, 0}};
+  return std::make_shared<Block>(dummyToken, statements);
 }
 
 AstNodePtr
 Parser::ParseFunctionDeclaration() {
-  if (Consume(TK_FN)) {
+  if (std::unique_ptr<Token> fnToken = Consume(TK_DEF)) {
     std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
 
     Expect(TK_OPEN_PAREN, "missing opening delimiter '(' in function declaration");
@@ -35,7 +36,7 @@ Parser::ParseFunctionDeclaration() {
     TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
     AstNodePtr body = ParseStatement();
 
-    return std::make_shared<FunctionDeclaration>(identifier, parameters, dataType, body);
+    return std::make_shared<FunctionDeclaration>(*fnToken, identifier, parameters, dataType, body);
   }
 
   return nullptr;
@@ -50,7 +51,7 @@ Parser::ParseFunctionParameters() {
       Expect(TK_COLON, "expected ':'");
       TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
 
-      AstNodePtr parameter = std::make_shared<FunctionParameter>(identifier->GetStr(), dataType);
+      AstNodePtr parameter = std::make_shared<FunctionParameter>(*identifier, identifier->GetStr(), dataType);
       parameters.push_back(parameter);
     }
   } while (Consume(TK_COMMA));
@@ -80,11 +81,11 @@ Parser::ParseStatement() {
 
 AstNodePtr
 Parser::ParseReturn() {
-  if (Consume(TK_RET)) {
+  if (std::unique_ptr<Token> retToken = Consume(TK_RET)) {
     AstNodePtr returnValue{ParseEqualityExpression()};
     Consume(TK_SEMICOLON);
 
-    return std::make_shared<ReturnStatement>(returnValue);
+    return std::make_shared<ReturnStatement>(*retToken, returnValue);
   }
 
   return nullptr;
@@ -92,14 +93,14 @@ Parser::ParseReturn() {
 
 AstNodePtr
 Parser::ParseBlock() {
-  if (Consume(TK_OPEN_CURLY)) {
+  if (std::unique_ptr<Token> curlyToken = Consume(TK_OPEN_CURLY)) {
     std::vector<AstNodePtr> statements;
 
     while (!Consume(TK_CLOSED_CURLY)) {
       statements.push_back(ParseStatement());
     }
 
-    return std::make_shared<Block>(statements);
+    return std::make_shared<Block>(*curlyToken, statements);
   }
 
   return nullptr;
@@ -107,7 +108,7 @@ Parser::ParseBlock() {
 
 AstNodePtr
 Parser::ParseIfElseStatement() {
-  if (Consume(TK_IF)) {
+  if (std::unique_ptr<Token> ifToken = Consume(TK_IF)) {
     Expect(TK_OPEN_PAREN, "missing opening delimiter '(' in conditional");
     AstNodePtr condition{ParseEqualityExpression()};
     Expect(TK_CLOSED_PAREN, "missing closing delimiter ')' in conditional");
@@ -115,10 +116,10 @@ Parser::ParseIfElseStatement() {
 
     if (Consume(TK_ELSE)) {
       AstNodePtr alternative{ParseStatement()};
-      return std::make_shared<IfElseStatement>(condition, consequent, alternative);
+      return std::make_shared<IfElseStatement>(*ifToken, condition, consequent, alternative);
     }
 
-    return std::make_shared<IfStatement>(condition, consequent);
+    return std::make_shared<IfStatement>(*ifToken, condition, consequent);
   }
 
   return nullptr;
@@ -126,13 +127,13 @@ Parser::ParseIfElseStatement() {
 
 AstNodePtr
 Parser::ParseWhileLoop() {
-  if (Consume(TK_WHILE)) {
+  if (std::unique_ptr<Token> whileToken = Consume(TK_WHILE)) {
     Expect(TK_OPEN_PAREN, "missing opening delimiter '(' in loop condition");
     AstNodePtr condition{ParseEqualityExpression()};
     Expect(TK_CLOSED_PAREN, "missing opening delimiter '(' in loop condition");
     AstNodePtr consequent{ParseStatement()};
 
-    return std::make_shared<WhileLoop>(condition, consequent);
+    return std::make_shared<WhileLoop>(*whileToken, condition, consequent);
   }
 
   return nullptr;
@@ -140,14 +141,14 @@ Parser::ParseWhileLoop() {
 
 AstNodePtr
 Parser::ParseDoWhileLoop() {
-  if (Consume(TK_DO)) {
+  if (std::unique_ptr<Token> doToken = Consume(TK_DO)) {
     AstNodePtr consequent{ParseStatement()};
     Expect(TK_WHILE, "missing 'while' condition");
     Expect(TK_OPEN_PAREN, "missing opening delimiter '(' in loop condition");
     AstNodePtr condition{ParseEqualityExpression()};
     Expect(TK_CLOSED_PAREN, "missing opening delimiter '(' in loop condition");
 
-    return std::make_shared<DoWhileLoop>(condition, consequent);
+    return std::make_shared<DoWhileLoop>(*doToken, condition, consequent);
   }
 
   return nullptr;
@@ -155,21 +156,30 @@ Parser::ParseDoWhileLoop() {
 
 AstNodePtr
 Parser::ParseExpression() {
-  if (Consume(TK_DEF)) {
-    return ParseAssignment();
-  } else {
-    return ParseEqualityExpression();
+  if (AstNodePtr assignmentNode = ParseAssignment()) {
+    return assignmentNode;
+  } else if (AstNodePtr equalityNode = ParseEqualityExpression()) {
+    return equalityNode;
   }
+
+  return nullptr;
 }
 
 AstNodePtr
 Parser::ParseAssignment() {
-  std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
-  Expect(TK_COLON, "expected ':'");
-  TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
-  Expect(TK_ASSIGN, "expected '='");
+  if (std::unique_ptr<Token> letToken = Consume(TK_LET)) {
+    std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
+    Expect(TK_COLON, "expected ':'");
+    TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
+    Expect(TK_ASSIGN, "expected '='");
 
-  return std::make_shared<AssignmentExpression>(identifier, dataType, ParseEqualityExpression());
+    return std::make_shared<AssignmentExpression>(*letToken,
+                                                  identifier,
+                                                  dataType,
+                                                  ParseEqualityExpression());
+  }
+
+  return nullptr;
 }
 
 AstNodePtr
@@ -182,8 +192,8 @@ Parser::ParseEqualityExpression() {
                                                            TK_LESS,
                                                            TK_GREATER_EQ,
                                                            TK_LESS_EQ})) {
-    BinaryOperation binaryOperationNode{*operatorToken, expression, ParseAddExpression()};
-    return std::make_shared<BinaryOperation>(binaryOperationNode);
+
+    return std::make_shared<BinaryOperation>(*operatorToken, expression, ParseAddExpression());
   }
 
   return expression;
@@ -194,8 +204,7 @@ Parser::ParseAddExpression() {
   AstNodePtr expression = ParseMulExpression();
 
   if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_PLUS, TK_MINUS})) {
-    BinaryOperation binaryOperationNode{*operatorToken, expression, ParseMulExpression()};
-    return std::make_shared<BinaryOperation>(binaryOperationNode);
+    return std::make_shared<BinaryOperation>(*operatorToken, expression, ParseMulExpression());
   }
 
   return expression;
@@ -206,8 +215,7 @@ Parser::ParseMulExpression() {
   AstNodePtr expression = ParsePrimaryExpression();
 
   if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_STAR, TK_SLASH, TK_PERCENT})) {
-    BinaryOperation binaryOperationNode{*operatorToken, expression, ParsePrimaryExpression()};
-    return std::make_shared<BinaryOperation>(binaryOperationNode);
+    return std::make_shared<BinaryOperation>(*operatorToken, expression, ParsePrimaryExpression());
   }
 
   return expression;
@@ -225,8 +233,8 @@ Parser::ParsePrimaryExpression() {
     return identifierNode;
   } else if (AstNodePtr boolNode = ParseBool()) {
     return boolNode;
-  } else if (Consume(TK_NULL)) {
-    return std::make_shared<NullValue>();
+  } else if (std::unique_ptr<Token> nullToken = Consume(TK_NULL)) {
+    return std::make_shared<NullValue>(*nullToken);
   }
 
   return nullptr;
@@ -235,13 +243,13 @@ Parser::ParsePrimaryExpression() {
 AstNodePtr
 Parser::ParseFunctionCall() {
   bool isExtern = static_cast<bool>(Consume(TK_EXTERN));
-  std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
+  std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER);
 
   if (Consume(TK_OPEN_PAREN)) {
     std::vector<AstNodePtr> arguments = ParseFunctionArguments();
     Expect(TK_CLOSED_PAREN, "missing closing delimiter ')' in function call");
 
-    return std::make_shared<FunctionCall>(identifier, arguments, isExtern);
+    return std::make_shared<FunctionCall>(*identifier, identifier->GetStr(), arguments, isExtern);
   }
 
   return nullptr;
@@ -256,7 +264,7 @@ Parser::ParseFunctionArguments() {
       Expect(TK_COLON, "expected ':'");
       AstNodePtr value = ParseEqualityExpression();
 
-      AstNodePtr parameter = std::make_shared<FunctionArgument>(identifier->GetStr(), value);
+      AstNodePtr parameter = std::make_shared<FunctionArgument>(*identifier, identifier->GetStr(), value);
       arguments.push_back(parameter);
     }
   } while (Consume(TK_COMMA));
@@ -273,10 +281,10 @@ Parser::ParseNumber() {
     if (Consume(TK_DOT)) { // Float value
       std::shared_ptr<Token> decimalPortion = Consume(TK_NUMBER);
 
-      return std::make_shared<NumberLiteral>(integerPortion->GetStr(), decimalPortion->GetStr());
+      return std::make_shared<NumberLiteral>(*integerPortion, integerPortion->GetStr(), decimalPortion->GetStr());
     } // Integer value
     else {
-      return std::make_shared<NumberLiteral>(integerPortion->GetStr());
+      return std::make_shared<NumberLiteral>(*integerPortion, integerPortion->GetStr());
     }
   } else {
     return nullptr;
@@ -286,10 +294,10 @@ Parser::ParseNumber() {
 AstNodePtr
 Parser::ParseString() {
   if (Consume(TK_QUOTATION)) {
-    std::string stringValue = Consume(TK_STRING)->GetStr();
+    std::unique_ptr<Token> stringToken = Consume(TK_STRING);
     Expect(TK_QUOTATION, "unterminated string");
 
-    return std::make_shared<StringLiteral>(stringValue);
+    return std::make_shared<StringLiteral>(*stringToken, stringToken->GetStr());
   }
 
   return nullptr;
@@ -298,7 +306,7 @@ Parser::ParseString() {
 AstNodePtr
 Parser::ParseIdentifier() {
   if (std::shared_ptr<Token> identifierNode = Consume(TK_IDENTIFIER)) {
-    Variable numberLiteralNode{identifierNode->GetStr()};
+    Variable numberLiteralNode{*identifierNode, identifierNode->GetStr()};
     return std::make_shared<Variable>(numberLiteralNode);
   } else {
     return nullptr;
@@ -307,10 +315,10 @@ Parser::ParseIdentifier() {
 
 AstNodePtr
 Parser::ParseBool() {
-  if (Consume(TK_TRUE)) {
-    return std::make_shared<BoolValue>(true);
-  } else if (Consume(TK_FALSE)) {
-    return std::make_shared<BoolValue>(false);
+  if (std::shared_ptr<Token> trueToken = Consume(TK_TRUE)) {
+    return std::make_shared<BoolValue>(*trueToken, true);
+  } else if (std::shared_ptr<Token> falseToken = Consume(TK_FALSE)) {
+    return std::make_shared<BoolValue>(*falseToken, false);
   }
 
   return nullptr;
@@ -336,10 +344,9 @@ Parser::LookAhead(size_t lookaheadDistance, TokenType tokenType) {
 
 bool
 Parser::LookAheadWithError(size_t lookaheadDistance, TokenType tokenType, std::string errorMessage) {
-  if(LookAhead(lookaheadDistance, tokenType)) {
+  if (LookAhead(lookaheadDistance, tokenType)) {
     return true;
-  }
-  else {
+  } else {
     std::string codeLine = code.at(currentToken.GetLocation().lineNumber);
     Location errorLocation = currentToken.GetLocation();
     errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;

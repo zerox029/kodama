@@ -42,6 +42,7 @@ class Datatype {
  public:
   virtual TypeCategory GetTypeCategory() const = 0;
   virtual TypeName GetTypeName() const = 0;
+  virtual std::string GetTypeNameString() const = 0;
   virtual llvm::Type* GetLLVMType(llvm::LLVMContext& context) const = 0;
   virtual bool IsCastableTo(Datatype& castType) const = 0;
   virtual AstNodePtr GetDefaultValue() const = 0;
@@ -61,6 +62,7 @@ class U8Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -70,6 +72,7 @@ class U16Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -79,6 +82,7 @@ class U32Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -88,6 +92,7 @@ class U64Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -97,6 +102,7 @@ class U128Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -106,6 +112,7 @@ class I8Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -115,6 +122,7 @@ class I16Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -124,6 +132,7 @@ class I32Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -133,6 +142,7 @@ class I64Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -142,6 +152,7 @@ class I128Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -151,6 +162,7 @@ class F32Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -160,6 +172,7 @@ class F64Type : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;
@@ -169,6 +182,7 @@ class BoolType : public Datatype {
  public:
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
   llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
   bool IsCastableTo(Datatype& castType) const override;
   AstNodePtr GetDefaultValue() const override;

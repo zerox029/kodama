@@ -34,10 +34,15 @@ class AstVisitor;
 
 class AstNode {
  public:
+  AstNode(Token token) : token{token} {};
   virtual ~AstNode() = default;
 
+  const Token& GetToken() const { return token; };
   virtual AstNodeKind GetKind() const = 0;
   virtual void Accept(AstVisitor* visitor) const = 0;
+
+ protected:
+  Token token;
 };
 
 typedef std::shared_ptr<AstNode> AstNodePtr;
@@ -50,7 +55,11 @@ class FunctionDeclaration : public AstNode {
   AstNodePtr body;
 
  public:
-  FunctionDeclaration(std::string identifier, std::vector<AstNodePtr> parameters, TypePtr returnType, AstNodePtr body);
+  FunctionDeclaration(Token token,
+                      std::string identifier,
+                      std::vector<AstNodePtr> parameters,
+                      TypePtr returnType,
+                      AstNodePtr body);
 
   std::string GetIdentifier() const;
   std::vector<AstNodePtr> GetParameters() const;
@@ -67,7 +76,7 @@ class FunctionParameter : public AstNode {
   TypePtr datatype;
 
  public:
-  FunctionParameter(std::string identifier, TypePtr dataType);
+  FunctionParameter(Token token, std::string identifier, TypePtr dataType);
 
   std::string GetIdentifier() const;
   TypePtr GetDataType() const;
@@ -81,7 +90,8 @@ class Block : public AstNode {
   std::vector<AstNodePtr> statements;
 
  public:
-  explicit Block(std::vector<AstNodePtr> statements);
+  Block(std::vector<AstNodePtr> statements);
+  Block(Token token, std::vector<AstNodePtr> statements);
 
   std::vector<AstNodePtr> GetStatements() const;
 
@@ -94,7 +104,7 @@ class ReturnStatement : public AstNode {
   AstNodePtr returnValue;
 
  public:
-  explicit ReturnStatement(AstNodePtr returnValue);
+  ReturnStatement(Token token, AstNodePtr returnValue);
 
   AstNodePtr GetReturnValue() const;
 
@@ -108,8 +118,7 @@ class IfStatement : public AstNode {
   AstNodePtr consequent;
 
  public:
-  IfStatement(AstNodePtr condition,
-              AstNodePtr consequent);
+  IfStatement(Token token, AstNodePtr condition, AstNodePtr consequent);
 
   AstNodePtr GetCondition() const;
   AstNodePtr GetConsequent() const;
@@ -125,9 +134,7 @@ class IfElseStatement : public AstNode {
   AstNodePtr alternative;
 
  public:
-  IfElseStatement(AstNodePtr condition,
-                  AstNodePtr consequent,
-                  AstNodePtr alternative);
+  IfElseStatement(Token token, AstNodePtr condition, AstNodePtr consequent, AstNodePtr alternative);
 
   AstNodePtr GetCondition() const;
   AstNodePtr GetConsequent() const;
@@ -143,8 +150,7 @@ class WhileLoop : public AstNode {
   AstNodePtr consequent;
 
  public:
-  WhileLoop(AstNodePtr condition,
-            AstNodePtr consequent);
+  WhileLoop(Token token, AstNodePtr condition, AstNodePtr consequent);
 
   AstNodePtr GetCondition() const;
   AstNodePtr GetConsequent() const;
@@ -159,8 +165,7 @@ class DoWhileLoop : public AstNode {
   AstNodePtr consequent;
 
  public:
-  DoWhileLoop(AstNodePtr condition,
-              AstNodePtr consequent);
+  DoWhileLoop(Token token, AstNodePtr condition, AstNodePtr consequent);
 
   AstNodePtr GetCondition() const;
   AstNodePtr GetConsequent() const;
@@ -176,7 +181,7 @@ class AssignmentExpression : public AstNode {
   AstNodePtr value;
 
  public:
-  AssignmentExpression(std::string identifier, TypePtr type, AstNodePtr value);
+  AssignmentExpression(Token token, std::string identifier, TypePtr type, AstNodePtr value);
 
   std::string GetIdentifier() const;
   TypePtr GetDataType() const;
@@ -188,12 +193,11 @@ class AssignmentExpression : public AstNode {
 
 class BinaryOperation : public AstNode {
  private:
-  Token operatorToken;
   AstNodePtr lhs;
   AstNodePtr rhs;
 
  public:
-  BinaryOperation(Token operatorTok, AstNodePtr lhs, AstNodePtr rhs);
+  BinaryOperation(Token token, AstNodePtr lhs, AstNodePtr rhs);
 
   AstNodePtr GetLhs() const;
   AstNodePtr GetRhs() const;
@@ -210,7 +214,7 @@ class FunctionCall : public AstNode {
   bool isExtern;
 
  public:
-  FunctionCall(std::string_view identifier, std::vector<AstNodePtr> arguments, bool isExtern);
+  FunctionCall(Token token, std::string_view identifier, std::vector<AstNodePtr> arguments, bool isExtern);
   std::string GetIdentifier() const;
   std::vector<AstNodePtr> GetArguments() const;
   bool IsExtern() const;
@@ -225,7 +229,7 @@ class FunctionArgument : public AstNode {
   AstNodePtr value;
 
  public:
-  FunctionArgument(std::string_view identifier, AstNodePtr value);
+  FunctionArgument(Token token, std::string_view identifier, AstNodePtr value);
 
   std::string GetIdentifier() const;
   AstNodePtr GetValue() const;
@@ -239,7 +243,7 @@ class Variable : public AstNode {
   std::string identifier;
 
  public:
-  explicit Variable(std::string_view identifier);
+  Variable(Token token, std::string_view identifier);
 
   std::string GetIdentifier() const;
 
@@ -253,8 +257,8 @@ class NumberLiteral : public AstNode {
   std::string decimalValue;
 
  public:
-  explicit NumberLiteral(std::string_view integerValue);
-  NumberLiteral(std::string_view integerValue, std::string_view decimalValue);
+  NumberLiteral(Token token, std::string_view integerValue);
+  NumberLiteral(Token token, std::string_view integerValue, std::string_view decimalValue);
 
   std::string GetIntegerValue() const;
   std::string GetDecimalValue() const;
@@ -269,7 +273,7 @@ class StringLiteral : public AstNode {
   std::string value;
 
  public:
-  explicit StringLiteral(std::string_view value);
+  StringLiteral(Token token, std::string_view value);
 
   std::string GetValue() const;
 
@@ -282,7 +286,7 @@ class BoolValue : public AstNode {
   bool value;
 
  public:
-  explicit BoolValue(bool value);
+  BoolValue(Token token, bool value);
 
   bool GetValue() const;
 
@@ -294,6 +298,7 @@ class NullValue : public AstNode {
  private:
 
  public:
+  explicit NullValue(Token token);
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) const override;
 };

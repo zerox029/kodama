@@ -28,9 +28,9 @@ const std::unordered_map<std::string, TokenType> keywords = {
     {"u64", TK_U64}, {"u128", TK_U128}, {"i8", TK_I8},
     {"i16", TK_I16}, {"i32", TK_I32}, {"i64", TK_I64},
     {"i128", TK_I128}, {"f32", TK_F32}, {"f64", TK_F64},
-    {"let", TK_DEF}, {"return", TK_RET}, {"if", TK_IF},
+    {"let", TK_LET}, {"return", TK_RET}, {"if", TK_IF},
     {"else", TK_ELSE}, {"do", TK_DO}, {"while", TK_WHILE},
-    {"for", TK_FOR}, {"in", TK_IN}, {"def", TK_FN},
+    {"for", TK_FOR}, {"in", TK_IN}, {"def", TK_DEF},
     {"extern", TK_EXTERN}, {"bool", TK_BOOL}, {"null", TK_NULL},
     {"true", TK_TRUE}, {"false", TK_FALSE}
 };

@@ -51,9 +51,9 @@ enum TokenType {
   TK_BOOL,        // bool
 
   // Reserved keywords
-  TK_DEF,         // def
+  TK_LET,         // let
   TK_RET,         // return
-  TK_FN,          // fn
+  TK_DEF,         // def
   TK_EXTERN,      // extern
   TK_IF,          // if
   TK_ELSE,        // else

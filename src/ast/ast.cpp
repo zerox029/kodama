@@ -7,11 +7,13 @@
 #include <utility>
 
 /// Function declaration
-FunctionDeclaration::FunctionDeclaration(std::string identifier,
+FunctionDeclaration::FunctionDeclaration(Token token,
+                                         std::string identifier,
                                          std::vector<AstNodePtr> parameters,
                                          TypePtr returnType,
                                          AstNodePtr body)
-    : identifier{std::move(identifier)},
+    : AstNode(token),
+      identifier{std::move(identifier)},
       parameters{std::move(parameters)},
       returnType{std::move(returnType)},
       body{std::move(body)} {}
@@ -33,8 +35,8 @@ FunctionDeclaration::GetKind() const { return AST_FUNC_DEC; }
 
 
 /// Function Parameter
-FunctionParameter::FunctionParameter(std::string identifier, TypePtr dataType)
-    : identifier{std::move(identifier)}, datatype{std::move(dataType)} {}
+FunctionParameter::FunctionParameter(Token token, std::string identifier, TypePtr dataType)
+    : AstNode(token), identifier{std::move(identifier)}, datatype{std::move(dataType)} {}
 
 std::string
 FunctionParameter::GetIdentifier() const { return identifier; }
@@ -47,7 +49,7 @@ FunctionParameter::GetKind() const { return AST_FUNC_PARAM; }
 
 
 /// Block
-Block::Block(std::vector<AstNodePtr> statements) : statements{std::move(statements)} {}
+Block::Block(Token token, std::vector<AstNodePtr> statements) : AstNode(token), statements{std::move(statements)} {}
 
 std::vector<AstNodePtr>
 Block::GetStatements() const { return statements; }
@@ -57,7 +59,9 @@ Block::GetKind() const { return AST_BLOCK; }
 
 
 /// ReturnStatement
-ReturnStatement::ReturnStatement(AstNodePtr returnValue) : returnValue{std::move(returnValue)} {}
+ReturnStatement::ReturnStatement(Token token, AstNodePtr returnValue)
+    : AstNode(token),
+      returnValue{std::move(returnValue)} {}
 
 AstNodePtr
 ReturnStatement::GetReturnValue() const { return returnValue; }
@@ -67,8 +71,10 @@ ReturnStatement::GetKind() const { return AST_RETURN; }
 
 
 /// If Statement
-IfStatement::IfStatement(AstNodePtr condition, AstNodePtr consequent)
-    : condition{std::move(condition)}, consequent{std::move(consequent)} {}
+IfStatement::IfStatement(Token token, AstNodePtr condition, AstNodePtr consequent)
+    : AstNode(token),
+      condition{std::move(condition)},
+      consequent{std::move(consequent)} {}
 
 AstNodePtr
 IfStatement::GetCondition() const { return condition; }
@@ -81,10 +87,11 @@ IfStatement::GetKind() const { return AST_IF; }
 
 
 /// IfElse Statement
-IfElseStatement::IfElseStatement(AstNodePtr condition,
-                                 AstNodePtr consequent,
-                                 AstNodePtr alternative)
-    : condition{std::move(condition)}, consequent{std::move(consequent)}, alternative{std::move(alternative)} {}
+IfElseStatement::IfElseStatement(Token token, AstNodePtr condition, AstNodePtr consequent, AstNodePtr alternative)
+    : AstNode(token),
+      condition{std::move(condition)},
+      consequent{std::move(consequent)},
+      alternative{std::move(alternative)} {}
 
 AstNodePtr
 IfElseStatement::GetCondition() const { return condition; }
@@ -100,8 +107,10 @@ IfElseStatement::GetKind() const { return AST_IF_ELSE; }
 
 
 /// While Loop
-WhileLoop::WhileLoop(AstNodePtr condition, AstNodePtr consequent)
-    : condition{std::move(condition)}, consequent{std::move(consequent)} {}
+WhileLoop::WhileLoop(Token token, AstNodePtr condition, AstNodePtr consequent)
+    : AstNode(token),
+      condition{std::move(condition)},
+      consequent{std::move(consequent)} {}
 
 AstNodePtr
 WhileLoop::GetCondition() const { return condition; }
@@ -114,8 +123,10 @@ WhileLoop::GetKind() const { return AST_WHILE; }
 
 
 /// Do While Loop
-DoWhileLoop::DoWhileLoop(AstNodePtr condition, AstNodePtr consequent)
-    : condition{std::move(condition)}, consequent{std::move(consequent)} {}
+DoWhileLoop::DoWhileLoop(Token token, AstNodePtr condition, AstNodePtr consequent)
+    : AstNode(token),
+      condition{std::move(condition)},
+      consequent{std::move(consequent)} {}
 
 AstNodePtr
 DoWhileLoop::GetCondition() const { return condition; }
@@ -128,8 +139,11 @@ DoWhileLoop::GetKind() const { return AST_DO_WHILE; }
 
 
 /// AssignmentExpression
-AssignmentExpression::AssignmentExpression(std::string identifier, TypePtr dataType, AstNodePtr value)
-    : identifier{std::move(identifier)}, dataType(std::move(dataType)), value{std::move(value)} {}
+AssignmentExpression::AssignmentExpression(Token token, std::string identifier, TypePtr dataType, AstNodePtr value)
+    : AstNode(token),
+      identifier{std::move(identifier)},
+      dataType(std::move(dataType)),
+      value{std::move(value)} {}
 
 std::string
 AssignmentExpression::GetIdentifier() const { return identifier; }
@@ -145,8 +159,8 @@ AssignmentExpression::GetKind() const { return AST_ASSIGNMENT; }
 
 
 /// Binary Operation
-BinaryOperation::BinaryOperation(Token tok, AstNodePtr lhs, AstNodePtr rhs)
-    : operatorToken{std::move(tok)}, lhs{std::move(lhs)}, rhs{std::move(rhs)} {}
+BinaryOperation::BinaryOperation(Token token, AstNodePtr lhs, AstNodePtr rhs)
+    : AstNode(token), lhs{std::move(lhs)}, rhs{std::move(rhs)} {}
 
 AstNodePtr
 BinaryOperation::GetLhs() const { return lhs; }
@@ -155,17 +169,18 @@ AstNodePtr
 BinaryOperation::GetRhs() const { return rhs; }
 
 Token
-BinaryOperation::GetOperator() const { return operatorToken; }
+BinaryOperation::GetOperator() const { return token; }
 
 AstNodeKind
 BinaryOperation::GetKind() const { return AST_BINARY_OPERATION; }
 
 
 /// Number Literal
-NumberLiteral::NumberLiteral(std::string_view integerValue) : integerValue{integerValue} {}
+NumberLiteral::NumberLiteral(Token token, std::string_view integerValue)
+    : AstNode(token), integerValue{integerValue} {}
 
-NumberLiteral::NumberLiteral(std::string_view integerValue, std::string_view decimalValue)
-    : integerValue{integerValue}, decimalValue{decimalValue} {}
+NumberLiteral::NumberLiteral(Token token, std::string_view integerValue, std::string_view decimalValue)
+    : AstNode(token), integerValue{integerValue}, decimalValue{decimalValue} {}
 
 std::string
 NumberLiteral::GetIntegerValue() const { return integerValue; }
@@ -181,8 +196,8 @@ NumberLiteral::GetKind() const { return AST_NUMBER_LITERAL; }
 
 
 /// Function call
-FunctionCall::FunctionCall(std::string_view identifier, std::vector<AstNodePtr> arguments, bool isExtern)
-    : identifier{identifier}, arguments{std::move(arguments)}, isExtern{isExtern} {}
+FunctionCall::FunctionCall(Token token, std::string_view identifier, std::vector<AstNodePtr> arguments, bool isExtern)
+    : AstNode(token), identifier{identifier}, arguments{std::move(arguments)}, isExtern{isExtern} {}
 
 std::string
 FunctionCall::GetIdentifier() const { return identifier; }
@@ -198,8 +213,8 @@ FunctionCall::GetKind() const { return AST_FUNCTION_CALL; }
 
 
 /// Function argument
-FunctionArgument::FunctionArgument(std::string_view identifier, AstNodePtr value)
-    : identifier{identifier}, value{std::move(value)} {}
+FunctionArgument::FunctionArgument(Token token, std::string_view identifier, AstNodePtr value)
+    : AstNode(token), identifier{identifier}, value{std::move(value)} {}
 
 std::string
 FunctionArgument::GetIdentifier() const { return identifier; }
@@ -212,7 +227,7 @@ FunctionArgument::GetKind() const { return AST_FUNCTION_ARGUMENT; }
 
 
 /// Variable
-Variable::Variable(std::string_view identifier) : identifier{identifier} {}
+Variable::Variable(Token token, std::string_view identifier) : AstNode(token), identifier{identifier} {}
 
 std::string
 Variable::GetIdentifier() const { return identifier; }
@@ -222,7 +237,7 @@ Variable::GetKind() const { return AST_VARIABLE; }
 
 
 /// String literal
-StringLiteral::StringLiteral(std::string_view value) : value{value} {}
+StringLiteral::StringLiteral(Token token, std::string_view value) : AstNode(token), value{value} {}
 
 std::string
 StringLiteral::GetValue() const { return value; }
@@ -232,7 +247,7 @@ StringLiteral::GetKind() const { return AST_STRING_LITERAL; }
 
 
 /// Bool value
-BoolValue::BoolValue(bool value) : value{value} {}
+BoolValue::BoolValue(Token token, bool value) : AstNode(token), value{value} {}
 
 bool
 BoolValue::GetValue() const { return value; }
@@ -242,5 +257,7 @@ BoolValue::GetKind() const { return AST_BOOL_VALUE; }
 
 
 /// Null value
+NullValue::NullValue(Token token) : AstNode(token) {}
+
 AstNodeKind
 NullValue::GetKind() const { return AST_NULL_VALUE; }

@@ -28,12 +28,16 @@ U8Type::GetTypeCategory() const { return UINTEGER; }
 TypeName
 U8Type::GetTypeName() const { return U8; }
 
+std::string
+U8Type::GetTypeNameString() const { return "u8"; }
+
 llvm::Type*
 U8Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt8Ty(context); }
 
 AstNodePtr
 U8Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -49,12 +53,16 @@ U16Type::GetTypeCategory() const { return UINTEGER; }
 TypeName
 U16Type::GetTypeName() const { return U16; }
 
+std::string
+U16Type::GetTypeNameString() const { return "u16"; }
+
 llvm::Type*
 U16Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt16Ty(context); }
 
 AstNodePtr
 U16Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -70,12 +78,16 @@ U32Type::GetTypeCategory() const { return UINTEGER; }
 TypeName
 U32Type::GetTypeName() const { return U32; }
 
+std::string
+U32Type::GetTypeNameString() const { return "u32"; }
+
 llvm::Type*
 U32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt32Ty(context); }
 
 AstNodePtr
 U32Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -91,12 +103,16 @@ U64Type::GetTypeCategory() const { return UINTEGER; }
 TypeName
 U64Type::GetTypeName() const { return U64; }
 
+std::string
+U64Type::GetTypeNameString() const { return "u64"; }
+
 llvm::Type*
 U64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt64Ty(context); }
 
 AstNodePtr
 U64Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -112,12 +128,16 @@ U128Type::GetTypeCategory() const { return UINTEGER; }
 TypeName
 U128Type::GetTypeName() const { return U128; }
 
+std::string
+U128Type::GetTypeNameString() const { return "u128"; }
+
 llvm::Type*
 U128Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt128Ty(context); }
 
 AstNodePtr
 U128Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -132,12 +152,16 @@ I8Type::GetTypeCategory() const { return INTEGER; }
 TypeName
 I8Type::GetTypeName() const { return I8; }
 
+std::string
+I8Type::GetTypeNameString() const { return "i8"; }
+
 llvm::Type*
 I8Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt8Ty(context); }
 
 AstNodePtr
 I8Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -153,12 +177,16 @@ I16Type::GetTypeCategory() const { return INTEGER; }
 TypeName
 I16Type::GetTypeName() const { return I16; }
 
+std::string
+I16Type::GetTypeNameString() const { return "i16"; }
+
 llvm::Type*
 I16Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt16Ty(context); }
 
 AstNodePtr
 I16Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -174,12 +202,16 @@ I32Type::GetTypeCategory() const { return INTEGER; }
 TypeName
 I32Type::GetTypeName() const { return I32; }
 
+std::string
+I32Type::GetTypeNameString() const { return "i32"; }
+
 llvm::Type*
 I32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt32Ty(context); }
 
 AstNodePtr
 I32Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -195,12 +227,16 @@ I64Type::GetTypeCategory() const { return INTEGER; }
 TypeName
 I64Type::GetTypeName() const { return I64; }
 
+std::string
+I64Type::GetTypeNameString() const { return "i64"; }
+
 llvm::Type*
 I64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt64Ty(context); }
 
 AstNodePtr
 I64Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -216,12 +252,16 @@ I128Type::GetTypeCategory() const { return INTEGER; }
 TypeName
 I128Type::GetTypeName() const { return I128; }
 
+std::string
+I128Type::GetTypeNameString() const { return "i128"; }
+
 llvm::Type*
 I128Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt128Ty(context); }
 
 AstNodePtr
 I128Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -237,12 +277,16 @@ F32Type::GetTypeCategory() const { return DECIMAL; }
 TypeName
 F32Type::GetTypeName() const { return F32; }
 
+std::string
+F32Type::GetTypeNameString() const { return "f32"; }
+
 llvm::Type*
 F32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getFloatTy(context); }
 
 AstNodePtr
 F32Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0", "0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -258,12 +302,16 @@ F64Type::GetTypeCategory() const { return DECIMAL; }
 TypeName
 F64Type::GetTypeName() const { return F64; }
 
+std::string
+F64Type::GetTypeNameString() const { return "f64"; }
+
 llvm::Type*
 F64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getDoubleTy(context); }
 
 AstNodePtr
 F64Type::GetDefaultValue() const {
-  return std::make_shared<NumberLiteral>("0", "0");
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
@@ -279,12 +327,16 @@ BoolType::GetTypeCategory() const { return BOOLEAN; }
 TypeName
 BoolType::GetTypeName() const { return BOOL; }
 
+std::string
+BoolType::GetTypeNameString() const { return "bool"; }
+
 llvm::Type*
 BoolType::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt1Ty(context); }
 
 AstNodePtr
 BoolType::GetDefaultValue() const {
-  return std::make_shared<BoolValue>(false);
+  Token dummyToken{TK_NUMBER, "0", {"", 0, 0}};
+  return std::make_shared<NumberLiteral>(dummyToken, "0");
 }
 
 bool
