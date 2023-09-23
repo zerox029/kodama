@@ -352,8 +352,19 @@ Parser::LookAheadWithError(size_t lookaheadDistance, TokenType tokenType, std::s
 
 std::unique_ptr<Token>
 Parser::ConsumeDataType() {
-  std::unique_ptr<Token> consumedToken = ConsumeOneOf({TK_BOOL, TK_U8, TK_U16, TK_U32, TK_U64, TK_U128,
-                                                       TK_I8, TK_I16, TK_I32, TK_I64, TK_I128, TK_F32, TK_F64});
+  std::unique_ptr<Token> consumedToken = ConsumeOneOf({TK_BOOL,
+                                                       TK_U8,
+                                                       TK_U16,
+                                                       TK_U32,
+                                                       TK_U64,
+                                                       TK_U128,
+                                                       TK_I8,
+                                                       TK_I16,
+                                                       TK_I32,
+                                                       TK_I64,
+                                                       TK_I128,
+                                                       TK_F32,
+                                                       TK_F64});
 
   if (consumedToken) {
     return consumedToken;

@@ -25,6 +25,9 @@ const std::unordered_map<TokenType, TypePtr> dataTypeMapping{
 TypeCategory
 U8Type::GetTypeCategory() const { return UINTEGER; }
 
+TypeName
+U8Type::GetTypeName() const { return U8; }
+
 llvm::Type*
 U8Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt8Ty(context); }
 
@@ -42,6 +45,9 @@ U8Type::IsCastableTo(Datatype& castType) const {
 /// U16
 TypeCategory
 U16Type::GetTypeCategory() const { return UINTEGER; }
+
+TypeName
+U16Type::GetTypeName() const { return U16; }
 
 llvm::Type*
 U16Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt16Ty(context); }
@@ -61,6 +67,9 @@ U16Type::IsCastableTo(Datatype& castType) const {
 TypeCategory
 U32Type::GetTypeCategory() const { return UINTEGER; }
 
+TypeName
+U32Type::GetTypeName() const { return U32; }
+
 llvm::Type*
 U32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt32Ty(context); }
 
@@ -78,6 +87,9 @@ U32Type::IsCastableTo(Datatype& castType) const {
 /// U64
 TypeCategory
 U64Type::GetTypeCategory() const { return UINTEGER; }
+
+TypeName
+U64Type::GetTypeName() const { return U64; }
 
 llvm::Type*
 U64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt64Ty(context); }
@@ -97,6 +109,9 @@ U64Type::IsCastableTo(Datatype& castType) const {
 TypeCategory
 U128Type::GetTypeCategory() const { return UINTEGER; }
 
+TypeName
+U128Type::GetTypeName() const { return U128; }
+
 llvm::Type*
 U128Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt128Ty(context); }
 
@@ -113,6 +128,9 @@ U128Type::IsCastableTo(Datatype& castType) const {
 /// I8
 TypeCategory
 I8Type::GetTypeCategory() const { return INTEGER; }
+
+TypeName
+I8Type::GetTypeName() const { return I8; }
 
 llvm::Type*
 I8Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt8Ty(context); }
@@ -132,6 +150,9 @@ I8Type::IsCastableTo(Datatype& castType) const {
 TypeCategory
 I16Type::GetTypeCategory() const { return INTEGER; }
 
+TypeName
+I16Type::GetTypeName() const { return I16; }
+
 llvm::Type*
 I16Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt16Ty(context); }
 
@@ -149,6 +170,9 @@ I16Type::IsCastableTo(Datatype& castType) const {
 /// I32
 TypeCategory
 I32Type::GetTypeCategory() const { return INTEGER; }
+
+TypeName
+I32Type::GetTypeName() const { return I32; }
 
 llvm::Type*
 I32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt32Ty(context); }
@@ -168,6 +192,9 @@ I32Type::IsCastableTo(Datatype& castType) const {
 TypeCategory
 I64Type::GetTypeCategory() const { return INTEGER; }
 
+TypeName
+I64Type::GetTypeName() const { return I64; }
+
 llvm::Type*
 I64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt64Ty(context); }
 
@@ -185,6 +212,9 @@ I64Type::IsCastableTo(Datatype& castType) const {
 /// I128
 TypeCategory
 I128Type::GetTypeCategory() const { return INTEGER; }
+
+TypeName
+I128Type::GetTypeName() const { return I128; }
 
 llvm::Type*
 I128Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt128Ty(context); }
@@ -204,6 +234,9 @@ I128Type::IsCastableTo(Datatype& castType) const {
 TypeCategory
 F32Type::GetTypeCategory() const { return DECIMAL; }
 
+TypeName
+F32Type::GetTypeName() const { return F32; }
+
 llvm::Type*
 F32Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getFloatTy(context); }
 
@@ -222,6 +255,9 @@ F32Type::IsCastableTo(Datatype& castType) const {
 TypeCategory
 F64Type::GetTypeCategory() const { return DECIMAL; }
 
+TypeName
+F64Type::GetTypeName() const { return F64; }
+
 llvm::Type*
 F64Type::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getDoubleTy(context); }
 
@@ -238,7 +274,10 @@ F64Type::IsCastableTo(Datatype& castType) const {
 
 /// Bool
 TypeCategory
-BoolType::GetTypeCategory() const { return BOOL; }
+BoolType::GetTypeCategory() const { return BOOLEAN; }
+
+TypeName
+BoolType::GetTypeName() const { return BOOL; }
 
 llvm::Type*
 BoolType::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt1Ty(context); }

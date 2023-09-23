@@ -27,7 +27,7 @@ Error::Error(std::string errorType, std::string errorMessage, Location errorLoca
       codeLine{std::move(codeLine)} {}
 
 void
-Error::Throw() {
+Error::Throw() const {
   std::cout << "\033[90m"
             << errorLocation.filePath
             << "(" << errorLocation.lineNumber + 1 << ":" << errorLocation.characterLineIndex + 1 << "): "

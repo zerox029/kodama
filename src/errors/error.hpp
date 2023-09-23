@@ -21,7 +21,7 @@ class Error {
 
  public:
   Error(std::string errorType, std::string errorMessage, Location errorLocation, std::string codeLine);
-  void Throw();
+  void Throw() const;
 };
 
 #endif //KODAMA_SRC_ERRORS_ERROR_HPP_

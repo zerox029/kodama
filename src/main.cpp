@@ -1,5 +1,6 @@
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
+#include "analyzer/type/typeChecker.hpp"
 #include "codegen/codegen.hpp"
 #include "utils/stringUtils.hpp"
 #include <iostream>
@@ -34,6 +35,17 @@ Compile(const std::string& code) {
   Parser parser{SplitString(code, "\n"), tokens};
   AstNodePtr tree = parser.Parse();
 
+  TypeChecker typeChecker{SplitString(code, "\n"), tokens};
+  std::vector<Error> errors = typeChecker.TypeCheck(tree);
+
+  if(!errors.empty()) {
+    for(const Error& error : errors) {
+      error.Throw();
+    }
+
+    exit(1);
+  }
+
   Codegen codegen{};
   codegen.Generate(tree);
   codegen.saveModuleToFile("../out/out.ll");
@@ -44,8 +56,6 @@ Compile(const std::string& code) {
 int
 main() {
   Compile(ReadFile());
-  //Error error{"syntax error", "expected '('", {"/a/file/location/code.kdm", 4,20}, "printf(\"hello world\""};
-  //error.Throw();
 
   return 0;
 }

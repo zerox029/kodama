@@ -1,9 +1,7 @@
 def main() -> i64 {
-    let x: bool = false;
-
-    if(x) {
-        printf("ok");
-    }
+    let x: i32 = 10
+    let y: i64 = 15
+    x+y
 
     return 0
 }
