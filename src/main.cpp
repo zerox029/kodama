@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <variant>
 
 std::string
 ReadFile() {
@@ -28,16 +29,7 @@ ReadFile() {
 }
 
 void
-Compile(const std::string& code) {
-  Lexer lexer{code, "/home/emma/Desktop/Kodama/src/code.kdm"};
-  std::vector<Token> tokens = lexer.Tokenize();
-
-  Parser parser{SplitString(code, "\n"), tokens};
-  AstNodePtr tree = parser.Parse();
-
-  TypeChecker typeChecker{SplitString(code, "\n"), tokens};
-  std::vector<Error> errors = typeChecker.TypeCheck(tree);
-
+CheckForErrors(const std::vector<Error>& errors) {
   if(!errors.empty()) {
     for(const Error& error : errors) {
       error.Throw();
@@ -45,12 +37,47 @@ Compile(const std::string& code) {
 
     exit(1);
   }
+}
 
+std::optional<AstNodePtr>
+Parse(const std::vector<std::string>& code, const std::vector<Token>& tokens) {
+  Parser parser{code, tokens};
+  std::variant<AstNodePtr, std::vector<Error>> parseResult = parser.Parse();
+  if(parseResult.index() == 0) {
+    return get<AstNodePtr>(parseResult);
+  }
+  else {
+    CheckForErrors(get<std::vector<Error>>(parseResult));
+    return {};
+  }
+}
+
+void
+TypeCheck(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast) {
+  TypeChecker typeChecker{code, tokens};
+  std::vector<Error> typeErrors = typeChecker.TypeCheck(ast);
+  CheckForErrors(typeErrors);
+}
+
+void
+GenerateCode(const AstNodePtr& ast) {
   Codegen codegen{};
-  codegen.Generate(tree);
-  codegen.saveModuleToFile("../out/out.ll");
+  codegen.Generate(ast);
+  codegen.SaveModuleToFile("../out/out.ll");
 
   system("lli ../out/out.ll");
+}
+
+void
+Compile(const std::string& code) {
+  std::vector<std::string> codeLines = SplitString(code, "\n");
+
+  Lexer lexer{code, "/home/emma/Desktop/Kodama/src/code.kdm"};
+  std::vector<Token> tokens = lexer.Tokenize();
+
+  AstNodePtr ast = Parse(codeLines, tokens).value();
+  TypeCheck(codeLines, tokens, ast);
+  GenerateCode(ast);
 }
 
 int

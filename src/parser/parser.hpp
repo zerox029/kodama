@@ -7,6 +7,7 @@
 
 #include "../lexer/token.hpp"
 #include "../ast/ast.hpp"
+#include "../errors/error.hpp"
 #include <queue>
 #include <utility>
 #include <memory>
@@ -15,13 +16,15 @@
 class Parser {
  public:
   explicit Parser(std::vector<std::string> code, std::vector<Token> tokens);
-  AstNodePtr Parse();
+  std::variant<AstNodePtr, std::vector<Error>> Parse();
 
  private:
   std::vector<std::string> code;
   std::vector<Token> tokens;
   size_t currentTokenIndex = 0;
   Token currentToken;
+
+  std::vector<Error> errors;
 
   AstNodePtr ParseFunctionDeclaration();
   std::vector<AstNodePtr> ParseFunctionParameters();

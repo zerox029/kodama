@@ -6,12 +6,13 @@
 #include "../errors/error.hpp"
 #include <utility>
 #include <iostream>
+#include <variant>
 
 Parser::Parser(std::vector<std::string> code, std::vector<Token> tokensVec) : code{std::move(code)},
                                                                               tokens{std::move(tokensVec)},
                                                                               currentToken{tokens.at(0)} {}
 
-AstNodePtr
+std::variant<AstNodePtr, std::vector<Error>>
 Parser::Parse() {
   std::vector<AstNodePtr> statements;
 
@@ -19,8 +20,13 @@ Parser::Parse() {
     statements.push_back(ParseFunctionDeclaration() ?: ParseStatement());
   }
 
-  Token dummyToken{TK_OPEN_CURLY, "", {"", 0, 0}};
-  return std::make_shared<Block>(dummyToken, statements);
+  if(errors.empty()) {
+    Token dummyToken{TK_OPEN_CURLY, "", {"", 0, 0}};
+    return std::make_shared<Block>(dummyToken, statements);
+  }
+  else {
+    return errors;
+  }
 }
 
 AstNodePtr
@@ -351,7 +357,7 @@ Parser::LookAheadWithError(size_t lookaheadDistance, TokenType tokenType, std::s
     Location errorLocation = currentToken.GetLocation();
     errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
     Error error{"syntax error", std::move(errorMessage), errorLocation, codeLine};
-    error.Throw();
+    errors.push_back(error);
 
     exit(1);
   }
@@ -380,7 +386,7 @@ Parser::ConsumeDataType() {
     Location errorLocation = currentToken.GetLocation();
     errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
     Error error{"syntax error", "expected data type", errorLocation, codeLine};
-    error.Throw();
+    errors.push_back(error);
 
     return nullptr;
   }
@@ -409,7 +415,7 @@ Parser::Expect(TokenType tokenType, std::string errorMessage) {
     Location errorLocation = currentToken.GetLocation();
     errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
     Error error{"syntax error", std::move(errorMessage), errorLocation, codeLine};
-    error.Throw();
+    errors.push_back(error);
   }
 }
 

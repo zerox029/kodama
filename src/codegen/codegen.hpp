@@ -34,7 +34,7 @@ class Codegen : public AstVisitor {
   Codegen();
 
   void Print();
-  void saveModuleToFile(const std::string& fileName);
+  void SaveModuleToFile(const std::string& fileName);
   void Generate(const AstNodePtr& ast);
 
   void Visit(const FunctionDeclaration* element) override;
