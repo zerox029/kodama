@@ -12,10 +12,10 @@ It is still heavily under development and not meant for end-user use.
 ## Safety
 By default, integer overflows will cause runtime errors. To specify that a variable can overflow, it must be marked with the `[[can_overflow]]` attribute
 ```
-let mut x: u8 = 255
+let x: u8 = 255
 x++ // Will cause a runtime error
 
-[[can_overflow]] let mut y: u8 = 255
+[[can_overflow]] let y: u8 = 255
 x++ // Will overflow without causing an error
 ```
 
@@ -160,14 +160,14 @@ if(num == 5) {
 - `(do) ... while`
 ```
 // Prints all numbers from 0 to 10
-let mut x = 0
+let x = 0
 while(x <= 10) {
     print(x)
     x++
 }
 
 // Prints 0
-let mut x = 0
+let x = 0
 do {
     print(x)
     x++
@@ -193,7 +193,7 @@ for value in list where value > 10 {
 ```
 
 ## Arrays
-Arrays are dynamic in size and can grow and shrink at runtime. \
+Arrays are dynamically sized and can grow and shrink at runtime. \
 **Open question**: Do we really want that behavior?
 
 ```

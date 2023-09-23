@@ -6,7 +6,7 @@ For example:
 
 ```
 // Prints all numbers from 0 to 10
-let mut x = 0
+let x = 0
 while(x <= 10) {
     print(x)
     x++
@@ -35,7 +35,7 @@ The `continue` statement will skip over the current iteration of a loop and will
 For example
 ```
 // Prints all numbers from 0 to 10 but skips 5
-let mut x = 0
+let x = 0
 while(x <= 10) {
     if(x == 5)
         continue
@@ -50,7 +50,7 @@ The `break` statement will break out of a loop entirely, bypassing any iteration
 For example:
 ```
 // Prints all numbers from 0 to 4
-let mut x = 0
+let x = 0
 while(x <= 10) {
     if(x == 5)
         break

@@ -19,7 +19,6 @@
 #include <iostream>
 #include <utility>
 
-
 Error::Error(std::string errorType, std::string errorMessage, Location errorLocation, std::string codeLine)
     : errorType{std::move(errorType)},
       errorMessage{std::move(errorMessage)},
