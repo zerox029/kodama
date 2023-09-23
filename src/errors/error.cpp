@@ -28,14 +28,17 @@ Error::Error(std::string errorType, std::string errorMessage, Location errorLoca
 
 void
 Error::Throw() const {
+  std::string trimmedCode = LeftTrim(codeLine);
+  size_t removedSpaces = codeLine.length() - trimmedCode.length();
+
   std::cout << "\033[90m"
             << errorLocation.filePath
             << "(" << errorLocation.lineNumber + 1 << ":" << errorLocation.characterLineIndex + 1 << "): "
             << errorType + ": " + errorMessage
             << "\033[0m\n";
 
-  std::cout << codeLine << std::endl;
-  std::cout << AddSpace("^", errorLocation.characterLineIndex + 1) << "^";
+  std::cout << trimmedCode << std::endl;
+  std::cout << AddSpace("^", errorLocation.characterLineIndex - removedSpaces + 1) << "^";
 
   exit(1);
 }

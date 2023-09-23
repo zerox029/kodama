@@ -19,6 +19,7 @@ class TypeChecker : public AstVisitor {
   std::vector<Token> tokens;
 
   std::unordered_map<std::string, TypePtr> symbolTable;
+  std::string currentScopeName;
   TypePtr lastVisitedType;
 
   std::vector<Error> errors;

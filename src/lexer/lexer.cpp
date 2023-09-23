@@ -115,6 +115,7 @@ std::optional<Token>
 Lexer::ReadNumber() {
   std::stringstream numValue{};
 
+  size_t startingPosition = characterLineIndex;
   while (index < input.length() && isdigit(static_cast<unsigned char>(input.at(index)))) {
     numValue << input.at(index);
     index++;
@@ -124,13 +125,14 @@ Lexer::ReadNumber() {
   if (numValue.str().length() == 0)
     return {};
 
-  return Token{TK_NUMBER, numValue.str(), {filePath, lineNumber, characterLineIndex}};
+  return Token{TK_NUMBER, numValue.str(), {filePath, lineNumber, startingPosition}};
 }
 
 std::optional<Token>
 Lexer::ReadIdentifier() {
   std::stringstream identifierValue{};
 
+  size_t startingPosition = characterLineIndex;
   while (index < input.length() && isalpha(static_cast<unsigned char>(input.at(index)))) {
     identifierValue << input.at(index);
     index++;
@@ -142,7 +144,7 @@ Lexer::ReadIdentifier() {
 
   return Token{TK_IDENTIFIER,
                identifierValue.str(),
-               {filePath, lineNumber, characterLineIndex - identifierValue.str().length()}};
+               {filePath, lineNumber, startingPosition}};
 }
 
 Token
