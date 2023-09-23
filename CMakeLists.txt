@@ -38,7 +38,9 @@ add_executable(Kodama
         src/analyzer/type/typeChecker.cpp
         src/analyzer/type/typeChecker.hpp
         src/analyzer/type/datatype.cpp
-        src/analyzer/type/datatype.hpp)
+        src/analyzer/type/datatype.hpp
+        src/analyzer/type/typeInference.cpp
+        src/analyzer/type/typeInference.hpp)
 
 # Find the libraries that correspond to the LLVM components
 # that you wish to use

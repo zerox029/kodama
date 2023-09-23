@@ -255,11 +255,14 @@ class Variable : public AstNode {
 class IntegerLiteral : public AstNode {
  private:
   std::string integerValue;
+  TypePtr datatype;
 
  public:
   IntegerLiteral(Token token, std::string_view integerValue);
 
   std::string GetValue() const;
+  const TypePtr& GetDatatype() const;
+  void SetDatatype(TypePtr dataype);
 
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) const override;
@@ -269,6 +272,7 @@ class DecimalLiteral : public AstNode {
  private:
   std::string integerValue;
   std::string decimalValue;
+  TypePtr datatype;
 
  public:
   DecimalLiteral(Token token, std::string_view integerValue, std::string_view decimalValue);
@@ -276,6 +280,8 @@ class DecimalLiteral : public AstNode {
   std::string GetIntegerValue() const;
   std::string GetDecimalValue() const;
   std::string GetValue() const;
+  const TypePtr& GetDatatype() const;
+  void SetDatatype(TypePtr dataype);
 
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) const override;

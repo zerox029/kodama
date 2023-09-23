@@ -182,6 +182,16 @@ IntegerLiteral::IntegerLiteral(Token token, std::string_view integerValue)
 std::string
 IntegerLiteral::GetValue() const { return integerValue; }
 
+const TypePtr&
+IntegerLiteral::GetDatatype() const { return datatype; }
+
+void
+IntegerLiteral::SetDatatype(TypePtr type) {
+  if(type->GetTypeCategory() == INTEGER || type->GetTypeCategory() == UINTEGER) {
+    this->datatype = type;
+  }
+}
+
 AstNodeKind
 IntegerLiteral::GetKind() const { return AST_INTEGER_LITERAL; }
 
@@ -198,6 +208,17 @@ DecimalLiteral::GetDecimalValue() const { return decimalValue; }
 
 std::string
 DecimalLiteral::GetValue() const { return integerValue + "." + decimalValue; }
+
+const TypePtr&
+DecimalLiteral::GetDatatype() const { return datatype; }
+
+void
+DecimalLiteral::SetDatatype(TypePtr type) {
+  if(type->GetTypeCategory() == DECIMAL) {
+    this->datatype = type;
+  }
+}
+
 
 AstNodeKind
 DecimalLiteral::GetKind() const { return AST_DECIMAL_LITERAL; }

@@ -1,28 +1,16 @@
 //
-// Created by emma on 21/09/23.
+// Created by emma on 23/09/23.
 //
 
-#ifndef KODAMA_SRC_ANALYZER_TYPECHECKER_HPP_
-#define KODAMA_SRC_ANALYZER_TYPECHECKER_HPP_
+#ifndef KODAMA_SRC_ANALYZER_TYPE_TYPEINFERENCE_HPP_
+#define KODAMA_SRC_ANALYZER_TYPE_TYPEINFERENCE_HPP_
 
 #include "../../ast/astVisitor.hpp"
-#include "../../errors/error.hpp"
-#include <vector>
 
-class TypeChecker : public AstVisitor {
+class TypeInference : public AstVisitor{
  public:
-  TypeChecker(const std::vector<std::string>& code, const std::vector<Token>& tokens);
-  std::vector<Error> TypeCheck(const AstNodePtr& ast);
-
  private:
-  std::vector<std::string> code;
-  std::vector<Token> tokens;
-
-  std::unordered_map<std::string, TypePtr> symbolTable;
   TypePtr currentScopeType;
-  TypePtr lastVisitedType;
-
-  std::vector<Error> errors;
 
   void Visit(const FunctionDeclaration* element) override;
   void Visit(const FunctionParameter* element) override;
@@ -42,9 +30,7 @@ class TypeChecker : public AstVisitor {
   void Visit(const StringLiteral* element) override;
   void Visit(const BoolValue* element) override;
   void Visit(const NullValue* element) override;
-
-  void CheckConditionType(const AstNodePtr& condition);
 };
 
 
-#endif //KODAMA_SRC_ANALYZER_TYPECHECKER_HPP_
+#endif //KODAMA_SRC_ANALYZER_TYPE_TYPEINFERENCE_HPP_
