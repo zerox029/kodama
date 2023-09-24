@@ -212,20 +212,27 @@ Codegen::Visit(DoWhileLoop* element) {
 void
 Codegen::Visit(AssignmentExpression* element) {
   currentVariableType = element->GetDataType();
+  llvm::Type* varType = element->GetDataType()->GetLLVMType(*context);
 
-  if(element->GetDataType()->GetTypeName() != STRING_TYPE) {
-    llvm::Type* varType = element->GetDataType()->GetLLVMType(*context);
-    llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
-    namedValues[element->GetIdentifier()] = variableAllocation;
-
+  if(element->GetDataType()->GetTypeName() == STRING_TYPE) {
     element->GetValue()->Accept(this);
+
+    std::string dataLayoutStr = module->getDataLayoutStr();
+    llvm::DataLayout dataLayout(dataLayoutStr);
+
+    llvm::TypeSize size = dataLayout.getTypeAllocSize(lastGeneratedValue->getType());
+    llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, builder->getInt8(size), element->GetIdentifier());
+
+    namedValues[element->GetIdentifier()] = variableAllocation;
 
     lastGeneratedValue = builder->CreateStore(lastGeneratedValue, variableAllocation);
   }
-  else
-  {
+  else {
     element->GetValue()->Accept(this);
-    lastGeneratedValue->setName(element->GetIdentifier());
+
+    llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
+    lastGeneratedValue = builder->CreateStore(lastGeneratedValue, variableAllocation);
+    namedValues[element->GetIdentifier()] = variableAllocation;
   }
 
   currentVariableType = nullptr;
@@ -363,6 +370,7 @@ Codegen::Visit(DecimalLiteral* element) {
 void
 Codegen::Visit(StringLiteral* element) {
   lastGeneratedValue = builder->CreateGlobalStringPtr(element->GetValue());
+  //lastGeneratedValue = llvm::ConstantDataArray::getString(*context, "Hello, LLVM!");
 }
 
 void

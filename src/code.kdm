@@ -1,6 +1,5 @@
 def main() -> i64 {
-    let test: string = "test";
-    printf(message: test);
+    val test: i64 = 10;
 
-    return 0;
+    return test;
 }

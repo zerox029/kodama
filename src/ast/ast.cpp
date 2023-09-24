@@ -139,11 +139,12 @@ DoWhileLoop::GetKind() const { return AST_DO_WHILE; }
 
 
 /// AssignmentExpression
-AssignmentExpression::AssignmentExpression(Token token, std::string identifier, TypePtr dataType, AstNodePtr value)
+AssignmentExpression::AssignmentExpression(Token token, std::string identifier, TypePtr dataType, AstNodePtr value, bool isMutable)
     : AstNode(token),
       identifier{std::move(identifier)},
       dataType(std::move(dataType)),
-      value{std::move(value)} {}
+      value{std::move(value)},
+      isMutable{isMutable} {}
 
 std::string
 AssignmentExpression::GetIdentifier() const { return identifier; }
@@ -156,6 +157,9 @@ AssignmentExpression::GetValue() const { return value; }
 
 AstNodeKind
 AssignmentExpression::GetKind() const { return AST_ASSIGNMENT; }
+
+bool
+AssignmentExpression::IsMutable() const { return isMutable; }
 
 
 /// Binary Operation

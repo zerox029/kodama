@@ -20,11 +20,10 @@ Parser::Parse() {
     statements.push_back(ParseFunctionDeclaration() ?: ParseStatement());
   }
 
-  if(errors.empty()) {
+  if (errors.empty()) {
     Token dummyToken{TK_OPEN_CURLY, "", {"", 0, 0}};
     return std::make_shared<Block>(dummyToken, statements);
-  }
-  else {
+  } else {
     return errors;
   }
 }
@@ -176,16 +175,21 @@ Parser::ParseExpression() {
 
 AstNodePtr
 Parser::ParseAssignment() {
-  if (std::unique_ptr<Token> letToken = Consume(TK_LET)) {
+  if (std::unique_ptr<Token> assignmentToken = ConsumeOneOf({TK_LET, TK_VAL})) {
     std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
     Expect(TK_COLON, "expected ':'");
     TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
     Expect(TK_ASSIGN, "expected '='");
 
-    return std::make_shared<AssignmentExpression>(*letToken,
+    return assignmentToken->GetTokenType() == TK_LET ?
+           std::make_shared<AssignmentExpression>(*assignmentToken,
                                                   identifier,
                                                   dataType,
-                                                  ParseEqualityExpression());
+                                                  ParseEqualityExpression(), true) :
+           std::make_shared<AssignmentExpression>(*assignmentToken,
+                                                  identifier,
+                                                  dataType,
+                                                  ParseEqualityExpression(), false);
   }
 
   return nullptr;

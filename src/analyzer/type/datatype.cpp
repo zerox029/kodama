@@ -4,6 +4,7 @@
 
 #include "datatype.hpp"
 #include "../../ast/ast.hpp"
+#include "llvm/IR/Constants.h"
 
 const std::unordered_map<TokenType, TypePtr> dataTypeMapping{
     {TK_U8, std::make_shared<U8Type>()},
@@ -357,7 +358,7 @@ std::string
 StringType::GetTypeNameString() const { return "string"; }
 
 llvm::Type*
-StringType::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt1Ty(context); }
+StringType::GetLLVMType(llvm::LLVMContext& context) const { return llvm::ArrayType::get(llvm::Type::getInt8Ty(context), 10); }
 
 AstNodePtr
 StringType::GetDefaultValue() const {

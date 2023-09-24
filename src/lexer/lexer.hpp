@@ -32,7 +32,8 @@ const std::unordered_map<std::string, TokenType> keywords = {
     {"else", TK_ELSE}, {"do", TK_DO}, {"while", TK_WHILE},
     {"for", TK_FOR}, {"in", TK_IN}, {"def", TK_DEF},
     {"extern", TK_EXTERN}, {"bool", TK_BOOL}, {"null", TK_NULL},
-    {"true", TK_TRUE}, {"false", TK_FALSE}, {"string", TK_STRING}
+    {"true", TK_TRUE}, {"false", TK_FALSE}, {"string", TK_STRING},
+    {"val", TK_VAL}
 };
 
 class Lexer {

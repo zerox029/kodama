@@ -20,7 +20,7 @@ statement : expression [';']
 
 expression : assignment | equality;
 
-assignment : 'let' identifier ':' data_type '=' add_expression;
+assignment : ('let' | 'val') identifier ':' data_type '=' add_expression;
 
 equality : add_expression '==' equality
          | add_expression '!=' equality

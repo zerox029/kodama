@@ -53,6 +53,7 @@ enum TokenType {
 
   // Reserved keywords
   TK_LET,         // let
+  TK_VAL,         // val
   TK_RET,         // return
   TK_DEF,         // def
   TK_EXTERN,      // extern
