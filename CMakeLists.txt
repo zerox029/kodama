@@ -42,7 +42,9 @@ add_executable(Kodama
         src/analyzer/type/typeInference.cpp
         src/analyzer/type/typeInference.hpp
         src/analyzer/semanticValidator.cpp
-        src/analyzer/semanticValidator.hpp)
+        src/analyzer/semanticValidator.hpp
+        src/errors/errorFactory.cpp
+        src/errors/errorFactory.hpp)
 
 # Find the libraries that correspond to the LLVM components
 # that you wish to use

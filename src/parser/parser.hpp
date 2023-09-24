@@ -65,7 +65,7 @@ class Parser {
    * @param errorMessage The error message to display if the token is not found
    * @return The matched token or a nullptr
    */
-  std::unique_ptr<Token> Expect(TokenType tokenType, const std::string& errorMessage);
+  std::unique_ptr<Token> Expect(TokenType tokenType, const Error error);
   std::unique_ptr<Token> ExpectOneOf(const std::list<TokenType>& possibleTokenTypes, const std::string& errorMessage);
   std::unique_ptr<Token> ExpectDataType();
 
@@ -85,7 +85,7 @@ class Parser {
    * @param errorMessage The error message to display if the token is not found
    * @return
    */
-  bool PeekWithError(size_t lookaheadDistance, TokenType tokenType, const std::string& errorMessage);
+  bool PeekWithError(size_t lookaheadDistance, TokenType tokenType, const Error error);
 
   /**
    * Adds the specified error to the error list
