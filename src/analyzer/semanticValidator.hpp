@@ -1,0 +1,41 @@
+//
+// Created by emma on 23/09/23.
+//
+
+#ifndef KODAMA_SRC_ANALYZER_SEMANTICVALIDATOR_HPP_
+#define KODAMA_SRC_ANALYZER_SEMANTICVALIDATOR_HPP_
+
+#include "../ast/astVisitor.hpp"
+
+class SemanticValidator : public AstVisitor {
+ public:
+  SemanticValidator(const std::vector<std::string>& code, const std::vector<Token>& tokens);
+
+ private:
+  std::vector<std::string> code;
+  std::vector<Token> tokens;
+
+  std::unordered_map<std::string, bool> symbolTable;
+
+  void Visit(FunctionDeclaration* element) override;
+  void Visit(FunctionParameter* element) override;
+  void Visit(Block* element) override;
+  void Visit(ReturnStatement* element) override;
+  void Visit(IfStatement* element) override;
+  void Visit(IfElseStatement* element) override;
+  void Visit(WhileLoop* element) override;
+  void Visit(DoWhileLoop* element) override;
+  void Visit(AssignmentExpression* element) override;
+  void Visit(BinaryOperation* element) override;
+  void Visit(FunctionCall* element) override;
+  void Visit(FunctionArgument* element) override;
+  void Visit(Variable* element) override;
+  void Visit(IntegerLiteral* element) override;
+  void Visit(DecimalLiteral* element) override;
+  void Visit(StringLiteral* element) override;
+  void Visit(BoolValue* element) override;
+  void Visit(NullValue* element) override;
+};
+
+
+#endif //KODAMA_SRC_ANALYZER_SEMANTICVALIDATOR_HPP_
