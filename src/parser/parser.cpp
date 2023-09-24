@@ -30,21 +30,23 @@ Parser::Parse() {
 
 AstNodePtr
 Parser::ParseFunctionDeclaration() {
-  if (std::unique_ptr<Token> fnToken = Consume(TK_DEF)) {
-    std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
+  if (std::unique_ptr<Token> defToken = Consume(TK_DEF)) {
+    std::unique_ptr<Token> identifierToken =
+        Expect(TK_IDENTIFIER, "expected identifier, found '" + currentToken.GetStr() + "'");
 
-    Expect(TK_OPEN_PAREN, "missing opening delimiter '(' in function parameters");
+    Expect(TK_OPEN_PAREN, "missing opening delimiter '('");
     std::vector<AstNodePtr> parameters = ParseFunctionParameters();
-    Expect(TK_CLOSED_PAREN, "missing closing delimiter ')' in function parameters");
+    Expect(TK_CLOSED_PAREN, "missing closing delimiter ')'");
 
-    Expect(TK_ARROW, "missing return type arrow '->' in function declaration");
-    TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
+    Expect(TK_ARROW, "missing return type arrow '->'");
+    std::unique_ptr<Token> datatypeToken = ExpectDataType();
 
-    //Expect(TK_OPEN_CURLY, "missing opening delimiter '{' in function declaration");
-    AstNodePtr body = ParseStatement();
-    //Expect(TK_CLOSED_CURLY, "missing closing delimiter '}' in function declaration");
+    AstNodePtr body = ParseFunctionDeclarationBody();
 
-    return std::make_shared<FunctionDeclaration>(*fnToken, identifier, parameters, dataType, body);
+    std::string identifier = identifierToken ? identifierToken->GetStr() : "";
+    TypePtr datatype = datatypeToken ? TokenTypeToDataType(datatypeToken->GetTokenType()) : nullptr;
+
+    return std::make_shared<FunctionDeclaration>(*defToken, identifier, parameters, datatype, body);
   }
 
   return nullptr;
@@ -57,7 +59,7 @@ Parser::ParseFunctionParameters() {
   do {
     if (std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
       Expect(TK_COLON, "expected ':'");
-      TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
+      TypePtr dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
 
       AstNodePtr parameter = std::make_shared<FunctionParameter>(*identifier, identifier->GetStr(), dataType);
       parameters.push_back(parameter);
@@ -65,6 +67,25 @@ Parser::ParseFunctionParameters() {
   } while (Consume(TK_COMMA));
 
   return parameters;
+}
+
+AstNodePtr
+Parser::ParseFunctionDeclarationBody() {
+  std::vector<AstNodePtr> statements{};
+
+  if (std::unique_ptr<Token> curlyToken = Expect(TK_OPEN_CURLY, "expected opening delimiter '{' but got '" + currentToken.GetStr() + "'")) {
+    while (!Peek(0, TK_CLOSED_CURLY)) {
+      statements.push_back(ParseStatement());
+    }
+
+    Expect(TK_CLOSED_CURLY, "expected opening delimiter '{' but got '" + currentToken.GetStr() + "'");
+
+    return std::make_shared<Block>(*curlyToken, statements);
+  } else {
+    Recover(TK_CLOSED_CURLY);
+
+    return std::make_shared<Block>(currentToken, statements);
+  }
 }
 
 AstNodePtr
@@ -166,7 +187,7 @@ AstNodePtr
 Parser::ParseExpression() {
   if (AstNodePtr assignmentNode = ParseAssignment()) {
     return assignmentNode;
-  } else if(AstNodePtr reassignmentNode = ParseReassignment()) {
+  } else if (AstNodePtr reassignmentNode = ParseReassignment()) {
     return reassignmentNode;
   } else if (AstNodePtr equalityNode = ParseEqualityExpression()) {
     return equalityNode;
@@ -182,7 +203,7 @@ Parser::ParseAssignment() {
 
     Expect(TK_COLON, "expected ':'");
 
-    TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
+    TypePtr dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
     dataType->SetMutability(assignmentToken->GetTokenType() == TK_LET);
 
     Expect(TK_ASSIGN, "expected '='");
@@ -199,12 +220,12 @@ Parser::ParseAssignment() {
 
 AstNodePtr
 Parser::ParseReassignment() {
-  if(LookAhead(1, TK_ASSIGN)) {
+  if (Peek(1, TK_ASSIGN)) {
     std::unique_ptr<Token> identifierToken = Consume(TK_IDENTIFIER);
     Expect(TK_ASSIGN, "expected '='");
     return std::make_shared<ReassignmentExpression>(*identifierToken,
-                                                  identifierToken->GetStr(),
-                                                  ParseEqualityExpression());
+                                                    identifierToken->GetStr(),
+                                                    ParseEqualityExpression());
   }
 
   return nullptr;
@@ -255,7 +276,7 @@ Parser::ParsePrimaryExpression() {
     return stringNode;
   } else if (AstNodePtr numberNode = ParseNumber()) {
     return numberNode;
-  } else if (LookAhead(0, TK_EXTERN) || LookAhead(1, TK_OPEN_PAREN)) {
+  } else if (Peek(0, TK_EXTERN) || Peek(1, TK_OPEN_PAREN)) {
     return ParseFunctionCall();
   } else if (AstNodePtr identifierNode = ParseIdentifier()) {
     return identifierNode;
@@ -298,7 +319,7 @@ Parser::ParseFunctionArguments() {
   } while (Consume(TK_COMMA));
 
   // If there are no more arguments, generate an error if the next token isn't a closing parenthesis
-  LookAheadWithError(0, TK_CLOSED_PAREN, "expected value or identifier");
+  PeekWithError(0, TK_CLOSED_PAREN, "expected value or identifier");
 
   return arguments;
 }
@@ -356,61 +377,10 @@ std::unique_ptr<Token>
 Parser::Consume(TokenType tokenType) {
   if (currentToken.GetTokenType() == tokenType) {
     std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
-    advance();
+    Advance();
 
     return consumedToken;
   } else {
-    return nullptr;
-  }
-}
-
-bool
-Parser::LookAhead(size_t lookaheadDistance, TokenType tokenType) {
-  //TODO: Add bound check
-  return tokens.at(currentTokenIndex + lookaheadDistance).GetTokenType() == tokenType;
-}
-
-bool
-Parser::LookAheadWithError(size_t lookaheadDistance, TokenType tokenType, std::string errorMessage) {
-  if (LookAhead(lookaheadDistance, tokenType)) {
-    return true;
-  } else {
-    std::string codeLine = code.at(currentToken.GetLocation().lineNumber);
-    Location errorLocation = currentToken.GetLocation();
-    errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
-    Error error{"syntax error", std::move(errorMessage), errorLocation, codeLine};
-    errors.push_back(error);
-
-    exit(1);
-  }
-}
-
-std::unique_ptr<Token>
-Parser::ConsumeDataType() {
-  std::unique_ptr<Token> consumedToken = ConsumeOneOf({TK_BOOL,
-                                                       TK_U8,
-                                                       TK_U16,
-                                                       TK_U32,
-                                                       TK_U64,
-                                                       TK_U128,
-                                                       TK_I8,
-                                                       TK_I16,
-                                                       TK_I32,
-                                                       TK_I64,
-                                                       TK_I128,
-                                                       TK_F32,
-                                                       TK_F64,
-                                                       TK_STRING});
-
-  if (consumedToken) {
-    return consumedToken;
-  } else {
-    std::string codeLine = code.at(currentToken.GetLocation().lineNumber);
-    Location errorLocation = currentToken.GetLocation();
-    errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
-    Error error{"syntax error", "expected data type", errorLocation, codeLine};
-    errors.push_back(error);
-
     return nullptr;
   }
 }
@@ -427,23 +397,90 @@ Parser::ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes) {
   return nullptr;
 }
 
-void
-Parser::Expect(TokenType tokenType, std::string errorMessage) {
+std::unique_ptr<Token>
+Parser::Expect(TokenType tokenType, const std::string& errorMessage) {
   if (currentToken.GetTokenType() == tokenType) {
     std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
-    advance();
-  } else {
+    Advance();
 
-    std::string codeLine = code.at(currentToken.GetLocation().lineNumber);
-    Location errorLocation = currentToken.GetLocation();
-    errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
-    Error error{"syntax error", std::move(errorMessage), errorLocation, codeLine};
-    errors.push_back(error);
+    return consumedToken;
+  } else {
+    ReportError(errorMessage, currentToken.GetLocation());
+
+    return nullptr;
+  }
+}
+
+std::unique_ptr<Token>
+Parser::ExpectOneOf(const std::list<TokenType>& possibleTokenTypes, const std::string& errorMessage) {
+  for (const TokenType& tokenType : possibleTokenTypes) {
+    std::unique_ptr<Token> consumedToken = Consume(tokenType);
+    if (consumedToken) {
+      return consumedToken;
+    }
+  }
+
+  ReportError(errorMessage, currentToken.GetLocation());
+
+  return nullptr;
+}
+
+std::unique_ptr<Token>
+Parser::ExpectDataType() {
+  return ExpectOneOf({TK_BOOL,
+                      TK_U8,
+                      TK_U16,
+                      TK_U32,
+                      TK_U64,
+                      TK_U128,
+                      TK_I8,
+                      TK_I16,
+                      TK_I32,
+                      TK_I64,
+                      TK_I128,
+                      TK_F32,
+                      TK_F64,
+                      TK_STRING},
+                     "expected datatype");
+}
+
+bool
+Parser::Peek(size_t lookaheadDistance, TokenType tokenType) {
+  //TODO: Add bound check
+  return tokens.at(currentTokenIndex + lookaheadDistance).GetTokenType() == tokenType;
+}
+
+bool
+Parser::PeekWithError(size_t lookaheadDistance, TokenType tokenType, const std::string& errorMessage) {
+  if (Peek(lookaheadDistance, tokenType)) {
+    return true;
+  } else {
+    ReportError(errorMessage, currentToken.GetLocation());
+
+    return false;
   }
 }
 
 void
-Parser::advance() {
+Parser::ReportError(const std::string& errorMessage, const Location& location) {
+  std::string codeLine = code.at(currentToken.GetLocation().lineNumber);
+  Location errorLocation = currentToken.GetLocation();
+  errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
+  Error error{"syntax error", errorMessage, errorLocation, codeLine};
+  errors.push_back(error);
+}
+
+void
+Parser::Recover(TokenType synchronizationToken) {
+  while (currentToken.GetTokenType() != synchronizationToken) {
+    Advance();
+  }
+
+  Advance();
+}
+
+void
+Parser::Advance() {
   if (currentTokenIndex < tokens.size() - 1) {
     currentTokenIndex++;
     currentToken = tokens.at(currentTokenIndex);

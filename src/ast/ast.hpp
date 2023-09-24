@@ -92,7 +92,6 @@ class Block : public AstNode {
   std::vector<AstNodePtr> statements;
 
  public:
-  Block(std::vector<AstNodePtr> statements);
   Block(Token token, std::vector<AstNodePtr> statements);
 
   std::vector<AstNodePtr> GetStatements() const;

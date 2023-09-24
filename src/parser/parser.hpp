@@ -30,6 +30,7 @@ class Parser {
 
   AstNodePtr ParseFunctionDeclaration();
   std::vector<AstNodePtr> ParseFunctionParameters();
+  AstNodePtr ParseFunctionDeclarationBody();
   AstNodePtr ParseStatement();
   AstNodePtr ParseIfElseStatement();
   AstNodePtr ParseBlock();
@@ -50,14 +51,55 @@ class Parser {
   AstNodePtr ParseString();
   AstNodePtr ParseBool();
 
+  /**
+   * Consumes the current token and returns it if it is of the specified type. Returns a nullptr otherwise.
+   * @param tokenType The token to match
+   * @return The matched token or a nullptr
+   */
   std::unique_ptr<Token> Consume(TokenType tokenType);
   std::unique_ptr<Token> ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes);
-  std::unique_ptr<Token> ConsumeDataType();
-  bool LookAhead(size_t lookaheadDistance, TokenType tokenType);
-  bool LookAheadWithError(size_t lookaheadDistance, TokenType tokenType, std::string errorMessage);
-  void Expect(TokenType tokenType, std::string errorMessage);
-  void advance();
 
+  /**
+   * Consumes the current token and returns it if it is of the specified type, reports and error otherwise.
+   * @param tokenType The token to match
+   * @param errorMessage The error message to display if the token is not found
+   * @return The matched token or a nullptr
+   */
+  std::unique_ptr<Token> Expect(TokenType tokenType, const std::string& errorMessage);
+  std::unique_ptr<Token> ExpectOneOf(const std::list<TokenType>& possibleTokenTypes, const std::string& errorMessage);
+  std::unique_ptr<Token> ExpectDataType();
+
+
+  /**
+   * Checks if the specified token is of the specified type.
+   * @param lookaheadDistance How far ahead in the list to look for the token
+   * @param tokenType The token to match
+   * @return Whether or not the token was found
+   */
+  bool Peek(size_t lookaheadDistance, TokenType tokenType);
+
+  /**
+   * Checks if the specified token is of the specified type, reports an error otherwise.
+   * @param lookaheadDistance How far ahead in the list to look for the token
+   * @param tokenType The token to match
+   * @param errorMessage The error message to display if the token is not found
+   * @return
+   */
+  bool PeekWithError(size_t lookaheadDistance, TokenType tokenType, const std::string& errorMessage);
+
+  /**
+   * Adds the specified error to the error list
+   */
+  void ReportError(const std::string& errorMessage, const Location& location);
+
+  /**
+   * Panic-mode recovery
+   * When an error is found, skip tokens until a recovery token is hit.
+   * Ideally, update this to be more context based and/or add phrase-level recovery
+   */
+  void Recover(TokenType synchronizationToken);
+
+  void Advance();
   bool IsFinishedParsing();
 };
 
