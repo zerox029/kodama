@@ -180,15 +180,13 @@ class AssignmentExpression : public AstNode {
   std::string identifier;
   TypePtr dataType;
   AstNodePtr value;
-  bool isMutable;
 
  public:
-  AssignmentExpression(Token token, std::string identifier, TypePtr type, AstNodePtr value, bool isMutable);
+  AssignmentExpression(Token token, std::string identifier, TypePtr type, AstNodePtr value);
 
   std::string GetIdentifier() const;
   TypePtr GetDataType() const;
   AstNodePtr GetValue() const;
-  bool IsMutable() const;
 
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) override;

@@ -177,19 +177,18 @@ AstNodePtr
 Parser::ParseAssignment() {
   if (std::unique_ptr<Token> assignmentToken = ConsumeOneOf({TK_LET, TK_VAL})) {
     std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
+
     Expect(TK_COLON, "expected ':'");
+
     TypePtr dataType = TokenTypeToDataType(ConsumeDataType()->GetTokenType());
+    dataType->SetMutability(assignmentToken->GetTokenType() == TK_LET);
+
     Expect(TK_ASSIGN, "expected '='");
 
-    return assignmentToken->GetTokenType() == TK_LET ?
-           std::make_shared<AssignmentExpression>(*assignmentToken,
+    return std::make_shared<AssignmentExpression>(*assignmentToken,
                                                   identifier,
                                                   dataType,
-                                                  ParseEqualityExpression(), true) :
-           std::make_shared<AssignmentExpression>(*assignmentToken,
-                                                  identifier,
-                                                  dataType,
-                                                  ParseEqualityExpression(), false);
+                                                  ParseEqualityExpression());
   }
 
   return nullptr;

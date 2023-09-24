@@ -49,6 +49,8 @@ class Datatype {
   virtual bool IsCastableTo(Datatype& castType) const = 0;
   virtual AstNodePtr GetDefaultValue() const = 0;
 
+  void SetMutability(bool mutability) { isMutable = mutability; }
+
   bool operator==(const Datatype& type) const {
     return GetTypeName() == type.GetTypeName();
   }
@@ -56,6 +58,9 @@ class Datatype {
   bool operator!=(const Datatype& type) const {
     return !operator==(type);
   }
+
+ private:
+  bool isMutable = true;
 };
 
 typedef std::shared_ptr<Datatype> TypePtr;

@@ -6,23 +6,6 @@
 #include "../../ast/ast.hpp"
 #include "llvm/IR/Constants.h"
 
-const std::unordered_map<TokenType, TypePtr> dataTypeMapping{
-    {TK_U8, std::make_shared<U8Type>()},
-    {TK_U16, std::make_shared<U16Type>()},
-    {TK_U32, std::make_shared<U32Type>()},
-    {TK_U64, std::make_shared<U64Type>()},
-    {TK_U128, std::make_shared<U128Type>()},
-    {TK_I8, std::make_shared<I8Type>()},
-    {TK_I16, std::make_shared<I16Type>()},
-    {TK_I32, std::make_shared<I32Type>()},
-    {TK_I64, std::make_shared<I64Type>()},
-    {TK_I128, std::make_shared<I128Type>()},
-    {TK_F32, std::make_shared<F32Type>()},
-    {TK_F64, std::make_shared<F64Type>()},
-    {TK_BOOL, std::make_shared<BoolType>()},
-    {TK_STRING, std::make_shared<StringType>()}
-};
-
 /// U8_TYPE
 TypeCategory
 U8Type::GetTypeCategory() const { return UINTEGER; }
@@ -371,10 +354,40 @@ StringType::IsCastableTo(Datatype& castType) const {
   return false;
 }
 
-
 TypePtr
 TokenTypeToDataType(TokenType tokenType) {
-  return dataTypeMapping.at(tokenType);
+  switch (tokenType) {
+    case TK_U8:
+      return std::make_shared<U8Type>();
+    case TK_U16:
+      return std::make_shared<U16Type>();
+    case TK_U32:
+      return std::make_shared<U32Type>();
+    case TK_U64:
+      return std::make_shared<U64Type>();
+    case TK_U128:
+      return std::make_shared<U128Type>();
+    case TK_I8:
+      return std::make_shared<I8Type>();
+    case TK_I16:
+      return std::make_shared<I16Type>();
+    case TK_I32:
+      return std::make_shared<I32Type>();
+    case TK_I64:
+      return std::make_shared<I64Type>();
+    case TK_I128:
+      return std::make_shared<I128Type>();
+    case TK_F32:
+      return std::make_shared<F32Type>();
+    case TK_F64:
+      return std::make_shared<F64Type>();
+    case TK_BOOL:
+      return std::make_shared<BoolType>();
+    case TK_STRING:
+      return std::make_shared<StringType>();
+    default:
+      return nullptr;
+  }
 }
 
 bool
