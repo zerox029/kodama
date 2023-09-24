@@ -6,16 +6,20 @@
 #define KODAMA_SRC_ANALYZER_SEMANTICVALIDATOR_HPP_
 
 #include "../ast/astVisitor.hpp"
+#include "../errors/error.hpp"
 
 class SemanticValidator : public AstVisitor {
  public:
   SemanticValidator(const std::vector<std::string>& code, const std::vector<Token>& tokens);
+  std::vector<Error> Validate(const AstNodePtr& ast);
 
  private:
   std::vector<std::string> code;
   std::vector<Token> tokens;
 
-  std::unordered_map<std::string, bool> symbolTable;
+  std::unordered_map<std::string, TypePtr> symbolTable;
+
+  std::vector<Error> errors;
 
   void Visit(FunctionDeclaration* element) override;
   void Visit(FunctionParameter* element) override;
@@ -26,6 +30,7 @@ class SemanticValidator : public AstVisitor {
   void Visit(WhileLoop* element) override;
   void Visit(DoWhileLoop* element) override;
   void Visit(AssignmentExpression* element) override;
+  void Visit(ReassignmentExpression* element) override;
   void Visit(BinaryOperation* element) override;
   void Visit(FunctionCall* element) override;
   void Visit(FunctionArgument* element) override;

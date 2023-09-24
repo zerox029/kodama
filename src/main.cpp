@@ -1,6 +1,7 @@
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
 #include "analyzer/type/typeChecker.hpp"
+#include "analyzer/semanticValidator.hpp"
 #include "codegen/codegen.hpp"
 #include "utils/stringUtils.hpp"
 #include <iostream>
@@ -53,6 +54,14 @@ Parse(const std::vector<std::string>& code, const std::vector<Token>& tokens) {
 }
 
 void
+ValidateSemantics(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast) {
+  SemanticValidator semanticValidator{code, tokens};
+  std::vector<Error> typeErrors = semanticValidator.Validate(ast);
+  CheckForErrors(typeErrors);
+}
+
+
+void
 TypeCheck(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast) {
   TypeChecker typeChecker{code, tokens};
   std::vector<Error> typeErrors = typeChecker.TypeCheck(ast);
@@ -76,8 +85,9 @@ Compile(const std::string& code) {
   std::vector<Token> tokens = lexer.Tokenize();
 
   AstNodePtr ast = Parse(codeLines, tokens).value();
+  ValidateSemantics(codeLines, tokens, ast);
   //TypeCheck(codeLines, tokens, ast);
-  GenerateCode(ast);
+  //GenerateCode(ast);
 }
 
 int

@@ -20,6 +20,7 @@ enum AstNodeKind {
   AST_WHILE,
   AST_DO_WHILE,
   AST_ASSIGNMENT,
+  AST_REASSIGNMENT,
   AST_BINARY_OPERATION,
   AST_FUNCTION_CALL,
   AST_FUNCTION_ARGUMENT,
@@ -191,6 +192,22 @@ class AssignmentExpression : public AstNode {
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) override;
 };
+
+class ReassignmentExpression : public AstNode {
+ private:
+  std::string identifier;
+  AstNodePtr value;
+
+ public:
+  ReassignmentExpression(Token token, std::string identifier, AstNodePtr value);
+
+  std::string GetIdentifier() const;
+  AstNodePtr GetValue() const;
+
+  AstNodeKind GetKind() const override;
+  void Accept(AstVisitor* visitor) override;
+};
+
 
 class BinaryOperation : public AstNode {
  private:

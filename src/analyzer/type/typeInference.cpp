@@ -54,6 +54,11 @@ TypeInference::Visit(AssignmentExpression* element) {
 }
 
 void
+TypeInference::Visit(ReassignmentExpression* element) {
+  element->GetValue()->Accept(this);
+}
+
+void
 TypeInference::Visit(BinaryOperation* element) {
   element->GetLhs()->Accept(this);
   element->GetRhs()->Accept(this);

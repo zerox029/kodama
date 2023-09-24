@@ -1,6 +1,6 @@
 def main() -> i64 {
-    val test: i64 = 10;
-    let testtwo: i64 = 10;
+    val test: i64 = 120;
+    test = 10;
 
     return test;
 }

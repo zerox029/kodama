@@ -50,6 +50,7 @@ class Datatype {
   virtual AstNodePtr GetDefaultValue() const = 0;
 
   void SetMutability(bool mutability) { isMutable = mutability; }
+  bool IsMutable() { return isMutable; }
 
   bool operator==(const Datatype& type) const {
     return GetTypeName() == type.GetTypeName();

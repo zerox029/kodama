@@ -50,6 +50,11 @@ AssignmentExpression::Accept(AstVisitor* visitor) {
 }
 
 void
+ReassignmentExpression::Accept(AstVisitor* visitor) {
+  return visitor->Visit(this);
+}
+
+void
 BinaryOperation::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }

@@ -26,6 +26,8 @@ class Parser {
 
   std::vector<Error> errors;
 
+  std::unordered_map<std::string, TypePtr> symbolTable;
+
   AstNodePtr ParseFunctionDeclaration();
   std::vector<AstNodePtr> ParseFunctionParameters();
   AstNodePtr ParseStatement();
@@ -36,6 +38,7 @@ class Parser {
   AstNodePtr ParseDoWhileLoop();
   AstNodePtr ParseExpression();
   AstNodePtr ParseAssignment();
+  AstNodePtr ParseReassignment();
   AstNodePtr ParseEqualityExpression();
   AstNodePtr ParseAddExpression();
   AstNodePtr ParseMulExpression();

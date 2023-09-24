@@ -158,6 +158,22 @@ AstNodeKind
 AssignmentExpression::GetKind() const { return AST_ASSIGNMENT; }
 
 
+/// ReassignmentExpression
+ReassignmentExpression::ReassignmentExpression(Token token, std::string identifier, AstNodePtr value)
+    : AstNode(token),
+      identifier{std::move(identifier)},
+      value{std::move(value)} {}
+
+std::string
+ReassignmentExpression::GetIdentifier() const { return identifier; }
+
+AstNodePtr
+ReassignmentExpression::GetValue() const { return value; }
+
+AstNodeKind
+ReassignmentExpression::GetKind() const { return AST_REASSIGNMENT; }
+
+
 /// Binary Operation
 BinaryOperation::BinaryOperation(Token token, AstNodePtr lhs, AstNodePtr rhs)
     : AstNode(token), lhs{std::move(lhs)}, rhs{std::move(rhs)} {}

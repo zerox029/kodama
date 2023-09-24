@@ -166,6 +166,8 @@ AstNodePtr
 Parser::ParseExpression() {
   if (AstNodePtr assignmentNode = ParseAssignment()) {
     return assignmentNode;
+  } else if(AstNodePtr reassignmentNode = ParseReassignment()) {
+    return reassignmentNode;
   } else if (AstNodePtr equalityNode = ParseEqualityExpression()) {
     return equalityNode;
   }
@@ -188,6 +190,20 @@ Parser::ParseAssignment() {
     return std::make_shared<AssignmentExpression>(*assignmentToken,
                                                   identifier,
                                                   dataType,
+                                                  ParseEqualityExpression());
+  }
+
+
+  return nullptr;
+}
+
+AstNodePtr
+Parser::ParseReassignment() {
+  if(LookAhead(1, TK_ASSIGN)) {
+    std::unique_ptr<Token> identifierToken = Consume(TK_IDENTIFIER);
+    Expect(TK_ASSIGN, "expected '='");
+    return std::make_shared<ReassignmentExpression>(*identifierToken,
+                                                  identifierToken->GetStr(),
                                                   ParseEqualityExpression());
   }
 

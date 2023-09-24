@@ -239,6 +239,11 @@ Codegen::Visit(AssignmentExpression* element) {
 }
 
 void
+Codegen::Visit(ReassignmentExpression* element) {
+
+}
+
+void
 Codegen::Visit(BinaryOperation* element) {
   element->GetLhs()->Accept(this);
   llvm::Value* lhs = lastGeneratedValue;

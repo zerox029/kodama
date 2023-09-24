@@ -100,6 +100,11 @@ TypeChecker::Visit(AssignmentExpression* element) {
 }
 
 void
+TypeChecker::Visit(ReassignmentExpression* element) {
+
+}
+
+void
 TypeChecker::Visit(BinaryOperation* element) {
   element->GetLhs()->Accept(this);
   TypePtr lhs = lastVisitedType;
