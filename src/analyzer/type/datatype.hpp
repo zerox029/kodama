@@ -19,23 +19,25 @@ enum TypeCategory {
   UINTEGER,
   INTEGER,
   DECIMAL,
-  BOOLEAN
+  BOOLEAN,
+  STRING
 };
 
 enum TypeName {
-  U8,
-  U16,
-  U32,
-  U64,
-  U128,
-  I8,
-  I16,
-  I32,
-  I64,
-  I128,
-  F32,
-  F64,
-  BOOL
+  U8_TYPE,
+  U16_TYPE,
+  U32_TYPE,
+  U64_TYPE,
+  U128_TYPE,
+  I8_TYPE,
+  I16_TYPE,
+  I32_TYPE,
+  I64_TYPE,
+  I128_TYPE,
+  F32_TYPE,
+  F64_TYPE,
+  BOOL_TYPE,
+  STRING_TYPE
 };
 
 class Datatype {
@@ -188,6 +190,15 @@ class BoolType : public Datatype {
   AstNodePtr GetDefaultValue() const override;
 };
 
+class StringType : public Datatype {
+ public:
+  TypeCategory GetTypeCategory() const override;
+  TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
+  llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
+  bool IsCastableTo(Datatype& castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
 TypePtr
 TokenTypeToDataType(TokenType tokenType);
 

@@ -213,13 +213,20 @@ void
 Codegen::Visit(AssignmentExpression* element) {
   currentVariableType = element->GetDataType();
 
-  llvm::Type* varType = element->GetDataType()->GetLLVMType(*context);
-  llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
-  namedValues[element->GetIdentifier()] = variableAllocation;
+  if(element->GetDataType()->GetTypeName() != STRING_TYPE) {
+    llvm::Type* varType = element->GetDataType()->GetLLVMType(*context);
+    llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
+    namedValues[element->GetIdentifier()] = variableAllocation;
 
-  element->GetValue()->Accept(this);
+    element->GetValue()->Accept(this);
 
-  lastGeneratedValue = builder->CreateStore(lastGeneratedValue, variableAllocation);
+    lastGeneratedValue = builder->CreateStore(lastGeneratedValue, variableAllocation);
+  }
+  else
+  {
+    element->GetValue()->Accept(this);
+    lastGeneratedValue->setName(element->GetIdentifier());
+  }
 
   currentVariableType = nullptr;
 }

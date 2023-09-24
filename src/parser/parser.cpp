@@ -380,7 +380,8 @@ Parser::ConsumeDataType() {
                                                        TK_I64,
                                                        TK_I128,
                                                        TK_F32,
-                                                       TK_F64});
+                                                       TK_F64,
+                                                       TK_STRING});
 
   if (consumedToken) {
     return consumedToken;

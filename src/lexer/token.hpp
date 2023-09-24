@@ -49,6 +49,7 @@ enum TokenType {
   TK_F32,         // f32
   TK_F64,         // f64
   TK_BOOL,        // bool
+  TK_STRING,      // string
 
   // Reserved keywords
   TK_LET,         // let
@@ -68,7 +69,6 @@ enum TokenType {
   // Value types
   TK_NUMBER,
   TK_IDENTIFIER,
-  TK_STRING,
 
   TK_EOF          // end of file
 };

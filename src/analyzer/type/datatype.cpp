@@ -18,15 +18,16 @@ const std::unordered_map<TokenType, TypePtr> dataTypeMapping{
     {TK_I128, std::make_shared<I128Type>()},
     {TK_F32, std::make_shared<F32Type>()},
     {TK_F64, std::make_shared<F64Type>()},
-    {TK_BOOL, std::make_shared<BoolType>()}
+    {TK_BOOL, std::make_shared<BoolType>()},
+    {TK_STRING, std::make_shared<StringType>()}
 };
 
-/// U8
+/// U8_TYPE
 TypeCategory
 U8Type::GetTypeCategory() const { return UINTEGER; }
 
 TypeName
-U8Type::GetTypeName() const { return U8; }
+U8Type::GetTypeName() const { return U8_TYPE; }
 
 std::string
 U8Type::GetTypeNameString() const { return "u8"; }
@@ -46,12 +47,12 @@ U8Type::IsCastableTo(Datatype& castType) const {
 }
 
 
-/// U16
+/// U16_TYPE
 TypeCategory
 U16Type::GetTypeCategory() const { return UINTEGER; }
 
 TypeName
-U16Type::GetTypeName() const { return U16; }
+U16Type::GetTypeName() const { return U16_TYPE; }
 
 std::string
 U16Type::GetTypeNameString() const { return "u16"; }
@@ -71,12 +72,12 @@ U16Type::IsCastableTo(Datatype& castType) const {
 }
 
 
-/// U32
+/// U32_TYPE
 TypeCategory
 U32Type::GetTypeCategory() const { return UINTEGER; }
 
 TypeName
-U32Type::GetTypeName() const { return U32; }
+U32Type::GetTypeName() const { return U32_TYPE; }
 
 std::string
 U32Type::GetTypeNameString() const { return "u32"; }
@@ -96,12 +97,12 @@ U32Type::IsCastableTo(Datatype& castType) const {
 }
 
 
-/// U64
+/// U64_TYPE
 TypeCategory
 U64Type::GetTypeCategory() const { return UINTEGER; }
 
 TypeName
-U64Type::GetTypeName() const { return U64; }
+U64Type::GetTypeName() const { return U64_TYPE; }
 
 std::string
 U64Type::GetTypeNameString() const { return "u64"; }
@@ -121,12 +122,12 @@ U64Type::IsCastableTo(Datatype& castType) const {
 }
 
 
-/// U128
+/// U128_TYPE
 TypeCategory
 U128Type::GetTypeCategory() const { return UINTEGER; }
 
 TypeName
-U128Type::GetTypeName() const { return U128; }
+U128Type::GetTypeName() const { return U128_TYPE; }
 
 std::string
 U128Type::GetTypeNameString() const { return "u128"; }
@@ -145,12 +146,12 @@ U128Type::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
 
-/// I8
+/// I8_TYPE
 TypeCategory
 I8Type::GetTypeCategory() const { return INTEGER; }
 
 TypeName
-I8Type::GetTypeName() const { return I8; }
+I8Type::GetTypeName() const { return I8_TYPE; }
 
 std::string
 I8Type::GetTypeNameString() const { return "i8"; }
@@ -170,12 +171,12 @@ I8Type::IsCastableTo(Datatype& castType) const {
 }
 
 
-/// I16
+/// I16_TYPE
 TypeCategory
 I16Type::GetTypeCategory() const { return INTEGER; }
 
 TypeName
-I16Type::GetTypeName() const { return I16; }
+I16Type::GetTypeName() const { return I16_TYPE; }
 
 std::string
 I16Type::GetTypeNameString() const { return "i16"; }
@@ -195,12 +196,12 @@ I16Type::IsCastableTo(Datatype& castType) const {
 }
 
 
-/// I32
+/// I32_TYPE
 TypeCategory
 I32Type::GetTypeCategory() const { return INTEGER; }
 
 TypeName
-I32Type::GetTypeName() const { return I32; }
+I32Type::GetTypeName() const { return I32_TYPE; }
 
 std::string
 I32Type::GetTypeNameString() const { return "i32"; }
@@ -220,12 +221,12 @@ I32Type::IsCastableTo(Datatype& castType) const {
 }
 
 
-/// I64
+/// I64_TYPE
 TypeCategory
 I64Type::GetTypeCategory() const { return INTEGER; }
 
 TypeName
-I64Type::GetTypeName() const { return I64; }
+I64Type::GetTypeName() const { return I64_TYPE; }
 
 std::string
 I64Type::GetTypeNameString() const { return "i64"; }
@@ -245,12 +246,12 @@ I64Type::IsCastableTo(Datatype& castType) const {
 }
 
 
-/// I128
+/// I128_TYPE
 TypeCategory
 I128Type::GetTypeCategory() const { return INTEGER; }
 
 TypeName
-I128Type::GetTypeName() const { return I128; }
+I128Type::GetTypeName() const { return I128_TYPE; }
 
 std::string
 I128Type::GetTypeNameString() const { return "i128"; }
@@ -270,12 +271,12 @@ I128Type::IsCastableTo(Datatype& castType) const {
 }
 
 
-/// F32
+/// F32_TYPE
 TypeCategory
 F32Type::GetTypeCategory() const { return DECIMAL; }
 
 TypeName
-F32Type::GetTypeName() const { return F32; }
+F32Type::GetTypeName() const { return F32_TYPE; }
 
 std::string
 F32Type::GetTypeNameString() const { return "f32"; }
@@ -295,12 +296,12 @@ F32Type::IsCastableTo(Datatype& castType) const {
 }
 
 
-/// F64
+/// F64_TYPE
 TypeCategory
 F64Type::GetTypeCategory() const { return DECIMAL; }
 
 TypeName
-F64Type::GetTypeName() const { return F64; }
+F64Type::GetTypeName() const { return F64_TYPE; }
 
 std::string
 F64Type::GetTypeNameString() const { return "f64"; }
@@ -325,7 +326,7 @@ TypeCategory
 BoolType::GetTypeCategory() const { return BOOLEAN; }
 
 TypeName
-BoolType::GetTypeName() const { return BOOL; }
+BoolType::GetTypeName() const { return BOOL_TYPE; }
 
 std::string
 BoolType::GetTypeNameString() const { return "bool"; }
@@ -343,6 +344,32 @@ bool
 BoolType::IsCastableTo(Datatype& castType) const {
   return IsNumericType(castType);
 }
+
+
+/// String type
+TypeCategory
+StringType::GetTypeCategory() const { return STRING; }
+
+TypeName
+StringType::GetTypeName() const { return STRING_TYPE; }
+
+std::string
+StringType::GetTypeNameString() const { return "string"; }
+
+llvm::Type*
+StringType::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt1Ty(context); }
+
+AstNodePtr
+StringType::GetDefaultValue() const {
+  Token dummyToken{TK_NUMBER, "", {"", 0, 0}};
+  return std::make_shared<IntegerLiteral>(dummyToken, "");
+}
+
+bool
+StringType::IsCastableTo(Datatype& castType) const {
+  return false;
+}
+
 
 TypePtr
 TokenTypeToDataType(TokenType tokenType) {

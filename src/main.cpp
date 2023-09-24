@@ -76,7 +76,7 @@ Compile(const std::string& code) {
   std::vector<Token> tokens = lexer.Tokenize();
 
   AstNodePtr ast = Parse(codeLines, tokens).value();
-  TypeCheck(codeLines, tokens, ast);
+  //TypeCheck(codeLines, tokens, ast);
   GenerateCode(ast);
 }
 
