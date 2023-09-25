@@ -29,6 +29,7 @@ Parser::Parse() {
   }
 }
 
+/// function : 'def' identifier '(' function_parameters ')' '->' data_type '{' statement '}'
 AstNodePtr
 Parser::ParseFunctionDeclaration() {
   if (std::unique_ptr<Token> defToken = Consume(TK_DEF)) {
@@ -43,7 +44,7 @@ Parser::ParseFunctionDeclaration() {
       Expect(TK_ARROW, [this]() { return ErrorFactory::Expected(TK_ARROW, currentToken, code); });
       std::unique_ptr<Token> datatypeToken = ExpectDataType();
 
-      AstNodePtr body = ParseFunctionDeclarationBody();
+      AstNodePtr body = ParseFunctionBody();
 
       std::string identifier = identifierToken ? identifierToken->GetStr() : "";
       TypePtr datatype = datatypeToken ? TokenTypeToDataType(datatypeToken->GetTokenType()) : nullptr;
@@ -61,6 +62,7 @@ Parser::ParseFunctionDeclaration() {
   return nullptr;
 }
 
+/// function_parameters : { identifier ':' data_type ',' } identifier ':' data_type;
 std::vector<AstNodePtr>
 Parser::ParseFunctionParameters() {
   std::vector<AstNodePtr> parameters{};
@@ -84,8 +86,9 @@ Parser::ParseFunctionParameters() {
   }
 }
 
+/// function_body : '{' statement '}';
 AstNodePtr
-Parser::ParseFunctionDeclarationBody() {
+Parser::ParseFunctionBody() {
   std::vector<AstNodePtr> statements{};
 
   std::unique_ptr<Token> curlyToken{};
@@ -109,7 +112,7 @@ Parser::ParseFunctionDeclarationBody() {
   }
 }
 
-
+/// statement: return | block | if_else | while | do_while | expression ';'
 AstNodePtr
 Parser::ParseStatement() {
   if (AstNodePtr ret = ParseReturn()) {
@@ -130,6 +133,7 @@ Parser::ParseStatement() {
   }
 }
 
+/// return: 'return' expression [';'];
 AstNodePtr
 Parser::ParseReturn() {
   if (std::unique_ptr<Token> retToken = Consume(TK_RET)) {
@@ -142,6 +146,7 @@ Parser::ParseReturn() {
   return nullptr;
 }
 
+/// block: '{' statement '}'
 AstNodePtr
 Parser::ParseBlock() {
   if (std::unique_ptr<Token> curlyToken = Consume(TK_OPEN_CURLY)) {
@@ -157,6 +162,7 @@ Parser::ParseBlock() {
   return nullptr;
 }
 
+/// if_else: 'if' '(' equality ')' statement ('else' statement)?
 AstNodePtr
 Parser::ParseIfElseStatement() {
   if (std::unique_ptr<Token> ifToken = Consume(TK_IF)) {
@@ -176,6 +182,7 @@ Parser::ParseIfElseStatement() {
   return nullptr;
 }
 
+/// while: 'while' '(' equality ')' statement
 AstNodePtr
 Parser::ParseWhileLoop() {
   if (std::unique_ptr<Token> whileToken = Consume(TK_WHILE)) {
@@ -190,6 +197,7 @@ Parser::ParseWhileLoop() {
   return nullptr;
 }
 
+/// do_while: 'do' statement 'while' '(' condition ')'
 AstNodePtr
 Parser::ParseDoWhileLoop() {
   if (std::unique_ptr<Token> doToken = Consume(TK_DO)) {
@@ -205,6 +213,7 @@ Parser::ParseDoWhileLoop() {
   return nullptr;
 }
 
+/// expression: assignment | equality
 AstNodePtr
 Parser::ParseExpression() {
   if (AstNodePtr assignmentNode = ParseAssignment()) {
@@ -218,6 +227,7 @@ Parser::ParseExpression() {
   return nullptr;
 }
 
+///assignment: ('let' | 'val') identifier ':' data_type '=' equality
 AstNodePtr
 Parser::ParseAssignment() {
   if (std::unique_ptr<Token> assignmentToken = ConsumeOneOf({TK_LET, TK_VAL})) {
@@ -240,6 +250,7 @@ Parser::ParseAssignment() {
   return nullptr;
 }
 
+///reassignment: identifier '=' equality
 AstNodePtr
 Parser::ParseReassignment() {
   if (Peek(1, TK_ASSIGN)) {
@@ -253,6 +264,13 @@ Parser::ParseReassignment() {
   return nullptr;
 }
 
+/// equality: add_expression '==' equality
+///         | add_expression '!=' equality
+///         | add_expression '>' equality
+///         | add_expression '<' equality
+///         | add_expression '>=' equality
+///         | add_expression '<=' equality
+///         | add_expression
 AstNodePtr
 Parser::ParseEqualityExpression() {
   AstNodePtr expression = ParseAddExpression();
@@ -270,6 +288,9 @@ Parser::ParseEqualityExpression() {
   return expression;
 }
 
+/// add_expression: mul_expression '+' add_expression
+///               | mul_expression '-' add_expression
+///               | mul_expression
 AstNodePtr
 Parser::ParseAddExpression() {
   AstNodePtr expression = ParseMulExpression();
@@ -281,6 +302,10 @@ Parser::ParseAddExpression() {
   return expression;
 }
 
+/// mul_expression: number '*' mul_expression
+///               | number '/' mul_expression
+///               | number '%' mul_expression
+///               | primary
 AstNodePtr
 Parser::ParseMulExpression() {
   AstNodePtr expression = ParsePrimaryExpression();
@@ -292,6 +317,7 @@ Parser::ParseMulExpression() {
   return expression;
 }
 
+/// primary: string | number | call | identifier | bool | 'null'
 AstNodePtr
 Parser::ParsePrimaryExpression() {
   if (AstNodePtr stringNode = ParseString()) {
@@ -311,6 +337,7 @@ Parser::ParsePrimaryExpression() {
   return nullptr;
 }
 
+/// call: identifier '(' function_arguments ')'
 AstNodePtr
 Parser::ParseFunctionCall() {
   bool isExtern = static_cast<bool>(Consume(TK_EXTERN));
@@ -326,6 +353,7 @@ Parser::ParseFunctionCall() {
   return nullptr;
 }
 
+/// function_arguments: { identifier ':' equality ',' } identifier ':' equality
 std::vector<AstNodePtr>
 Parser::ParseFunctionArguments() {
   std::vector<AstNodePtr> arguments{};
@@ -352,6 +380,7 @@ Parser::ParseFunctionArguments() {
   return arguments;
 }
 
+/// ('0'-'9')+
 AstNodePtr
 Parser::ParseNumber() {
   if (std::shared_ptr<Token> integerPortion = Consume(TK_NUMBER)) {
@@ -368,6 +397,7 @@ Parser::ParseNumber() {
   }
 }
 
+/// string: any string
 AstNodePtr
 Parser::ParseString() {
   if (Consume(TK_QUOTATION)) {
@@ -380,6 +410,7 @@ Parser::ParseString() {
   return nullptr;
 }
 
+/// {'a'-'z' | 'A'-'Z'}
 AstNodePtr
 Parser::ParseIdentifier() {
   if (std::shared_ptr<Token> identifierNode = Consume(TK_IDENTIFIER)) {
@@ -390,6 +421,7 @@ Parser::ParseIdentifier() {
   }
 }
 
+/// 'true' | 'false'
 AstNodePtr
 Parser::ParseBool() {
   if (std::shared_ptr<Token> trueToken = Consume(TK_TRUE)) {
