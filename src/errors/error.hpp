@@ -15,6 +15,7 @@ inline constexpr auto EXPECTED_CL_DELIMITER = "expected closing delimiter '{0}' 
 inline constexpr auto EXPECTED_KEYWORD = "expected keyword '{0}' but got '{1}'";
 inline constexpr auto EXPECTED_TOKEN = "expected token '{0}' but got '{1}'";
 inline constexpr auto EXPECTED_DATATYPE = "expected datatype";
+inline constexpr auto EXPECTED_VALUE_IDENTIFIER = "expected value or identifier";
 }
 
 class Error {

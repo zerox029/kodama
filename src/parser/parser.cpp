@@ -3,7 +3,6 @@
 //
 
 #include "parser.hpp"
-#include "../errors/error.hpp"
 #include "../errors/errorFactory.hpp"
 #include <utility>
 #include <iostream>
@@ -322,7 +321,7 @@ Parser::ParseFunctionArguments() {
   } while (Consume(TK_COMMA));
 
   // If there are no more arguments, generate an error if the next token isn't a closing parenthesis
-  PeekWithError(0, TK_CLOSED_PAREN, [this]() { return ErrorFactory::Expected("expected value or identifier", currentToken, code); });
+  PeekWithError(0, TK_CLOSED_PAREN, [this]() { return ErrorFactory::Expected(errorStrings::EXPECTED_VALUE_IDENTIFIER, currentToken, code); });
 
   return arguments;
 }
@@ -444,7 +443,7 @@ Parser::ExpectDataType() {
                       TK_F32,
                       TK_F64,
                       TK_STRING},
-                     [this]() { return ErrorFactory::Expected("expected datatype", currentToken, code); });
+                     [this]() { return ErrorFactory::Expected(errorStrings::EXPECTED_DATATYPE, currentToken, code); });
 }
 
 bool
