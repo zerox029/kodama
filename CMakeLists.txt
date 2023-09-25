@@ -13,38 +13,30 @@ include_directories(${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
 
-# Code
+# Set source and output directories
+set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(OUT_DIR ${CMAKE_SOURCE_DIR}/out)
+
+# Collect source files
+file(GLOB_RECURSE SRC_FILES
+        ${SRC_DIR}/analyzer/*.cpp
+        ${SRC_DIR}/analyzer/*.hpp
+        ${SRC_DIR}/ast/*.cpp
+        ${SRC_DIR}/ast/*.hpp
+        ${SRC_DIR}/codegen/*.cpp
+        ${SRC_DIR}/codegen/*.hpp
+        ${SRC_DIR}/errors/*.cpp
+        ${SRC_DIR}/errors/*.hpp
+        ${SRC_DIR}/lexer/*.cpp
+        ${SRC_DIR}/lexer/*.hpp
+        ${SRC_DIR}/parser/*.cpp
+        ${SRC_DIR}/parser/*.hpp
+        ${SRC_DIR}/utils/*.cpp
+        ${SRC_DIR}/utils/*.hpp)
+
 add_executable(Kodama
-        src/main.cpp
-        src/lexer/lexer.hpp
-        src/lexer/lexer.hpp
-        src/lexer/lexer.cpp
-        src/lexer/token.hpp
-        src/ast/ast.hpp
-        src/parser/parser.cpp
-        src/parser/parser.hpp
-        src/ast/ast.hpp
-        src/ast/ast.cpp
-        src/ast/astVisitor.cpp
-        src/ast/astVisitor.hpp
-        src/codegen/codegen.cpp
-        src/codegen/codegen.hpp
-        src/codegen/irtransform.cpp
-        src/codegen/irtransform.hpp
-        src/errors/error.cpp
-        src/errors/error.hpp
-        src/utils/stringUtils.cpp
-        src/utils/stringUtils.hpp
-        src/analyzer/type/typeChecker.cpp
-        src/analyzer/type/typeChecker.hpp
-        src/analyzer/type/datatype.cpp
-        src/analyzer/type/datatype.hpp
-        src/analyzer/type/typeInference.cpp
-        src/analyzer/type/typeInference.hpp
-        src/analyzer/semanticValidator.cpp
-        src/analyzer/semanticValidator.hpp
-        src/errors/errorFactory.cpp
-        src/errors/errorFactory.hpp)
+        ${SRC_FILES}
+        ${SRC_DIR}/main.cpp)
 
 # Find the libraries that correspond to the LLVM components
 # that you wish to use
@@ -64,7 +56,9 @@ add_custom_target(run_llvm
 # Make sure the custom target is executed after building
 add_dependencies(run_llvm Kodama)
 
-# Tests
+
+
+## Tests
 include(FetchContent)
 FetchContent_Declare(
         googletest
@@ -74,38 +68,11 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(tests
-        src/lexer/lexer.hpp
-        src/lexer/lexer.hpp
-        src/lexer/lexer.cpp
-        src/lexer/token.hpp
-        src/ast/ast.hpp
-        src/parser/parser.cpp
-        src/parser/parser.hpp
-        src/ast/ast.hpp
-        src/ast/ast.cpp
-        src/ast/astVisitor.cpp
-        src/ast/astVisitor.hpp
-        src/codegen/codegen.cpp
-        src/codegen/codegen.hpp
-        src/codegen/irtransform.cpp
-        src/codegen/irtransform.hpp
-        src/errors/error.cpp
-        src/errors/error.hpp
-        src/utils/stringUtils.cpp
-        src/utils/stringUtils.hpp
-        src/analyzer/type/typeChecker.cpp
-        src/analyzer/type/typeChecker.hpp
-        src/analyzer/type/datatype.cpp
-        src/analyzer/type/datatype.hpp
-        src/analyzer/type/typeInference.cpp
-        src/analyzer/type/typeInference.hpp
-        src/analyzer/semanticValidator.cpp
-        src/analyzer/semanticValidator.hpp
-        src/errors/errorFactory.cpp
-        src/errors/errorFactory.hpp
-        test/test.cpp
-        test/parser/functions.cpp)
+# Collect source files
+file(GLOB_RECURSE TEST_FILES
+        ${SRC_DIR}/test/*.cpp
+        ${SRC_DIR}/test/*.hpp)
+
+add_executable(tests ${SRC_FILES} ${TEST_FILES})
 
 target_link_libraries(tests gtest gtest_main LLVM-16)
-add_test(NAME SquareTest COMMAND SquareTest)

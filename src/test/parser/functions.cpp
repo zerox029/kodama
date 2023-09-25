@@ -2,8 +2,8 @@
 // Created by emma on 24/09/23.
 //
 
-#include "../../src/parser/parser.hpp"
-#include "../../src/utils/stringUtils.hpp"
+#include "../../parser/parser.hpp"
+#include "../../utils/stringUtils.hpp"
 #include <gtest/gtest.h>
 #include <string>
 #include <format>
