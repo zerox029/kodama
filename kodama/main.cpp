@@ -12,7 +12,7 @@
 
 std::string
 ReadFile() {
-  std::ifstream inputFile("../src/code.kdm");
+  std::ifstream inputFile("../kodama/code.kdm");
   if (!inputFile.is_open()) {
     std::cerr << "Error opening the file.\n";
     return "";
@@ -81,7 +81,7 @@ void
 Compile(const std::string& code) {
   std::vector<std::string> codeLines = SplitString(code, "\n");
 
-  Lexer lexer{code, "/home/emma/Desktop/Kodama/src/code.kdm"};
+  Lexer lexer{code, "/home/emma/Desktop/Kodama/kodama/code.kdm"};
   std::vector<Token> tokens = lexer.Tokenize();
 
   AstNodePtr ast = Parse(codeLines, tokens).value();
