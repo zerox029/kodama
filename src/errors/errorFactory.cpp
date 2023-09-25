@@ -5,10 +5,15 @@
 #include "errorFactory.hpp"
 #include "../lexer/lexer.hpp"
 #include <string>
+#include <format>
 
 Error
 ErrorFactory::Expected(const std::string& errorMessage, const Token& actual, const std::vector<std::string>& code) {
-  return Error{"syntax error", errorMessage, actual.GetLocation(), code.at(actual.GetLocation().lineNumber)};
+  Location location = actual.GetLocation();
+  location.lineNumber += 1;
+  location.characterLineIndex += 1;
+
+  return Error{"syntax error", errorMessage, location, code.at(actual.GetLocation().lineNumber)};
 }
 
 Error
@@ -18,25 +23,25 @@ ErrorFactory::Expected(const TokenType expected, const Token& actual, const std:
     case TK_EOF:
       return Expected(expected, code);
     case TK_IDENTIFIER:
-       message = "expected identifier but got '" + actual.GetStr() + "'";
+       message = std::format(errorStrings::EXPECTED_IDENTIFIER, actual.GetStr());
        break;
     case TK_OPEN_PAREN:
     case TK_OPEN_CURLY:
-      message = "expected opening delimiter '" + Lexer::GetSymbolFromTokenType(expected) + "' but got '" + actual.GetStr() + "'";
+      message = std::format(errorStrings::EXPECTED_OP_DELIMITER, Lexer::GetSymbolFromTokenType(expected), actual.GetStr());
       break;
     case TK_CLOSED_PAREN:
     case TK_CLOSED_CURLY:
-      message = "expected closing delimiter '" + Lexer::GetSymbolFromTokenType(expected) + "' but got '" + actual.GetStr() + "'";
+      message = std::format(errorStrings::EXPECTED_CL_DELIMITER, Lexer::GetSymbolFromTokenType(expected), actual.GetStr());
       break;
     case TK_WHILE:
-      message = "expected keyword '" + Lexer::GetSymbolFromTokenType(expected) + "' but got '" + actual.GetStr() + "'";
+      message = std::format(errorStrings::EXPECTED_KEYWORD, Lexer::GetSymbolFromTokenType(expected), actual.GetStr());
       break;
     default:
-      message = "expected token '" + Lexer::GetSymbolFromTokenType(expected) + "' but got '" + actual.GetStr() + "'";
+      message = std::format(errorStrings::EXPECTED_TOKEN, Lexer::GetSymbolFromTokenType(expected), actual.GetStr());
       break;
   }
 
-  return Error{"syntax error", message, actual.GetLocation(), code.at(actual.GetLocation().lineNumber)};
+  return Expected(message, actual, code);
 }
 
 Error

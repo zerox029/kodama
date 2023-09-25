@@ -74,6 +74,38 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(tests test/test.cpp)
-target_link_libraries(tests gtest gtest_main)
+add_executable(tests
+        src/lexer/lexer.hpp
+        src/lexer/lexer.hpp
+        src/lexer/lexer.cpp
+        src/lexer/token.hpp
+        src/ast/ast.hpp
+        src/parser/parser.cpp
+        src/parser/parser.hpp
+        src/ast/ast.hpp
+        src/ast/ast.cpp
+        src/ast/astVisitor.cpp
+        src/ast/astVisitor.hpp
+        src/codegen/codegen.cpp
+        src/codegen/codegen.hpp
+        src/codegen/irtransform.cpp
+        src/codegen/irtransform.hpp
+        src/errors/error.cpp
+        src/errors/error.hpp
+        src/utils/stringUtils.cpp
+        src/utils/stringUtils.hpp
+        src/analyzer/type/typeChecker.cpp
+        src/analyzer/type/typeChecker.hpp
+        src/analyzer/type/datatype.cpp
+        src/analyzer/type/datatype.hpp
+        src/analyzer/type/typeInference.cpp
+        src/analyzer/type/typeInference.hpp
+        src/analyzer/semanticValidator.cpp
+        src/analyzer/semanticValidator.hpp
+        src/errors/errorFactory.cpp
+        src/errors/errorFactory.hpp
+        test/test.cpp
+        test/parserTests.cpp)
+
+target_link_libraries(tests gtest gtest_main LLVM-16)
 add_test(NAME SquareTest COMMAND SquareTest)

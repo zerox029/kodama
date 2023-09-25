@@ -32,10 +32,30 @@ Error::Throw() const {
 
   std::cout << "\033[90m"
             << errorLocation.filePath
-            << "(" << errorLocation.lineNumber + 1 << ":" << errorLocation.characterLineIndex + 1 << "): "
+            << "(" << errorLocation.lineNumber << ":" << errorLocation.characterLineIndex << "): "
             << errorType + ": " + errorMessage
             << "\033[0m\n";
 
   std::cout << trimmedCode << std::endl;
-  std::cout << AddSpace("", errorLocation.characterLineIndex - removedSpaces + 1) << "^" << "\n\n";
+  std::cout << AddSpace("", errorLocation.characterLineIndex - removedSpaces) << "^" << "\n\n";
+}
+
+const std::string&
+Error::GetErrorType() const {
+  return errorType;
+}
+
+const std::string&
+Error::GetErrorMessage() const {
+  return errorMessage;
+}
+
+const Location&
+Error::GetErrorLocation() const {
+  return errorLocation;
+}
+
+const std::string&
+Error::GetCodeLine() const {
+  return codeLine;
 }
