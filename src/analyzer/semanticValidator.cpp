@@ -26,7 +26,7 @@ SemanticValidator::Visit(FunctionParameter* element) {
 
 void
 SemanticValidator::Visit(Block* element) {
-  for(const AstNodePtr& node : element->GetStatements()) {
+  for (const AstNodePtr& node : element->GetStatements()) {
     node->Accept(this);
   }
 }
@@ -60,13 +60,12 @@ SemanticValidator::Visit(DoWhileLoop* element) {
 void
 SemanticValidator::Visit(AssignmentExpression* element) {
   // Verify that the variable was not already defined
-  if(symbolTable.contains(element->GetIdentifier())) {
+  if (symbolTable.contains(element->GetIdentifier())) {
     std::string errorMessage = "illegal redefinition of '" + element->GetIdentifier() + "'";
     Location location = element->GetToken().GetLocation();
     Error error{"semantic error", errorMessage, location, code.at(location.lineNumber)};
     errors.push_back(error);
-  }
-  else {
+  } else {
     symbolTable.insert({element->GetIdentifier(), element->GetDataType()});
   }
 
@@ -76,7 +75,7 @@ SemanticValidator::Visit(AssignmentExpression* element) {
 void
 SemanticValidator::Visit(ReassignmentExpression* element) {
   // Verify that the variable being reassigned to exists
-  if(!symbolTable.contains(element->GetIdentifier())) {
+  if (!symbolTable.contains(element->GetIdentifier())) {
     std::string errorMessage = "cannot find symbol '" + element->GetIdentifier() + "' in scope";
     Location location = element->GetToken().GetLocation();
     Error error{"error", errorMessage, location, code.at(location.lineNumber)};
@@ -86,7 +85,7 @@ SemanticValidator::Visit(ReassignmentExpression* element) {
   }
 
   //Verify that the variable being reassigned to is mutable
-  if(!symbolTable.at(element->GetIdentifier())->IsMutable()) {
+  if (!symbolTable.at(element->GetIdentifier())->IsMutable()) {
     std::string errorMessage = "cannot assign twice to value '" + element->GetIdentifier() + "'";
     Location location = element->GetToken().GetLocation();
     Error error{"error", errorMessage, location, code.at(location.lineNumber)};
@@ -104,7 +103,15 @@ SemanticValidator::Visit(BinaryOperation* element) {
 
 void
 SemanticValidator::Visit(FunctionCall* element) {
+  // Verify that the function exists
+  if (!symbolTable.contains(element->GetIdentifier())) {
+    std::string errorMessage = "cannot find symbol '" + element->GetIdentifier() + "' in scope";
+    Location location = element->GetToken().GetLocation();
+    Error error{"error", errorMessage, location, code.at(location.lineNumber)};
+    errors.push_back(error);
 
+    return;
+  }
 }
 
 void
@@ -114,7 +121,15 @@ SemanticValidator::Visit(FunctionArgument* element) {
 
 void
 SemanticValidator::Visit(Variable* element) {
+  // Verify that the function exists
+  if (!symbolTable.contains(element->GetIdentifier())) {
+    std::string errorMessage = "cannot find symbol '" + element->GetIdentifier() + "' in scope";
+    Location location = element->GetToken().GetLocation();
+    Error error{"error", errorMessage, location, code.at(location.lineNumber)};
+    errors.push_back(error);
 
+    return;
+  }
 }
 
 void
