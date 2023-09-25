@@ -12,6 +12,14 @@
 #include <utility>
 #include <memory>
 #include <list>
+#include <exception>
+
+class ParsingException : public std::exception {
+ public:
+  const char* what() const noexcept {
+    return "Aborting due to parsing error...";
+  }
+};
 
 class Parser {
  public:
@@ -66,7 +74,8 @@ class Parser {
    * @return The matched token or a nullptr
    */
   std::unique_ptr<Token> Expect(TokenType tokenType, const std::function<Error()>& errorHandler);
-  std::unique_ptr<Token> ExpectOneOf(const std::list<TokenType>& possibleTokenTypes, const std::function<Error()>& errorHandler);
+  std::unique_ptr<Token> ExpectOneOf(const std::list<TokenType>& possibleTokenTypes,
+                                     const std::function<Error()>& errorHandler);
   std::unique_ptr<Token> ExpectDataType();
 
 
@@ -86,11 +95,6 @@ class Parser {
    * @return
    */
   bool PeekWithError(size_t lookaheadDistance, TokenType tokenType, const std::function<Error()>& errorHandler);
-
-  /**
-   * Adds the specified error to the error list
-   */
-  void ReportError(const std::string& errorMessage, const Location& location);
 
   /**
    * Panic-mode recovery

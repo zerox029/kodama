@@ -105,7 +105,7 @@ add_executable(tests
         src/errors/errorFactory.cpp
         src/errors/errorFactory.hpp
         test/test.cpp
-        test/parserTests.cpp)
+        test/parser/functions.cpp)
 
 target_link_libraries(tests gtest gtest_main LLVM-16)
 add_test(NAME SquareTest COMMAND SquareTest)

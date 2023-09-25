@@ -32,22 +32,30 @@ Parser::Parse() {
 AstNodePtr
 Parser::ParseFunctionDeclaration() {
   if (std::unique_ptr<Token> defToken = Consume(TK_DEF)) {
-    std::unique_ptr<Token> identifierToken =
-        Expect(TK_IDENTIFIER, [this]() { return ErrorFactory::Expected(TK_IDENTIFIER, currentToken, code); });
+    try {
+      std::unique_ptr<Token> identifierToken =
+          Expect(TK_IDENTIFIER, [this]() { return ErrorFactory::Expected(TK_IDENTIFIER, currentToken, code); });
 
-    Expect(TK_OPEN_PAREN, [this]() { return ErrorFactory::Expected(TK_OPEN_PAREN, currentToken, code); });
-    std::vector<AstNodePtr> parameters = ParseFunctionParameters();
-    Expect(TK_CLOSED_PAREN, [this]() { return ErrorFactory::Expected(TK_CLOSED_PAREN, currentToken, code); });
+      Expect(TK_OPEN_PAREN, [this]() { return ErrorFactory::Expected(TK_OPEN_PAREN, currentToken, code); });
+      std::vector<AstNodePtr> parameters = ParseFunctionParameters();
+      Expect(TK_CLOSED_PAREN, [this]() { return ErrorFactory::Expected(TK_CLOSED_PAREN, currentToken, code); });
 
-    Expect(TK_ARROW, [this]() { return ErrorFactory::Expected(TK_ARROW, currentToken, code); });
-    std::unique_ptr<Token> datatypeToken = ExpectDataType();
+      Expect(TK_ARROW, [this]() { return ErrorFactory::Expected(TK_ARROW, currentToken, code); });
+      std::unique_ptr<Token> datatypeToken = ExpectDataType();
 
-    AstNodePtr body = ParseFunctionDeclarationBody();
+      AstNodePtr body = ParseFunctionDeclarationBody();
 
-    std::string identifier = identifierToken ? identifierToken->GetStr() : "";
-    TypePtr datatype = datatypeToken ? TokenTypeToDataType(datatypeToken->GetTokenType()) : nullptr;
+      std::string identifier = identifierToken ? identifierToken->GetStr() : "";
+      TypePtr datatype = datatypeToken ? TokenTypeToDataType(datatypeToken->GetTokenType()) : nullptr;
 
-    return std::make_shared<FunctionDeclaration>(*defToken, identifier, parameters, datatype, body);
+      return std::make_shared<FunctionDeclaration>(*defToken, identifier, parameters, datatype, body);
+    }
+    catch (const ParsingException& parsingException) {
+      Recover(TK_CLOSED_CURLY);
+
+      std::vector<AstNodePtr> dummyParameters{};
+      return std::make_shared<FunctionDeclaration>(*defToken, "", dummyParameters, nullptr, nullptr);
+    }
   }
 
   return nullptr;
@@ -57,25 +65,33 @@ std::vector<AstNodePtr>
 Parser::ParseFunctionParameters() {
   std::vector<AstNodePtr> parameters{};
 
-  do {
-    if (std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
-      Expect(TK_COLON, [this]() { return ErrorFactory::Expected(TK_CLOSED_PAREN, currentToken, code); });
-      TypePtr dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
+  try {
+    do {
+      if (std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
+        Expect(TK_COLON, [this]() { return ErrorFactory::Expected(TK_COLON, currentToken, code); });
+        TypePtr dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
 
-      AstNodePtr parameter = std::make_shared<FunctionParameter>(*identifier, identifier->GetStr(), dataType);
-      parameters.push_back(parameter);
-    }
-  } while (Consume(TK_COMMA));
+        AstNodePtr parameter = std::make_shared<FunctionParameter>(*identifier, identifier->GetStr(), dataType);
+        parameters.push_back(parameter);
+      }
+    } while (Consume(TK_COMMA));
 
-  return parameters;
+    return parameters;
+  }
+  catch (const ParsingException& parsingException) {
+    Recover(TK_CLOSED_PAREN);
+    return parameters;
+  }
 }
 
 AstNodePtr
 Parser::ParseFunctionDeclarationBody() {
   std::vector<AstNodePtr> statements{};
 
-  if (std::unique_ptr<Token>
-      curlyToken = Expect(TK_OPEN_CURLY, [this]() { return ErrorFactory::Expected(TK_OPEN_CURLY, currentToken, code); })) {
+  std::unique_ptr<Token> curlyToken{};
+  try {
+    curlyToken = Expect(TK_OPEN_CURLY, [this]() { return ErrorFactory::Expected(TK_OPEN_CURLY, currentToken, code); });
+
     while (!Peek(0, TK_CLOSED_CURLY)) {
       statements.push_back(ParseStatement());
     }
@@ -83,12 +99,16 @@ Parser::ParseFunctionDeclarationBody() {
     Expect(TK_CLOSED_CURLY, [this]() { return ErrorFactory::Expected(TK_CLOSED_CURLY, currentToken, code); });
 
     return std::make_shared<Block>(*curlyToken, statements);
-  } else {
+  }
+  catch (const ParsingException& parsingException) {
+    Token errorToken = curlyToken ? *curlyToken : currentToken;
+
     Recover(TK_CLOSED_CURLY);
 
-    return std::make_shared<Block>(currentToken, statements);
+    return std::make_shared<Block>(errorToken, statements);
   }
 }
+
 
 AstNodePtr
 Parser::ParseStatement() {
@@ -321,7 +341,13 @@ Parser::ParseFunctionArguments() {
   } while (Consume(TK_COMMA));
 
   // If there are no more arguments, generate an error if the next token isn't a closing parenthesis
-  PeekWithError(0, TK_CLOSED_PAREN, [this]() { return ErrorFactory::Expected(errorStrings::EXPECTED_VALUE_IDENTIFIER, currentToken, code); });
+  PeekWithError(0,
+                TK_CLOSED_PAREN,
+                [this]() {
+                  return ErrorFactory::Expected(errorStrings::EXPECTED_VALUE_IDENTIFIER,
+                                                currentToken,
+                                                code);
+                });
 
   return arguments;
 }
@@ -409,7 +435,7 @@ Parser::Expect(TokenType tokenType, const std::function<Error()>& errorHandler) 
   } else {
     errors.push_back(errorHandler());
 
-    return nullptr;
+    throw ParsingException();
   }
 }
 
@@ -424,7 +450,7 @@ Parser::ExpectOneOf(const std::list<TokenType>& possibleTokenTypes, const std::f
 
   errors.push_back(errorHandler());
 
-  return nullptr;
+  throw ParsingException();
 }
 
 std::unique_ptr<Token>
@@ -462,15 +488,6 @@ Parser::PeekWithError(size_t lookaheadDistance, TokenType tokenType, const std::
 
     return false;
   }
-}
-
-void
-Parser::ReportError(const std::string& errorMessage, const Location& location) {
-  std::string codeLine = code.at(currentToken.GetLocation().lineNumber);
-  Location errorLocation = currentToken.GetLocation();
-  errorLocation.characterLineIndex = errorLocation.characterLineIndex - 1;
-  Error error{"syntax error", errorMessage, errorLocation, codeLine};
-  errors.push_back(error);
 }
 
 void

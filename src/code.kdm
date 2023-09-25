@@ -1,1 +1,3 @@
-def test() -> {}
+def test () ->
+    return 10;
+}

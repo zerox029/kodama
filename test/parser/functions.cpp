@@ -2,8 +2,8 @@
 // Created by emma on 24/09/23.
 //
 
-#include "../src/parser/parser.hpp"
-#include "../src/utils/stringUtils.hpp"
+#include "../../src/parser/parser.hpp"
+#include "../../src/utils/stringUtils.hpp"
 #include <gtest/gtest.h>
 #include <string>
 #include <format>
@@ -132,5 +132,37 @@ TEST(FunctionDeclaration, MissingReturnType) {
   EXPECT_EQ(errors.size(), 1);
   EXPECT_EQ(errors.at(0).GetErrorType(), "syntax error");
   EXPECT_EQ(errors.at(0).GetErrorMessage(), errorStrings::EXPECTED_DATATYPE);
+  AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
+}
+
+TEST(FunctionDeclaration, MissingOpeningCurly) {
+  // GIVEN
+  std::string code = "def test() -> i32 }";
+  std::string expectedMessage = std::format(errorStrings::EXPECTED_OP_DELIMITER, "{", "}");
+  Location expectedLocation{DUMMY_FILE_LOCATION, 1, 19};
+
+  // WHEN
+  std::vector<Error> errors = getErrorsForAst(code);
+
+  // THEN
+  EXPECT_EQ(errors.size(), 1);
+  EXPECT_EQ(errors.at(0).GetErrorType(), "syntax error");
+  EXPECT_EQ(errors.at(0).GetErrorMessage(), expectedMessage);
+  AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
+}
+
+TEST(FunctionDeclaration, AbortAfterFirstError) {
+  // GIVEN
+  std::string code = "def test) -> i32 }";
+  std::string expectedMessage = std::format(errorStrings::EXPECTED_OP_DELIMITER, "(", ")");
+  Location expectedLocation{DUMMY_FILE_LOCATION, 1, 9};
+
+  // WHEN
+  std::vector<Error> errors = getErrorsForAst(code);
+
+  // THEN
+  EXPECT_EQ(errors.size(), 1);
+  EXPECT_EQ(errors.at(0).GetErrorType(), "syntax error");
+  EXPECT_EQ(errors.at(0).GetErrorMessage(),  expectedMessage);
   AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
 }
