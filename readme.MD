@@ -61,7 +61,7 @@ Variables are non-nullable by default. They can be made nullable by adding a que
 **Open question**: Would it be better to use a `[[nullable]]` annotation instead? And get rid of the auto keyword.
 ```
 let x = null // Will not compile
-let x: int? = null // Will compile correctly
+let x: SomeObject? = null // Will compile correctly
 ```
 
 ## Functions declarations
