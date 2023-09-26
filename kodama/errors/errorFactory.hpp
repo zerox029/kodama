@@ -27,6 +27,10 @@ enum ErrorType {
   ID_NOT_FOUND,
   ASSIGN_VAL,
   ILLEGAL_REDEFINITION,
+  UNASSIGNED_VALUE,
+  INVALID_OUTSIDE_FUNCTION,
+  INVALID_INSIDE_FUNCTION,
+  UNREACHABLE_CODE,
 
   // Type
   RETURN_TYPE_MISMATCH,
@@ -69,6 +73,16 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
                                                   fmt::make_format_args(std::forward<T>(args)...)));
     case ILLEGAL_REDEFINITION:
       return std::make_pair("error", fmt::vformat("illegal redefinition of '{}'",
+                                                  fmt::make_format_args(std::forward<T>(args)...)));
+    case UNASSIGNED_VALUE:
+      return std::make_pair("error", "expression result unused. Assign it or remove it.");
+    case INVALID_OUTSIDE_FUNCTION:
+      return std::make_pair("error", "out of place expression. use it inside a function");
+    case INVALID_INSIDE_FUNCTION:
+      return std::make_pair("error", fmt::vformat("{} is not allowed inside a function",
+                                                  fmt::make_format_args(std::forward<T>(args)...)));
+    case UNREACHABLE_CODE:
+      return std::make_pair("error", fmt::vformat("everything after this statement is unreachable",
                                                   fmt::make_format_args(std::forward<T>(args)...)));
 
     // Type

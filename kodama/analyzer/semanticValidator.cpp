@@ -16,7 +16,34 @@ SemanticValidator::Validate(const AstNodePtr& ast) {
 void
 SemanticValidator::Visit(Program* element) {
   for (const AstNodePtr& node : element->GetStatements()) {
-    node->Accept(this);
+    switch (node->GetKind()) {
+      case AST_BINARY_OPERATION:
+      case AST_VARIABLE:
+      case AST_INTEGER_LITERAL:
+      case AST_DECIMAL_LITERAL:
+      case AST_STRING_LITERAL:
+      case AST_NULL_VALUE:
+      case AST_BOOL_VALUE:
+        errors.push_back(Errors::Generate(Errors::UNASSIGNED_VALUE,
+                                          element->GetToken().GetLocation(),
+                                          code));
+        break;
+      case AST_RETURN:
+      case AST_IF:
+      case AST_IF_ELSE:
+      case AST_WHILE:
+      case AST_DO_WHILE:
+      case AST_BLOCK:
+      case AST_REASSIGNMENT:
+      case AST_FUNCTION_CALL:
+        errors.push_back(Errors::Generate(Errors::INVALID_OUTSIDE_FUNCTION,
+                                          element->GetToken().GetLocation(),
+                                          code));
+        break;
+      default:
+        node->Accept(this);
+        break;
+    }
   }
 }
 
@@ -32,8 +59,29 @@ SemanticValidator::Visit(FunctionParameter* element) {
 
 void
 SemanticValidator::Visit(Block* element) {
-  for (const AstNodePtr& node : element->GetStatements()) {
-    node->Accept(this);
+  for (size_t i = 0; i < element->GetStatements().size(); i++) {
+    switch (element->GetStatements().at(i)->GetKind()) {
+      case AST_BINARY_OPERATION:
+      case AST_VARIABLE:
+      case AST_INTEGER_LITERAL:
+      case AST_DECIMAL_LITERAL:
+      case AST_STRING_LITERAL:
+      case AST_NULL_VALUE:
+      case AST_BOOL_VALUE:
+        errors.push_back(Errors::Generate(Errors::UNASSIGNED_VALUE,
+                                          element->GetToken().GetLocation(),
+                                          code));
+        break;
+      case AST_RETURN:
+        if(i < (element->GetStatements().size() - 1)) {
+          errors.push_back(Errors::Generate(Errors::UNASSIGNED_VALUE,
+                                            element->GetToken().GetLocation(),
+                                            code));
+          break;
+        }
+      default:
+        element->GetStatements().at(i)->Accept(this);
+    }
   }
 }
 
