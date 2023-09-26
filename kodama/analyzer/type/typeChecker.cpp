@@ -121,7 +121,7 @@ TypeChecker::Visit(BinaryOperation* element) {
   element->GetRhs()->Accept(this);
   TypePtr rhs = lastVisitedType;
 
-  if (lhs != rhs) {
+  if (lhs->GetTypeName() != rhs->GetTypeName()) {
     errors.push_back(Errors::Generate(Errors::RETURN_TYPE_MISMATCH,
                                       element->GetToken().GetLocation(),
                                       code,

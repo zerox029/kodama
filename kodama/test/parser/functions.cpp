@@ -66,7 +66,7 @@ TEST(FunctionDeclaration, MissingIdentifier) {
 
   // THEN
   EXPECT_EQ(errors.size(), 1);
-  EXPECT_EQ(errors.at(0).GetErrorType(), "syntax error");
+  EXPECT_EQ(errors.at(0).GetErrorClass(), "syntax error");
   EXPECT_EQ(errors.at(0).GetErrorMessage(),  expectedMessage);
   AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
 }
@@ -83,7 +83,7 @@ TEST(FunctionDeclaration, MissingOpeningParen) {
 
   // THEN
   EXPECT_EQ(errors.size(), 1);
-  EXPECT_EQ(errors.at(0).GetErrorType(), "syntax error");
+  EXPECT_EQ(errors.at(0).GetErrorClass(), "syntax error");
   EXPECT_EQ(errors.at(0).GetErrorMessage(),  expectedMessage);
   AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
 }
@@ -99,7 +99,7 @@ TEST(FunctionDeclaration, MissingClosingParen) {
 
   // THEN
   EXPECT_EQ(errors.size(), 1);
-  EXPECT_EQ(errors.at(0).GetErrorType(), "syntax error");
+  EXPECT_EQ(errors.at(0).GetErrorClass(), "syntax error");
   EXPECT_EQ(errors.at(0).GetErrorMessage(),  expectedMessage);
   AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
 }
@@ -115,7 +115,7 @@ TEST(FunctionDeclaration, MissingReturnArrow) {
 
   // THEN
   EXPECT_EQ(errors.size(), 1);
-  EXPECT_EQ(errors.at(0).GetErrorType(), "syntax error");
+  EXPECT_EQ(errors.at(0).GetErrorClass(), "syntax error");
   EXPECT_EQ(errors.at(0).GetErrorMessage(),  expectedMessage);
   AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
 }
@@ -130,7 +130,7 @@ TEST(FunctionDeclaration, MissingReturnType) {
 
   // THEN
   EXPECT_EQ(errors.size(), 1);
-  EXPECT_EQ(errors.at(0).GetErrorType(), "syntax error");
+  EXPECT_EQ(errors.at(0).GetErrorClass(), "syntax error");
   EXPECT_EQ(errors.at(0).GetErrorMessage(), errorStrings::EXPECTED_DATATYPE);
   AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
 }
@@ -146,7 +146,7 @@ TEST(FunctionDeclaration, MissingOpeningCurly) {
 
   // THEN
   EXPECT_EQ(errors.size(), 1);
-  EXPECT_EQ(errors.at(0).GetErrorType(), "syntax error");
+  EXPECT_EQ(errors.at(0).GetErrorClass(), "syntax error");
   EXPECT_EQ(errors.at(0).GetErrorMessage(), expectedMessage);
   AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
 }
@@ -162,7 +162,7 @@ TEST(FunctionDeclaration, AbortAfterFirstError) {
 
   // THEN
   EXPECT_EQ(errors.size(), 1);
-  EXPECT_EQ(errors.at(0).GetErrorType(), "syntax error");
+  EXPECT_EQ(errors.at(0).GetErrorClass(), "syntax error");
   EXPECT_EQ(errors.at(0).GetErrorMessage(),  expectedMessage);
   AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
 }
