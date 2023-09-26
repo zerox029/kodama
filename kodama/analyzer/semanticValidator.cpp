@@ -62,10 +62,10 @@ void
 SemanticValidator::Visit(AssignmentExpression* element) {
   // Verify that the variable was not already defined
   if (symbolTable.contains(element->GetIdentifier())) {
-    std::string errorMessage = "illegal redefinition of '" + element->GetIdentifier() + "'";
-    Location location = element->GetToken().GetLocation();
-    Error error{"semantic error", errorMessage, location, code.at(location.lineNumber)};
-    errors.push_back(error);
+    errors.push_back(Errors::Generate(Errors::ILLEGAL_REDEFINITION,
+                                      element->GetToken().GetLocation(),
+                                      code,
+                                      element->GetIdentifier()));
   } else {
     symbolTable.insert({element->GetIdentifier(), element->GetDataType()});
   }
@@ -77,20 +77,18 @@ void
 SemanticValidator::Visit(ReassignmentExpression* element) {
   // Verify that the variable being reassigned to exists
   if (!symbolTable.contains(element->GetIdentifier())) {
-    std::string errorMessage = "cannot find symbol '" + element->GetIdentifier() + "' in scope";
-    Location location = element->GetToken().GetLocation();
-    Error error{"error", errorMessage, location, code.at(location.lineNumber)};
-    errors.push_back(error);
-
-    return;
+    errors.push_back(Errors::Generate(Errors::ID_NOT_FOUND,
+                                      element->GetToken().GetLocation(),
+                                      code,
+                                      element->GetIdentifier()));
   }
 
   //Verify that the variable being reassigned to is mutable
   if (!symbolTable.at(element->GetIdentifier())->IsMutable()) {
-    std::string errorMessage = "cannot assign twice to value '" + element->GetIdentifier() + "'";
-    Location location = element->GetToken().GetLocation();
-    Error error{"error", errorMessage, location, code.at(location.lineNumber)};
-    errors.push_back(error);
+    errors.push_back(Errors::Generate(Errors::ASSIGN_VAL,
+                                      element->GetToken().GetLocation(),
+                                      code,
+                                      element->GetIdentifier()));
   }
 
   element->GetValue()->Accept(this);
@@ -106,12 +104,10 @@ void
 SemanticValidator::Visit(FunctionCall* element) {
   // Verify that the function exists
   if (!symbolTable.contains(element->GetIdentifier())) {
-    std::string errorMessage = "cannot find symbol '" + element->GetIdentifier() + "' in scope";
-    Location location = element->GetToken().GetLocation();
-    Error error{"error", errorMessage, location, code.at(location.lineNumber)};
-    errors.push_back(error);
-
-    return;
+    errors.push_back(Errors::Generate(Errors::ID_NOT_FOUND,
+                                      element->GetToken().GetLocation(),
+                                      code,
+                                      element->GetIdentifier()));
   }
 }
 
@@ -124,12 +120,10 @@ void
 SemanticValidator::Visit(Variable* element) {
   // Verify that the function exists
   if (!symbolTable.contains(element->GetIdentifier())) {
-    std::string errorMessage = "cannot find symbol '" + element->GetIdentifier() + "' in scope";
-    Location location = element->GetToken().GetLocation();
-    Error error{"error", errorMessage, location, code.at(location.lineNumber)};
-    errors.push_back(error);
-
-    return;
+    errors.push_back(Errors::Generate(Errors::ID_NOT_FOUND,
+                                      element->GetToken().GetLocation(),
+                                      code,
+                                      element->GetIdentifier()));
   }
 }
 

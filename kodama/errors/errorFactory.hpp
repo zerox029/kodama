@@ -13,7 +13,7 @@
 
 namespace Errors {
 enum ErrorType {
-  // Parsing
+  // Syntax
   EXPECTED_IDENTIFIER,
   EXPECTED_OP_DELIMITER,
   EXPECTED_CL_DELIMITER,
@@ -21,9 +21,12 @@ enum ErrorType {
   EXPECTED_TOKEN,
   EXPECTED_DATATYPE,
   EXPECTED_VALUE_IDENTIFIER,
-  UNTERMINATED_STRING
+  UNTERMINATED_STRING,
 
   // Semantic
+  ID_NOT_FOUND,
+  ASSIGN_VAL,
+  ILLEGAL_REDEFINITION,
 
   // Type
 };
@@ -54,6 +57,17 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
       return std::make_pair("syntax error", "expected value or identifier");
     case UNTERMINATED_STRING:
       return std::make_pair("syntax error", "unterminated string");
+
+    // Semantic
+    case ID_NOT_FOUND:
+      return std::make_pair("error", fmt::vformat("cannot find symbol '{}' in scope",
+                                                         fmt::make_format_args(std::forward<T>(args)...)));
+    case ASSIGN_VAL:
+      return std::make_pair("error", fmt::vformat("cannot assign twice to value '{}'",
+                                                  fmt::make_format_args(std::forward<T>(args)...)));
+    case ILLEGAL_REDEFINITION:
+      return std::make_pair("error", fmt::vformat("illegal redefinition of '{}'",
+                                                  fmt::make_format_args(std::forward<T>(args)...)));
   }
 }
 
