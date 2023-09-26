@@ -353,7 +353,7 @@ Parser::ParseFunctionCall() {
   return nullptr;
 }
 
-/// function_arguments: { identifier ':' equality ',' } identifier ':' equality
+/// function_arguments: { [identifier ':'] equality ',' } [identifier ':'] equality
 std::vector<AstNodePtr>
 Parser::ParseFunctionArguments() {
   std::vector<AstNodePtr> arguments{};
@@ -364,6 +364,10 @@ Parser::ParseFunctionArguments() {
       AstNodePtr value = ParseEqualityExpression();
 
       AstNodePtr parameter = std::make_shared<FunctionArgument>(*identifier, identifier->GetStr(), value);
+      arguments.push_back(parameter);
+    }
+    else if(AstNodePtr value = ParseEqualityExpression()) {
+      AstNodePtr parameter = std::make_shared<FunctionArgument>(value->GetToken(), value);
       arguments.push_back(parameter);
     }
   } while (Consume(TK_COMMA));

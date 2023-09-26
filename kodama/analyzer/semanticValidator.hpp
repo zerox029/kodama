@@ -41,6 +41,8 @@ class SemanticValidator : public AstVisitor {
   void Visit(StringLiteral* element) override;
   void Visit(BoolValue* element) override;
   void Visit(NullValue* element) override;
+
+  void ValidateFunctionArguments(const std::vector<AstNodePtr>& arguments);
 };
 
 

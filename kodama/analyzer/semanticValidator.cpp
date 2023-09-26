@@ -4,12 +4,15 @@
 
 #include "semanticValidator.hpp"
 #include "../errors/errorFactory.hpp"
+#include <cassert>
 
 SemanticValidator::SemanticValidator(const std::vector<std::string>& code, const std::vector<Token>& tokens)
     : code{code}, tokens{tokens} {}
 
 std::vector<Error>
 SemanticValidator::Validate(const AstNodePtr& ast) {
+  ast->Accept(this);
+
   return errors;
 }
 
@@ -73,7 +76,7 @@ SemanticValidator::Visit(Block* element) {
                                           code));
         break;
       case AST_RETURN:
-        if(i < (element->GetStatements().size() - 1)) {
+        if (i < (element->GetStatements().size() - 1)) {
           errors.push_back(Errors::Generate(Errors::UNASSIGNED_VALUE,
                                             element->GetToken().GetLocation(),
                                             code));
@@ -161,6 +164,23 @@ SemanticValidator::Visit(FunctionCall* element) {
                                       element->GetToken().GetLocation(),
                                       code,
                                       element->GetIdentifier()));
+  }
+
+  ValidateFunctionArguments(element->GetArguments());
+}
+
+void
+SemanticValidator::ValidateFunctionArguments(const std::vector<AstNodePtr>& arguments) {
+  // Verify that no positional argument is found after a named argument
+  bool foundNamedArgument = false;
+  for (const AstNodePtr arg : arguments) {
+    FunctionArgument* argument = dynamic_cast<FunctionArgument*>(arg.get());
+    if (argument->GetIdentifier() != "") {
+      foundNamedArgument = true;
+    }
+    if (argument->GetIdentifier() == "" && foundNamedArgument) {
+      errors.push_back(Errors::Generate(Errors::INVALID_POSITIONAL_ARGUMENT, argument->GetToken().GetLocation(), code));
+    }
   }
 }
 

@@ -40,4 +40,4 @@ mul_expression : number '*' mul_expression
 
 primary : call | number | identifier;
 call : identifier '(' function_arguments ')';
-function_arguments : { identifier ':' equality ',' } identifier ':' equality;
+function_arguments : { [identifier ':'] equality ',' } [identifier ':'] equality;

@@ -31,6 +31,7 @@ enum ErrorType {
   INVALID_OUTSIDE_FUNCTION,
   INVALID_INSIDE_FUNCTION,
   UNREACHABLE_CODE,
+  INVALID_POSITIONAL_ARGUMENT,
 
   // Type
   RETURN_TYPE_MISMATCH,
@@ -83,6 +84,9 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
                                                   fmt::make_format_args(std::forward<T>(args)...)));
     case UNREACHABLE_CODE:
       return std::make_pair("error", fmt::vformat("everything after this statement is unreachable",
+                                                  fmt::make_format_args(std::forward<T>(args)...)));
+    case INVALID_POSITIONAL_ARGUMENT:
+      return std::make_pair("error", fmt::vformat("positional argument after named argument",
                                                   fmt::make_format_args(std::forward<T>(args)...)));
 
     // Type

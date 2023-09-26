@@ -267,6 +267,9 @@ FunctionCall::GetKind() const { return AST_FUNCTION_CALL; }
 
 
 /// Function argument
+FunctionArgument::FunctionArgument(Token token, AstNodePtr value)
+    : AstNode(token), identifier{""}, value{std::move(value)} {}
+
 FunctionArgument::FunctionArgument(Token token, std::string_view identifier, AstNodePtr value)
     : AstNode(token), identifier{identifier}, value{std::move(value)} {}
 

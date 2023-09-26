@@ -260,6 +260,7 @@ class FunctionArgument : public AstNode {
   AstNodePtr value;
 
  public:
+  FunctionArgument(Token token, AstNodePtr value);
   FunctionArgument(Token token, std::string_view identifier, AstNodePtr value);
 
   std::string GetIdentifier() const;
