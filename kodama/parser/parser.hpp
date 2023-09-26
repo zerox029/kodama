@@ -8,6 +8,7 @@
 #include "../lexer/token.hpp"
 #include "../ast/ast.hpp"
 #include "../errors/error.hpp"
+#include "../errors/errorFactory.hpp"
 #include <queue>
 #include <utility>
 #include <memory>
@@ -75,9 +76,10 @@ class Parser {
    * @param errorMessage The error message to display if the token is not found
    * @return The matched token or a nullptr
    */
-  std::unique_ptr<Token> Expect(TokenType tokenType, const std::function<Error()>& errorHandler);
-  std::unique_ptr<Token> ExpectOneOf(const std::list<TokenType>& possibleTokenTypes,
-                                     const std::function<Error()>& errorHandler);
+  template<class... T>
+  std::unique_ptr<Token> Expect(TokenType tokenType, Errors::ErrorType errorType, T&& ... args);
+  template<class... T>
+  std::unique_ptr<Token> ExpectOneOf(const std::list<TokenType>& possibleTokenTypes, Errors::ErrorType errorType, T&& ... args);
   std::unique_ptr<Token> ExpectDataType();
 
 
@@ -96,7 +98,8 @@ class Parser {
    * @param errorMessage The error message to display if the token is not found
    * @return
    */
-  bool PeekWithError(size_t lookaheadDistance, TokenType tokenType, const std::function<Error()>& errorHandler);
+  template<class... T>
+  bool PeekWithError(size_t lookaheadDistance, TokenType tokenType, Errors::ErrorType errorType, T&& ... args);
 
   /**
    * Panic-mode recovery

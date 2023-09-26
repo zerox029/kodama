@@ -7,8 +7,9 @@
 #include <string>
 #include <format>
 
+namespace Errors {
 Error
-ErrorFactory::Expected(const std::string& errorMessage, const Token& actual, const std::vector<std::string>& code) {
+Expected(const std::string& errorMessage, const Token& actual, const std::vector<std::string>& code) {
   Location location = actual.GetLocation();
   location.lineNumber += 1;
   location.characterLineIndex += 1;
@@ -17,14 +18,14 @@ ErrorFactory::Expected(const std::string& errorMessage, const Token& actual, con
 }
 
 Error
-ErrorFactory::Expected(const TokenType expected, const Token& actual, const std::vector<std::string>& code) {
+Expected(const TokenType expected, const Token& actual, const std::vector<std::string>& code) {
   std::string message{};
   switch (expected) {
     case TK_EOF:
       return Expected(expected, code);
     case TK_IDENTIFIER:
-       message = std::format(errorStrings::EXPECTED_IDENTIFIER, actual.GetStr());
-       break;
+      message = std::format(errorStrings::EXPECTED_IDENTIFIER, actual.GetStr());
+      break;
     case TK_OPEN_PAREN:
     case TK_OPEN_CURLY:
       message = std::format(errorStrings::EXPECTED_OP_DELIMITER, Lexer::GetSymbolFromTokenType(expected), actual.GetStr());
@@ -45,6 +46,7 @@ ErrorFactory::Expected(const TokenType expected, const Token& actual, const std:
 }
 
 Error
-ErrorFactory::Expected(const TokenType tokenType, const std::vector<std::string>& code) {
+Expected(const TokenType tokenType, const std::vector<std::string>& code) {
 
+}
 }

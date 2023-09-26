@@ -20,7 +20,7 @@ inline constexpr auto EXPECTED_VALUE_IDENTIFIER = "expected value or identifier"
 
 class Error {
  private:
-  std::string errorType;
+  std::string errorClass;
   std::string errorMessage;
   Location errorLocation;
   std::string codeLine;
@@ -29,7 +29,7 @@ class Error {
   Error(std::string errorType, std::string errorMessage, Location errorLocation, std::string codeLine);
   void Throw() const;
 
-  const std::string& GetErrorType() const;
+  const std::string& GetErrorClass() const;
   const std::string& GetErrorMessage() const;
   const Location& GetErrorLocation() const;
   const std::string& GetCodeLine() const;

@@ -20,7 +20,7 @@
 #include <utility>
 
 Error::Error(std::string errorType, std::string errorMessage, Location errorLocation, std::string codeLine)
-    : errorType{std::move(errorType)},
+    : errorClass{std::move(errorType)},
       errorMessage{std::move(errorMessage)},
       errorLocation{std::move(errorLocation)},
       codeLine{std::move(codeLine)} {}
@@ -33,7 +33,7 @@ Error::Throw() const {
   std::cout << "\033[90m"
             << errorLocation.filePath
             << "(" << errorLocation.lineNumber << ":" << errorLocation.characterLineIndex << "): "
-            << errorType + ": " + errorMessage
+            << errorClass + ": " + errorMessage
             << "\033[0m\n";
 
   std::cout << trimmedCode << std::endl;
@@ -41,8 +41,8 @@ Error::Throw() const {
 }
 
 const std::string&
-Error::GetErrorType() const {
-  return errorType;
+Error::GetErrorClass() const {
+  return errorClass;
 }
 
 const std::string&

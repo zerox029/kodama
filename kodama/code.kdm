@@ -1,4 +1,4 @@
-def test () -> i32 {
-    retu
+def test () -> i32
+    return 0;
 
 }

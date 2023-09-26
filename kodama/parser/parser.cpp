@@ -3,11 +3,11 @@
 //
 
 #include "parser.hpp"
-#include "../errors/errorFactory.hpp"
 #include <utility>
 #include <iostream>
 #include <variant>
 #include <functional>
+#include <utility>
 
 Parser::Parser(std::vector<std::string> code, std::vector<Token> tokensVec) : code{std::move(code)},
                                                                               tokens{std::move(tokensVec)},
@@ -35,13 +35,13 @@ Parser::ParseFunctionDeclaration() {
   if (std::unique_ptr<Token> defToken = Consume(TK_DEF)) {
     try {
       std::unique_ptr<Token> identifierToken =
-          Expect(TK_IDENTIFIER, [this]() { return ErrorFactory::Expected(TK_IDENTIFIER, currentToken, code); });
+          Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, std::string("{"));
 
-      Expect(TK_OPEN_PAREN, [this]() { return ErrorFactory::Expected(TK_OPEN_PAREN, currentToken, code); });
+      Expect(TK_OPEN_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
       std::vector<AstNodePtr> parameters = ParseFunctionParameters();
-      Expect(TK_CLOSED_PAREN, [this]() { return ErrorFactory::Expected(TK_CLOSED_PAREN, currentToken, code); });
+      Expect(TK_CLOSED_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
 
-      Expect(TK_ARROW, [this]() { return ErrorFactory::Expected(TK_ARROW, currentToken, code); });
+      Expect(TK_ARROW, Errors::EXPECTED_TOKEN, std::string("->"), currentToken.GetStr());
       std::unique_ptr<Token> datatypeToken = ExpectDataType();
 
       AstNodePtr body = ParseFunctionBody();
@@ -70,7 +70,7 @@ Parser::ParseFunctionParameters() {
   try {
     do {
       if (std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
-        Expect(TK_COLON, [this]() { return ErrorFactory::Expected(TK_COLON, currentToken, code); });
+        Expect(TK_COLON, Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
         TypePtr dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
 
         AstNodePtr parameter = std::make_shared<FunctionParameter>(*identifier, identifier->GetStr(), dataType);
@@ -93,13 +93,13 @@ Parser::ParseFunctionBody() {
 
   std::unique_ptr<Token> curlyToken{};
   try {
-    curlyToken = Expect(TK_OPEN_CURLY, [this]() { return ErrorFactory::Expected(TK_OPEN_CURLY, currentToken, code); });
+    curlyToken = Expect(TK_OPEN_CURLY,  Errors::EXPECTED_OP_DELIMITER, std::string("{"), currentToken.GetStr());
 
     while (!Peek(0, TK_CLOSED_CURLY)) {
       statements.push_back(ParseStatement());
     }
 
-    Expect(TK_CLOSED_CURLY, [this]() { return ErrorFactory::Expected(TK_CLOSED_CURLY, currentToken, code); });
+    Expect(TK_CLOSED_CURLY,  Errors::EXPECTED_OP_DELIMITER, std::string("}"), currentToken.GetStr());
 
     return std::make_shared<Block>(*curlyToken, statements);
   }
@@ -166,9 +166,9 @@ Parser::ParseBlock() {
 AstNodePtr
 Parser::ParseIfElseStatement() {
   if (std::unique_ptr<Token> ifToken = Consume(TK_IF)) {
-    Expect(TK_OPEN_PAREN, [this]() { return ErrorFactory::Expected(TK_OPEN_PAREN, currentToken, code); });
+    Expect(TK_OPEN_PAREN,  Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
     AstNodePtr condition{ParseEqualityExpression()};
-    Expect(TK_CLOSED_PAREN, [this]() { return ErrorFactory::Expected(TK_CLOSED_PAREN, currentToken, code); });
+    Expect(TK_CLOSED_PAREN,  Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
     AstNodePtr consequent{ParseStatement()};
 
     if (Consume(TK_ELSE)) {
@@ -186,9 +186,9 @@ Parser::ParseIfElseStatement() {
 AstNodePtr
 Parser::ParseWhileLoop() {
   if (std::unique_ptr<Token> whileToken = Consume(TK_WHILE)) {
-    Expect(TK_OPEN_PAREN, [this]() { return ErrorFactory::Expected(TK_OPEN_PAREN, currentToken, code); });
+    Expect(TK_OPEN_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
     AstNodePtr condition{ParseEqualityExpression()};
-    Expect(TK_CLOSED_PAREN, [this]() { return ErrorFactory::Expected(TK_CLOSED_PAREN, currentToken, code); });
+    Expect(TK_CLOSED_PAREN,  Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
     AstNodePtr consequent{ParseStatement()};
 
     return std::make_shared<WhileLoop>(*whileToken, condition, consequent);
@@ -202,10 +202,10 @@ AstNodePtr
 Parser::ParseDoWhileLoop() {
   if (std::unique_ptr<Token> doToken = Consume(TK_DO)) {
     AstNodePtr consequent{ParseStatement()};
-    Expect(TK_WHILE, [this]() { return ErrorFactory::Expected(TK_WHILE, currentToken, code); });
-    Expect(TK_OPEN_PAREN, [this]() { return ErrorFactory::Expected(TK_OPEN_PAREN, currentToken, code); });
+    Expect(TK_WHILE,  Errors::EXPECTED_KEYWORD, std::string("while"), currentToken.GetStr());
+    Expect(TK_OPEN_PAREN,  Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
     AstNodePtr condition{ParseEqualityExpression()};
-    Expect(TK_CLOSED_PAREN, [this]() { return ErrorFactory::Expected(TK_CLOSED_PAREN, currentToken, code); });
+    Expect(TK_CLOSED_PAREN,  Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
 
     return std::make_shared<DoWhileLoop>(*doToken, condition, consequent);
   }
@@ -233,12 +233,12 @@ Parser::ParseAssignment() {
   if (std::unique_ptr<Token> assignmentToken = ConsumeOneOf({TK_LET, TK_VAL})) {
     std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
 
-    Expect(TK_COLON, [this]() { return ErrorFactory::Expected(TK_COLON, currentToken, code); });
+    Expect(TK_COLON,  Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
 
     TypePtr dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
     dataType->SetMutability(assignmentToken->GetTokenType() == TK_LET);
 
-    Expect(TK_ASSIGN, [this]() { return ErrorFactory::Expected(TK_ASSIGN, currentToken, code); });
+    Expect(TK_ASSIGN,  Errors::EXPECTED_TOKEN, std::string("="), currentToken.GetStr());
 
     return std::make_shared<AssignmentExpression>(*assignmentToken,
                                                   identifier,
@@ -255,7 +255,7 @@ AstNodePtr
 Parser::ParseReassignment() {
   if (Peek(1, TK_ASSIGN)) {
     std::unique_ptr<Token> identifierToken = Consume(TK_IDENTIFIER);
-    Expect(TK_ASSIGN, [this]() { return ErrorFactory::Expected(TK_ASSIGN, currentToken, code); });
+    Expect(TK_ASSIGN,  Errors::EXPECTED_TOKEN, std::string("="), currentToken.GetStr());
     return std::make_shared<ReassignmentExpression>(*identifierToken,
                                                     identifierToken->GetStr(),
                                                     ParseEqualityExpression());
@@ -345,7 +345,7 @@ Parser::ParseFunctionCall() {
 
   if (Consume(TK_OPEN_PAREN)) {
     std::vector<AstNodePtr> arguments = ParseFunctionArguments();
-    Expect(TK_CLOSED_PAREN, [this]() { return ErrorFactory::Expected(TK_CLOSED_PAREN, currentToken, code); });
+    Expect(TK_CLOSED_PAREN,  Errors::EXPECTED_CL_DELIMITER, std::string(")"), currentToken.GetStr());
 
     return std::make_shared<FunctionCall>(*identifier, identifier->GetStr(), arguments, isExtern);
   }
@@ -360,7 +360,7 @@ Parser::ParseFunctionArguments() {
 
   do {
     if (std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
-      Expect(TK_COLON, [this]() { return ErrorFactory::Expected(TK_COLON, currentToken, code); });
+      Expect(TK_COLON,  Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
       AstNodePtr value = ParseEqualityExpression();
 
       AstNodePtr parameter = std::make_shared<FunctionArgument>(*identifier, identifier->GetStr(), value);
@@ -369,13 +369,7 @@ Parser::ParseFunctionArguments() {
   } while (Consume(TK_COMMA));
 
   // If there are no more arguments, generate an error if the next token isn't a closing parenthesis
-  PeekWithError(0,
-                TK_CLOSED_PAREN,
-                [this]() {
-                  return ErrorFactory::Expected(errorStrings::EXPECTED_VALUE_IDENTIFIER,
-                                                currentToken,
-                                                code);
-                });
+  PeekWithError(0, TK_CLOSED_PAREN, Errors::EXPECTED_VALUE_IDENTIFIER);
 
   return arguments;
 }
@@ -402,7 +396,7 @@ AstNodePtr
 Parser::ParseString() {
   if (Consume(TK_QUOTATION)) {
     std::unique_ptr<Token> stringToken = Consume(TK_STRING);
-    Expect(TK_QUOTATION, [this]() { return ErrorFactory::Expected("unterminated string", currentToken, code); });
+    Expect(TK_QUOTATION, Errors::UNTERMINATED_STRING);
 
     return std::make_shared<StringLiteral>(*stringToken, stringToken->GetStr());
   }
@@ -457,22 +451,24 @@ Parser::ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes) {
   return nullptr;
 }
 
+template<class... T>
 std::unique_ptr<Token>
-Parser::Expect(TokenType tokenType, const std::function<Error()>& errorHandler) {
+Parser::Expect(TokenType tokenType, Errors::ErrorType errorType, T&& ... args) {
   if (currentToken.GetTokenType() == tokenType) {
     std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
     Advance();
 
     return consumedToken;
-  } else {
-    errors.push_back(errorHandler());
-
-    throw ParsingException();
   }
+
+  errors.push_back(Errors::Generate(errorType, currentToken.GetLocation(), code, std::forward<T>(args)...));
+
+  throw ParsingException();
 }
 
+template<class... T>
 std::unique_ptr<Token>
-Parser::ExpectOneOf(const std::list<TokenType>& possibleTokenTypes, const std::function<Error()>& errorHandler) {
+Parser::ExpectOneOf(const std::list<TokenType>& possibleTokenTypes, Errors::ErrorType errorType, T&& ... args) {
   for (const TokenType& tokenType : possibleTokenTypes) {
     std::unique_ptr<Token> consumedToken = Consume(tokenType);
     if (consumedToken) {
@@ -480,7 +476,7 @@ Parser::ExpectOneOf(const std::list<TokenType>& possibleTokenTypes, const std::f
     }
   }
 
-  errors.push_back(errorHandler());
+  errors.push_back(Errors::Generate(errorType, currentToken.GetLocation(), code, std::forward<T>(args)...));
 
   throw ParsingException();
 }
@@ -501,7 +497,7 @@ Parser::ExpectDataType() {
                       TK_F32,
                       TK_F64,
                       TK_STRING},
-                     [this]() { return ErrorFactory::Expected(errorStrings::EXPECTED_DATATYPE, currentToken, code); });
+                     Errors::EXPECTED_DATATYPE);
 }
 
 bool
@@ -510,13 +506,13 @@ Parser::Peek(size_t lookaheadDistance, TokenType tokenType) {
   return tokens.at(currentTokenIndex + lookaheadDistance).GetTokenType() == tokenType;
 }
 
+template<class... T>
 bool
-Parser::PeekWithError(size_t lookaheadDistance, TokenType tokenType, const std::function<Error()>& errorHandler) {
+Parser::PeekWithError(size_t lookaheadDistance, TokenType tokenType, Errors::ErrorType errorType, T&& ... args) {
   if (Peek(lookaheadDistance, tokenType)) {
     return true;
   } else {
-    //ReportError(errorMessage, currentToken.GetLocation());
-    errors.push_back(errorHandler());
+    errors.push_back(Errors::Generate(errorType, currentToken.GetLocation(), code, std::forward<T>(args)...));
 
     return false;
   }

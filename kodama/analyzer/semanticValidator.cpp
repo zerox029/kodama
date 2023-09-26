@@ -3,6 +3,7 @@
 //
 
 #include "semanticValidator.hpp"
+#include "../errors/errorFactory.hpp"
 
 SemanticValidator::SemanticValidator(const std::vector<std::string>& code, const std::vector<Token>& tokens)
     : code{code}, tokens{tokens} {}

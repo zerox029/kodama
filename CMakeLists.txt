@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -g")
 
 find_package(LLVM 16 REQUIRED CONFIG)
+find_package(fmt CONFIG REQUIRED)
 
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
@@ -14,7 +15,7 @@ separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
 
 # Set source and output directories
-set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(SRC_DIR ${CMAKE_SOURCE_DIR}/kodama)
 set(OUT_DIR ${CMAKE_SOURCE_DIR}/out)
 
 # Collect source files
@@ -43,7 +44,7 @@ add_executable(Kodama
 llvm_map_components_to_libnames(llvm_libs support core)
 
 # Link against LLVM libraries
-target_link_libraries(Kodama LLVM-16)
+target_link_libraries(Kodama LLVM-16 fmt::fmt)
 
 # Add a custom target to run the lli command after building
 add_custom_target(run_llvm
@@ -55,8 +56,6 @@ add_custom_target(run_llvm
 
 # Make sure the custom target is executed after building
 add_dependencies(run_llvm Kodama)
-
-
 
 ## Tests
 include(FetchContent)
@@ -75,4 +74,4 @@ file(GLOB_RECURSE TEST_FILES
 
 add_executable(tests ${SRC_FILES} ${TEST_FILES})
 
-target_link_libraries(tests gtest gtest_main LLVM-16)
+target_link_libraries(tests gtest gtest_main LLVM-16 fmt::fmt)
