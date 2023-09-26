@@ -29,6 +29,8 @@ enum ErrorType {
   ILLEGAL_REDEFINITION,
 
   // Type
+  RETURN_TYPE_MISMATCH,
+  VAR_TYPE_MISMATCH
 };
 
 template<class... T>
@@ -68,6 +70,14 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
     case ILLEGAL_REDEFINITION:
       return std::make_pair("error", fmt::vformat("illegal redefinition of '{}'",
                                                   fmt::make_format_args(std::forward<T>(args)...)));
+
+    // Type
+    case RETURN_TYPE_MISMATCH:
+      return std::make_pair("type mismatch", fmt::vformat("expected return type '{}' but got '{}'",
+                                                  fmt::make_format_args(std::forward<T>(args)...)));
+    case VAR_TYPE_MISMATCH:
+      return std::make_pair("type mismatch", fmt::vformat("expected type '{}' but got '{}'",
+                                                          fmt::make_format_args(std::forward<T>(args)...)));
   }
 }
 

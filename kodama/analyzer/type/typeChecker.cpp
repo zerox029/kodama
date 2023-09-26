@@ -3,6 +3,7 @@
 //
 
 #include "typeChecker.hpp"
+#include "../../errors/errorFactory.hpp"
 #include <sstream>
 
 TypeChecker::TypeChecker(const std::vector<std::string>& code, const std::vector<Token>& tokens)
@@ -48,10 +49,11 @@ TypeChecker::Visit(ReturnStatement* element) {
 
   // Return type mismatch
   if (lastVisitedType->GetTypeName() != currentScopeType->GetTypeName()) {
-    std::string errorMessage = "expected " + currentScopeType->GetTypeNameString() + " return type but got " + lastVisitedType->GetTypeNameString();
-    Location location = element->GetReturnValue()->GetToken().GetLocation();
-    Error error{"type mismatch", errorMessage, location, code.at(location.lineNumber)};
-    errors.push_back(error);
+    errors.push_back(Errors::Generate(Errors::RETURN_TYPE_MISMATCH,
+                                      element->GetToken().GetLocation(),
+                                      code,
+                                      currentScopeType->GetTypeNameString(),
+                                      lastVisitedType->GetTypeNameString()));
   }
 }
 
@@ -89,10 +91,11 @@ TypeChecker::Visit(AssignmentExpression* element) {
 
   // Variable value type mismatch
   if (element->GetDataType()->GetTypeName() != lastVisitedType->GetTypeName()) {
-    std::string errorMessage = "expected " + element->GetDataType()->GetTypeNameString() + " but got " + lastVisitedType->GetTypeNameString();
-    Location location = element->GetValue()->GetToken().GetLocation();
-    Error error{"type mismatch", errorMessage, location, code.at(location.lineNumber)};
-    errors.push_back(error);
+    errors.push_back(Errors::Generate(Errors::VAR_TYPE_MISMATCH,
+                                      element->GetToken().GetLocation(),
+                                      code,
+                                      currentScopeType->GetTypeNameString(),
+                                      lastVisitedType->GetTypeNameString()));
   }
 
   symbolTable.insert({element->GetIdentifier(), element->GetDataType()});
@@ -112,10 +115,11 @@ TypeChecker::Visit(BinaryOperation* element) {
   TypePtr rhs = lastVisitedType;
 
   if (lhs != rhs) {
-    std::string errorMessage = "expected " + lhs->GetTypeNameString() + " but got " + rhs->GetTypeNameString();
-    Location location = element->GetRhs()->GetToken().GetLocation();
-    Error error{"type mismatch", errorMessage, location, code.at(location.lineNumber)};
-    errors.push_back(error);
+    errors.push_back(Errors::Generate(Errors::RETURN_TYPE_MISMATCH,
+                                      element->GetToken().GetLocation(),
+                                      code,
+                                      currentScopeType->GetTypeNameString(),
+                                      lastVisitedType->GetTypeNameString()));
   }
 }
 
@@ -136,8 +140,8 @@ TypeChecker::Visit(Variable* element) {
 
 void
 TypeChecker::Visit(IntegerLiteral* element) {
-  if(element->GetDatatype()->GetTypeName() != currentScopeType->GetTypeName()
-  && element->GetDatatype()->GetTypeCategory() == currentScopeType->GetTypeCategory()) {
+  if (element->GetDatatype()->GetTypeName() != currentScopeType->GetTypeName()
+      && element->GetDatatype()->GetTypeCategory() == currentScopeType->GetTypeCategory()) {
     element->SetDatatype(currentScopeType);
   }
 
@@ -146,7 +150,7 @@ TypeChecker::Visit(IntegerLiteral* element) {
 
 void
 TypeChecker::Visit(DecimalLiteral* element) {
-  if(element->GetDatatype()->GetTypeName() != currentScopeType->GetTypeName()
+  if (element->GetDatatype()->GetTypeName() != currentScopeType->GetTypeName()
       && element->GetDatatype()->GetTypeCategory() == currentScopeType->GetTypeCategory()) {
     element->SetDatatype(currentScopeType);
   }
@@ -159,10 +163,11 @@ TypeChecker::CheckConditionType(const AstNodePtr& condition) {
   condition->Accept(this);
 
   if (lastVisitedType->GetTypeCategory() != BOOLEAN) {
-    std::string errorMessage = "expected bool but got " + lastVisitedType->GetTypeNameString();
-    Location location = condition->GetToken().GetLocation();
-    Error error{"type mismatch", errorMessage, location, code.at(location.lineNumber)};
-    errors.push_back(error);
+    errors.push_back(Errors::Generate(Errors::RETURN_TYPE_MISMATCH,
+                                      condition->GetToken().GetLocation(),
+                                      code,
+                                      std::string("bool"),
+                                      lastVisitedType->GetTypeNameString()));
   }
 }
 
