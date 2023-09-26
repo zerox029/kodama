@@ -23,7 +23,7 @@ Parser::Parse() {
 
   if (errors.empty()) {
     Token dummyToken{TK_OPEN_CURLY, "", {"", 0, 0}};
-    return std::make_shared<Block>(dummyToken, statements);
+    return std::make_shared<Program>(dummyToken, statements);
   } else {
     return errors;
   }

@@ -11,6 +11,7 @@
 #include <llvm/IR/Value.h>
 
 enum AstNodeKind {
+  AST_PROGRAM,
   AST_FUNC_DEC,
   AST_FUNC_PARAM,
   AST_BLOCK,
@@ -48,6 +49,19 @@ class AstNode {
 };
 
 typedef std::shared_ptr<AstNode> AstNodePtr;
+
+class Program : public AstNode {
+ private:
+  std::vector<AstNodePtr> statements;
+
+ public:
+  Program(Token token, std::vector<AstNodePtr> statements);
+
+  std::vector<AstNodePtr> GetStatements() const;
+
+  AstNodeKind GetKind() const override;
+  void Accept(AstVisitor* visitor) override;
+};
 
 class FunctionDeclaration : public AstNode {
  private:

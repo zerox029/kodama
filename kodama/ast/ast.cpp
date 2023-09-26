@@ -6,6 +6,15 @@
 
 #include <utility>
 
+/// Program
+Program::Program(Token token, std::vector<AstNodePtr> statements) : AstNode{std::move(token)}, statements{std::move(statements)} {}
+
+std::vector<AstNodePtr>
+Program::GetStatements() const { return statements; }
+
+AstNodeKind
+Program::GetKind() const { return AST_PROGRAM; }
+
 /// Function declaration
 FunctionDeclaration::FunctionDeclaration(Token token,
                                          std::string identifier,

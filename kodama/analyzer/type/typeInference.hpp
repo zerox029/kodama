@@ -12,6 +12,7 @@ class TypeInference : public AstVisitor{
  private:
   TypePtr currentScopeType;
 
+  void Visit(Program* element) override;
   void Visit(FunctionDeclaration* element) override;
   void Visit(FunctionParameter* element) override;
   void Visit(Block* element) override;

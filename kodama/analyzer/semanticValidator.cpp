@@ -10,9 +10,14 @@ SemanticValidator::SemanticValidator(const std::vector<std::string>& code, const
 
 std::vector<Error>
 SemanticValidator::Validate(const AstNodePtr& ast) {
-  ast->Accept(this);
-
   return errors;
+}
+
+void
+SemanticValidator::Visit(Program* element) {
+  for (const AstNodePtr& node : element->GetStatements()) {
+    node->Accept(this);
+  }
 }
 
 void

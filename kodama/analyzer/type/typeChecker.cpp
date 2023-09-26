@@ -20,6 +20,13 @@ TypeChecker::TypeCheck(const AstNodePtr& ast) {
 }
 
 void
+TypeChecker::Visit(Program* element) {
+  for (const AstNodePtr& statement : element->GetStatements()) {
+    statement->Accept(this);
+  }
+}
+
+void
 TypeChecker::Visit(FunctionDeclaration* element) {
   symbolTable.insert({element->GetIdentifier(), element->GetReturnType()});
   currentScopeType = element->GetReturnType();

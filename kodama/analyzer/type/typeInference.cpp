@@ -5,6 +5,13 @@
 #include "typeInference.hpp"
 
 void
+TypeInference::Visit(Program* element) {
+  for(const AstNodePtr& node : element->GetStatements()) {
+    node->Accept(this);
+  }
+}
+
+void
 TypeInference::Visit(FunctionDeclaration* element) {
   element->GetBody()->Accept(this);
 }

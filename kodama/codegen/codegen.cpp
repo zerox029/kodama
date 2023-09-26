@@ -37,6 +37,13 @@ Codegen::Generate(const AstNodePtr& ast) {
 }
 
 void
+Codegen::Visit(Program* element) {
+  for (const AstNodePtr& node : element->GetStatements()) {
+    node->Accept(this);
+  }
+}
+
+void
 Codegen::Visit(FunctionDeclaration* element) {
   currentFunctionType = element->GetReturnType();
 
@@ -214,20 +221,20 @@ Codegen::Visit(AssignmentExpression* element) {
   currentVariableType = element->GetDataType();
   llvm::Type* varType = element->GetDataType()->GetLLVMType(*context);
 
-  if(element->GetDataType()->GetTypeName() == STRING_TYPE) {
+  if (element->GetDataType()->GetTypeName() == STRING_TYPE) {
     element->GetValue()->Accept(this);
 
     std::string dataLayoutStr = module->getDataLayoutStr();
     llvm::DataLayout dataLayout(dataLayoutStr);
 
     llvm::TypeSize size = dataLayout.getTypeAllocSize(lastGeneratedValue->getType());
-    llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, builder->getInt8(size), element->GetIdentifier());
+    llvm::AllocaInst
+        * variableAllocation = builder->CreateAlloca(varType, builder->getInt8(size), element->GetIdentifier());
 
     namedValues[element->GetIdentifier()] = variableAllocation;
 
     lastGeneratedValue = builder->CreateStore(lastGeneratedValue, variableAllocation);
-  }
-  else {
+  } else {
     element->GetValue()->Accept(this);
 
     llvm::AllocaInst* variableAllocation = builder->CreateAlloca(varType, nullptr, element->GetIdentifier());
@@ -359,10 +366,9 @@ Codegen::Visit(Variable* element) {
 
 void
 Codegen::Visit(IntegerLiteral* element) {
-  if(currentVariableType == nullptr) {
+  if (currentVariableType == nullptr) {
     lastGeneratedValue = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetValue(), 10));
-  }
-  else {
+  } else {
     lastGeneratedValue = llvm::ConstantInt::get(*context, llvm::APInt(32, element->GetValue(), 10));
   }
 }

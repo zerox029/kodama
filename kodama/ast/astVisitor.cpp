@@ -5,6 +5,11 @@
 #include "astVisitor.hpp"
 
 void
+Program::Accept(AstVisitor* visitor) {
+  return visitor->Visit(this);
+}
+
+void
 FunctionDeclaration::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
