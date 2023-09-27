@@ -86,25 +86,31 @@ Parser::ParseFunctionParameters() {
   }
 }
 
-/// function_body : '{' statement '}';
+/// function_body : '{' statement '}' | '=>' equality;
 AstNodePtr
 Parser::ParseFunctionBody() {
   std::vector<AstNodePtr> statements{};
 
-  std::unique_ptr<Token> curlyToken{};
+  std::unique_ptr<Token> openingToken{};
   try {
-    curlyToken = Expect(TK_OPEN_CURLY,  Errors::EXPECTED_OP_DELIMITER, std::string("{"), currentToken.GetStr());
+    openingToken = ExpectOneOf({TK_OPEN_CURLY, TK_DOUBLE_ARROW}, Errors::EXPECTED_FUNCTION_BODY, currentToken.GetStr());
 
-    while (!Peek(0, TK_CLOSED_CURLY)) {
-      statements.push_back(ParseStatement());
+    if (openingToken->GetTokenType() == TK_OPEN_CURLY) {
+      while (!Peek(0, TK_CLOSED_CURLY)) {
+        statements.push_back(ParseStatement());
+      }
+
+      Expect(TK_CLOSED_CURLY, Errors::EXPECTED_CL_DELIMITER, std::string("}"), currentToken.GetStr());
+
+      return std::make_shared<Block>(*openingToken, statements);
+    } else {
+      AstNodePtr returnValue = ParseEqualityExpression();
+
+      return std::make_shared<ReturnStatement>(*openingToken, returnValue);
     }
-
-    Expect(TK_CLOSED_CURLY,  Errors::EXPECTED_OP_DELIMITER, std::string("}"), currentToken.GetStr());
-
-    return std::make_shared<Block>(*curlyToken, statements);
   }
   catch (const ParsingException& parsingException) {
-    Token errorToken = curlyToken ? *curlyToken : currentToken;
+    Token errorToken = openingToken ? *openingToken : currentToken;
 
     Recover(TK_CLOSED_CURLY);
 
@@ -166,9 +172,9 @@ Parser::ParseBlock() {
 AstNodePtr
 Parser::ParseIfElseStatement() {
   if (std::unique_ptr<Token> ifToken = Consume(TK_IF)) {
-    Expect(TK_OPEN_PAREN,  Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
+    Expect(TK_OPEN_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
     AstNodePtr condition{ParseEqualityExpression()};
-    Expect(TK_CLOSED_PAREN,  Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
+    Expect(TK_CLOSED_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
     AstNodePtr consequent{ParseStatement()};
 
     if (Consume(TK_ELSE)) {
@@ -188,7 +194,7 @@ Parser::ParseWhileLoop() {
   if (std::unique_ptr<Token> whileToken = Consume(TK_WHILE)) {
     Expect(TK_OPEN_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
     AstNodePtr condition{ParseEqualityExpression()};
-    Expect(TK_CLOSED_PAREN,  Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
+    Expect(TK_CLOSED_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
     AstNodePtr consequent{ParseStatement()};
 
     return std::make_shared<WhileLoop>(*whileToken, condition, consequent);
@@ -202,10 +208,10 @@ AstNodePtr
 Parser::ParseDoWhileLoop() {
   if (std::unique_ptr<Token> doToken = Consume(TK_DO)) {
     AstNodePtr consequent{ParseStatement()};
-    Expect(TK_WHILE,  Errors::EXPECTED_KEYWORD, std::string("while"), currentToken.GetStr());
-    Expect(TK_OPEN_PAREN,  Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
+    Expect(TK_WHILE, Errors::EXPECTED_KEYWORD, std::string("while"), currentToken.GetStr());
+    Expect(TK_OPEN_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
     AstNodePtr condition{ParseEqualityExpression()};
-    Expect(TK_CLOSED_PAREN,  Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
+    Expect(TK_CLOSED_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
 
     return std::make_shared<DoWhileLoop>(*doToken, condition, consequent);
   }
@@ -233,12 +239,12 @@ Parser::ParseAssignment() {
   if (std::unique_ptr<Token> assignmentToken = ConsumeOneOf({TK_LET, TK_VAL})) {
     std::string identifier = Consume(TK_IDENTIFIER)->GetStr();
 
-    Expect(TK_COLON,  Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
+    Expect(TK_COLON, Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
 
     TypePtr dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
     dataType->SetMutability(assignmentToken->GetTokenType() == TK_LET);
 
-    Expect(TK_ASSIGN,  Errors::EXPECTED_TOKEN, std::string("="), currentToken.GetStr());
+    Expect(TK_ASSIGN, Errors::EXPECTED_TOKEN, std::string("="), currentToken.GetStr());
 
     return std::make_shared<AssignmentExpression>(*assignmentToken,
                                                   identifier,
@@ -255,7 +261,7 @@ AstNodePtr
 Parser::ParseReassignment() {
   if (Peek(1, TK_ASSIGN)) {
     std::unique_ptr<Token> identifierToken = Consume(TK_IDENTIFIER);
-    Expect(TK_ASSIGN,  Errors::EXPECTED_TOKEN, std::string("="), currentToken.GetStr());
+    Expect(TK_ASSIGN, Errors::EXPECTED_TOKEN, std::string("="), currentToken.GetStr());
     return std::make_shared<ReassignmentExpression>(*identifierToken,
                                                     identifierToken->GetStr(),
                                                     ParseEqualityExpression());
@@ -320,10 +326,9 @@ Parser::ParseMulExpression() {
 /// unary: ('-' | '+')? primary
 AstNodePtr
 Parser::ParseUnaryExpression() {
-  if(std::shared_ptr<Token> plusToken = Consume(TK_PLUS)) {
+  if (std::shared_ptr<Token> plusToken = Consume(TK_PLUS)) {
     return ParsePrimaryExpression();
-  }
-  else if(std::shared_ptr<Token> minusToken = Consume(TK_MINUS)) {
+  } else if (std::shared_ptr<Token> minusToken = Consume(TK_MINUS)) {
     AstNodePtr lhs = std::make_shared<IntegerLiteral>(*minusToken, "0");
     AstNodePtr rhs = ParsePrimaryExpression();
 
@@ -361,7 +366,7 @@ Parser::ParseFunctionCall() {
 
   if (Consume(TK_OPEN_PAREN)) {
     std::vector<AstNodePtr> arguments = ParseFunctionArguments();
-    Expect(TK_CLOSED_PAREN,  Errors::EXPECTED_CL_DELIMITER, std::string(")"), currentToken.GetStr());
+    Expect(TK_CLOSED_PAREN, Errors::EXPECTED_CL_DELIMITER, std::string(")"), currentToken.GetStr());
 
     return std::make_shared<FunctionCall>(*identifier, identifier->GetStr(), arguments, isExtern);
   }
@@ -376,13 +381,12 @@ Parser::ParseFunctionArguments() {
 
   do {
     if (std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
-      Expect(TK_COLON,  Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
+      Expect(TK_COLON, Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
       AstNodePtr value = ParseEqualityExpression();
 
       AstNodePtr parameter = std::make_shared<FunctionArgument>(*identifier, identifier->GetStr(), value);
       arguments.push_back(parameter);
-    }
-    else if(AstNodePtr value = ParseEqualityExpression()) {
+    } else if (AstNodePtr value = ParseEqualityExpression()) {
       AstNodePtr parameter = std::make_shared<FunctionArgument>(value->GetToken(), value);
       arguments.push_back(parameter);
     }

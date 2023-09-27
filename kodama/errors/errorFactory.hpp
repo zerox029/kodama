@@ -22,6 +22,7 @@ enum ErrorType {
   EXPECTED_DATATYPE,
   EXPECTED_VALUE_IDENTIFIER,
   UNTERMINATED_STRING,
+  EXPECTED_FUNCTION_BODY,
 
   // Semantic
   ID_NOT_FOUND,
@@ -64,6 +65,9 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
       return std::make_pair("syntax error", "expected value or identifier");
     case UNTERMINATED_STRING:
       return std::make_pair("syntax error", "unterminated string");
+    case EXPECTED_FUNCTION_BODY:
+      return std::make_pair("syntax error", fmt::vformat("expected  function body delimiter '=>' or '{' but got '{}'",
+                                                         fmt::make_format_args(std::forward<T>(args)...)));
 
     // Semantic
     case ID_NOT_FOUND:

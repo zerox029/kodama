@@ -15,7 +15,7 @@
 
 const std::unordered_map<std::string, TokenType> symbols = {
     {"==", TK_EQUAL}, {"!=", TK_NOT_EQUAL}, {"->", TK_ARROW},
-    {">=", TK_GREATER_EQ}, {"<=", TK_LESS_EQ},
+    {"=>", TK_DOUBLE_ARROW}, {">=", TK_GREATER_EQ}, {"<=", TK_LESS_EQ},
     {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH},
     {"=", TK_ASSIGN}, {"%", TK_PERCENT}, {":", TK_COLON}, {";", TK_SEMICOLON},
     {"(", TK_OPEN_PAREN}, {")", TK_CLOSED_PAREN}, {"{", TK_OPEN_CURLY},

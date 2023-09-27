@@ -39,8 +39,6 @@ class Parser {
 
   AstNodePtr ParseFunctionDeclaration();
   std::vector<AstNodePtr> ParseFunctionParameters();
-
-
   AstNodePtr ParseFunctionBody();
   AstNodePtr ParseStatement();
   AstNodePtr ParseIfElseStatement();

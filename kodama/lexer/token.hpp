@@ -26,6 +26,7 @@ enum TokenType {
   TK_COLON,       // :
   TK_SEMICOLON,   // ;
   TK_ARROW,       // ->
+  TK_DOUBLE_ARROW,// =>
   TK_QUOTATION,   // "
   TK_COMMA,       // ,
   TK_DOT,         // .
