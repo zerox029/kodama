@@ -33,10 +33,12 @@ add_expression : mul_expression '+' add_expression
                | mul_expression '-' add_expression
                | mul_expression;
 
-mul_expression : number '*' mul_expression
-               | number '/' mul_expression
-               | number '%' mul_expression
-               | primary;
+mul_expression : unary '*' mul_expression
+               | unary '/' mul_expression
+               | unary '%' mul_expression
+               | unary;
+
+unary : ['-' | '+'] primary;
 
 primary : call | number | identifier;
 call : identifier '(' function_arguments ')';

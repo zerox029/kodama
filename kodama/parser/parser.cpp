@@ -302,19 +302,35 @@ Parser::ParseAddExpression() {
   return expression;
 }
 
-/// mul_expression: number '*' mul_expression
-///               | number '/' mul_expression
-///               | number '%' mul_expression
-///               | primary
+/// mul_expression: unary '*' mul_expression
+///               | unary '/' mul_expression
+///               | unary '%' mul_expression
+///               | unary
 AstNodePtr
 Parser::ParseMulExpression() {
-  AstNodePtr expression = ParsePrimaryExpression();
+  AstNodePtr expression = ParseUnaryExpression();
 
   if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_STAR, TK_SLASH, TK_PERCENT})) {
-    return std::make_shared<BinaryOperation>(*operatorToken, expression, ParsePrimaryExpression());
+    return std::make_shared<BinaryOperation>(*operatorToken, expression, ParseUnaryExpression());
   }
 
   return expression;
+}
+
+/// unary: ('-' | '+')? primary
+AstNodePtr
+Parser::ParseUnaryExpression() {
+  if(std::shared_ptr<Token> plusToken = Consume(TK_PLUS)) {
+    return ParsePrimaryExpression();
+  }
+  else if(std::shared_ptr<Token> minusToken = Consume(TK_MINUS)) {
+    AstNodePtr lhs = std::make_shared<IntegerLiteral>(*minusToken, "0");
+    AstNodePtr rhs = ParsePrimaryExpression();
+
+    return std::make_shared<BinaryOperation>(*minusToken, lhs, rhs);
+  }
+
+  return ParsePrimaryExpression();
 }
 
 /// primary: string | number | call | identifier | bool | 'null'
@@ -378,21 +394,22 @@ Parser::ParseFunctionArguments() {
   return arguments;
 }
 
-/// ('0'-'9')+
+/// '-'? ('0'-'9')+
 AstNodePtr
 Parser::ParseNumber() {
+  bool isNegative = Consume(TK_MINUS) == nullptr;
   if (std::shared_ptr<Token> integerPortion = Consume(TK_NUMBER)) {
     if (Consume(TK_DOT)) { // Float value
       std::shared_ptr<Token> decimalPortion = Consume(TK_NUMBER);
 
       return std::make_shared<DecimalLiteral>(*integerPortion, integerPortion->GetStr(), decimalPortion->GetStr());
-    } // Integer value
-    else {
-      return std::make_shared<IntegerLiteral>(*integerPortion, integerPortion->GetStr());
     }
-  } else {
-    return nullptr;
+
+    // Integer value
+    return std::make_shared<IntegerLiteral>(*integerPortion, integerPortion->GetStr());
   }
+
+  return nullptr;
 }
 
 /// string: any string

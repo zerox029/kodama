@@ -54,6 +54,7 @@ class Parser {
   AstNodePtr ParseEqualityExpression();
   AstNodePtr ParseAddExpression();
   AstNodePtr ParseMulExpression();
+  AstNodePtr ParseUnaryExpression();
   AstNodePtr ParsePrimaryExpression();
   AstNodePtr ParseFunctionCall();
   std::vector<AstNodePtr> ParseFunctionArguments();
