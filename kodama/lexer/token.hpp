@@ -31,6 +31,7 @@ enum TokenType {
   TK_COMMA,       // ,
   TK_DOT,         // .
 
+  // Delimiters
   TK_OPEN_PAREN,  // (
   TK_CLOSED_PAREN,// )
   TK_OPEN_CURLY,  // {
@@ -64,6 +65,8 @@ enum TokenType {
   TK_WHILE,       // while
   TK_FOR,         // for
   TK_IN,          // in
+  TK_TO,          // to
+  TK_UNTIL,       // until
   TK_NULL,        // null
   TK_TRUE,        // true
   TK_FALSE,       // false

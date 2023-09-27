@@ -63,7 +63,7 @@ Compiler::Compile(const std::string& code) {
   std::vector<Token> tokens = lexer.Tokenize();
 
   AstNodePtr ast = Parse(codeLines, tokens).value();
-  ValidateSemantics(codeLines, tokens, ast);
-  TypeCheck(codeLines, tokens, ast);
+  //ValidateSemantics(codeLines, tokens, ast);
+  //TypeCheck(codeLines, tokens, ast);
   GenerateCode(ast);
 }

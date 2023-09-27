@@ -131,6 +131,8 @@ Parser::ParseStatement() {
     return whileLoop;
   } else if (AstNodePtr doWhileLoop = ParseDoWhileLoop()) {
     return doWhileLoop;
+  } else if(AstNodePtr forLoop = ParseForLoop()) {
+    return forLoop;
   } else {
     AstNodePtr expression = ParseExpression();
     Consume(TK_SEMICOLON);
@@ -214,6 +216,25 @@ Parser::ParseDoWhileLoop() {
     Expect(TK_CLOSED_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
 
     return std::make_shared<DoWhileLoop>(*doToken, condition, consequent);
+  }
+
+  return nullptr;
+}
+
+AstNodePtr
+Parser::ParseForLoop() {
+  if(std::unique_ptr<Token> forToken = Consume(TK_FOR)) {
+    std::unique_ptr<Token> identifierToken = Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
+    Expect(TK_IN, Errors::EXPECTED_KEYWORD, currentToken.GetStr());
+    std::unique_ptr<Token> fromToken = Expect(TK_NUMBER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
+    std::unique_ptr<Token> toUntilToken = ExpectOneOf({TK_TO, TK_UNTIL}, Errors::EXPECTED_TO_UNTIL, currentToken.GetStr());
+    std::unique_ptr<Token> toToken = Expect(TK_NUMBER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
+    AstNodePtr consequent{ParseStatement()};
+
+    int fromInt = stoi(fromToken->GetStr());
+    int toInt = toUntilToken->GetTokenType() == TK_TO ? stoi(toToken->GetStr()) : stoi(toToken->GetStr()) - 1;
+
+    return std::make_shared<ForLoop>(*forToken, identifierToken->GetStr(), fromInt, toInt, consequent);
   }
 
   return nullptr;

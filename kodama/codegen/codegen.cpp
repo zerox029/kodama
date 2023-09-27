@@ -217,6 +217,52 @@ Codegen::Visit(DoWhileLoop* element) {
 }
 
 void
+Codegen::Visit(ForLoop* element) {
+  llvm::Function* fn = module->getFunction("main");
+
+  llvm::BasicBlock* condition = llvm::BasicBlock::Create(*context, "condition", fn);
+  llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
+  llvm::BasicBlock* alternative = llvm::BasicBlock::Create(*context, "alternative", fn);
+
+  // Set up the counter
+  llvm::Value* fromValue = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetFrom()));
+  llvm::Value* toValue = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetTo()));
+
+  llvm::AllocaInst* counterAllocation = builder->CreateAlloca(llvm::Type::getInt64Ty(*context),
+                                                              nullptr,
+                                                              element->GetIdentifier());
+  builder->CreateStore(fromValue, counterAllocation);
+  namedValues[element->GetIdentifier()] = counterAllocation;
+
+
+  // Generate the condition
+  builder->CreateBr(condition);
+  builder->SetInsertPoint(condition);
+
+  llvm::Value* currentValue =
+      builder->CreateLoad(llvm::Type::getInt64Ty(*context), counterAllocation, element->GetIdentifier());
+  llvm::Value* conditionValue = builder->CreateICmpSLE(currentValue, toValue, "forcmp");
+
+  builder->CreateCondBr(conditionValue,
+                        consequent,
+                        alternative);
+
+  // Generate the consequent
+  builder->SetInsertPoint(consequent);
+  element->GetConsequent()->Accept(this);
+
+  currentValue = builder->CreateLoad(llvm::Type::getInt64Ty(*context), counterAllocation, element->GetIdentifier());
+  llvm::Value* forIncrementValue = llvm::ConstantInt::get(*context, llvm::APInt(64, 1));
+  llvm::Value* nextValue = builder->CreateAdd(currentValue, forIncrementValue, "forincrement");
+  builder->CreateStore(nextValue, counterAllocation);
+
+  builder->CreateBr(condition);
+
+  // Go to the merge point
+  builder->SetInsertPoint(alternative);
+}
+
+void
 Codegen::Visit(AssignmentExpression* element) {
   currentVariableType = element->GetDataType();
   llvm::Type* varType = element->GetDataType()->GetLLVMType(*context);

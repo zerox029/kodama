@@ -50,6 +50,11 @@ DoWhileLoop::Accept(AstVisitor* visitor) {
 }
 
 void
+ForLoop::Accept(AstVisitor* visitor) {
+  return visitor->Visit(this);
+}
+
+void
 AssignmentExpression::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }

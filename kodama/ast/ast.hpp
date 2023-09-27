@@ -20,6 +20,7 @@ enum AstNodeKind {
   AST_IF_ELSE,
   AST_WHILE,
   AST_DO_WHILE,
+  AST_FOR,
   AST_ASSIGNMENT,
   AST_REASSIGNMENT,
   AST_BINARY_OPERATION,
@@ -184,6 +185,25 @@ class DoWhileLoop : public AstNode {
 
   AstNodePtr GetCondition() const;
   AstNodePtr GetConsequent() const;
+
+  AstNodeKind GetKind() const override;
+  void Accept(AstVisitor* visitor) override;
+};
+
+class ForLoop : public AstNode {
+ private:
+  std::string identifier;
+  int from;
+  int to;
+  AstNodePtr consequent;
+
+ public:
+  ForLoop(Token token, std::string identifier, int from, int to, AstNodePtr consequent);
+
+  const std::string& GetIdentifier() const;
+  const int GetFrom() const;
+  const int GetTo() const;
+  const AstNodePtr& GetConsequent() const;
 
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) override;

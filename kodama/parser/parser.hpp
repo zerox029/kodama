@@ -46,6 +46,7 @@ class Parser {
   AstNodePtr ParseReturn();
   AstNodePtr ParseWhileLoop();
   AstNodePtr ParseDoWhileLoop();
+  AstNodePtr ParseForLoop();
   AstNodePtr ParseExpression();
   AstNodePtr ParseAssignment();
   AstNodePtr ParseReassignment();

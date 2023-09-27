@@ -55,6 +55,12 @@ TypeInference::Visit(DoWhileLoop* element) {
 }
 
 void
+TypeInference::Visit(ForLoop* element) {
+  element->GetConsequent()->Accept(this);
+}
+
+
+void
 TypeInference::Visit(AssignmentExpression* element) {
   currentScopeType = element->GetDataType();
   element->GetValue()->Accept(this);

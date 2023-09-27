@@ -90,6 +90,11 @@ TypeChecker::Visit(DoWhileLoop* element) {
 }
 
 void
+TypeChecker::Visit(ForLoop* element) {
+  element->GetConsequent()->Accept(this);
+}
+
+void
 TypeChecker::Visit(AssignmentExpression* element) {
   TypePtr previousScopeType = currentScopeType;
   currentScopeType = element->GetDataType();
@@ -111,7 +116,7 @@ TypeChecker::Visit(AssignmentExpression* element) {
 
 void
 TypeChecker::Visit(ReassignmentExpression* element) {
-
+  //TODO
 }
 
 void

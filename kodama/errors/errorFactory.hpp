@@ -23,6 +23,7 @@ enum ErrorType {
   EXPECTED_VALUE_IDENTIFIER,
   UNTERMINATED_STRING,
   EXPECTED_FUNCTION_BODY,
+  EXPECTED_TO_UNTIL,
 
   // Semantic
   ID_NOT_FOUND,
@@ -33,6 +34,7 @@ enum ErrorType {
   INVALID_INSIDE_FUNCTION,
   UNREACHABLE_CODE,
   INVALID_POSITIONAL_ARGUMENT,
+  LIST_BOUNDS_INVERTED,
 
   // Type
   RETURN_TYPE_MISMATCH,
@@ -66,7 +68,10 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
     case UNTERMINATED_STRING:
       return std::make_pair("syntax error", "unterminated string");
     case EXPECTED_FUNCTION_BODY:
-      return std::make_pair("syntax error", fmt::vformat("expected  function body delimiter '=>' or '{' but got '{}'",
+      return std::make_pair("syntax error", fmt::vformat("expected function body delimiter '=>' or '{' but got '{}'",
+                                                         fmt::make_format_args(std::forward<T>(args)...)));
+    case EXPECTED_TO_UNTIL:
+      return std::make_pair("syntax error", fmt::vformat("expected keyword 'to' or 'until' but got '{}'",
                                                          fmt::make_format_args(std::forward<T>(args)...)));
 
     // Semantic
@@ -91,6 +96,9 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
                                                   fmt::make_format_args(std::forward<T>(args)...)));
     case INVALID_POSITIONAL_ARGUMENT:
       return std::make_pair("error", fmt::vformat("positional argument after named argument",
+                                                  fmt::make_format_args(std::forward<T>(args)...)));
+    case LIST_BOUNDS_INVERTED:
+      return std::make_pair("error", fmt::vformat("list lower bound '{}' is greater than the greater bound '{}'",
                                                   fmt::make_format_args(std::forward<T>(args)...)));
 
     // Type

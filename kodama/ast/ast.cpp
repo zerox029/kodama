@@ -7,7 +7,8 @@
 #include <utility>
 
 /// Program
-Program::Program(Token token, std::vector<AstNodePtr> statements) : AstNode{std::move(token)}, statements{std::move(statements)} {}
+Program::Program(Token token, std::vector<AstNodePtr> statements) : AstNode{std::move(token)},
+                                                                    statements{std::move(statements)} {}
 
 std::vector<AstNodePtr>
 Program::GetStatements() const { return statements; }
@@ -147,6 +148,29 @@ AstNodeKind
 DoWhileLoop::GetKind() const { return AST_DO_WHILE; }
 
 
+/// For Loop
+ForLoop::ForLoop(Token token, std::string identifier, int from, int to, AstNodePtr consequent)
+    : AstNode(token),
+      identifier{std::move(identifier)},
+      from{from},
+      to{to},
+      consequent{std::move(consequent)} {}
+
+const std::string&
+ForLoop::GetIdentifier() const { return identifier; }
+
+const int
+ForLoop::GetFrom() const { return from; }
+
+const int
+ForLoop::GetTo() const { return to; }
+
+const AstNodePtr&
+ForLoop::GetConsequent() const { return consequent; }
+
+AstNodeKind
+ForLoop::GetKind() const { return AST_FOR; }
+
 /// AssignmentExpression
 AssignmentExpression::AssignmentExpression(Token token, std::string identifier, TypePtr dataType, AstNodePtr value)
     : AstNode(token),
@@ -212,7 +236,7 @@ IntegerLiteral::GetDatatype() const { return datatype; }
 
 void
 IntegerLiteral::SetDatatype(TypePtr type) {
-  if(type->GetTypeCategory() == INTEGER || type->GetTypeCategory() == UINTEGER) {
+  if (type->GetTypeCategory() == INTEGER || type->GetTypeCategory() == UINTEGER) {
     this->datatype = type;
   }
 }
@@ -239,7 +263,7 @@ DecimalLiteral::GetDatatype() const { return datatype; }
 
 void
 DecimalLiteral::SetDatatype(TypePtr type) {
-  if(type->GetTypeCategory() == DECIMAL) {
+  if (type->GetTypeCategory() == DECIMAL) {
     this->datatype = type;
   }
 }

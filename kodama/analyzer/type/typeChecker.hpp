@@ -33,6 +33,7 @@ class TypeChecker : public AstVisitor {
   void Visit(IfElseStatement* element) override;
   void Visit(WhileLoop* element) override;
   void Visit(DoWhileLoop* element) override;
+  void Visit(ForLoop* element) override;
   void Visit(AssignmentExpression* element) override;
   void Visit(ReassignmentExpression* element) override;
   void Visit(BinaryOperation* element) override;
