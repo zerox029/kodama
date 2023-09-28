@@ -116,15 +116,6 @@ SemanticValidator::Visit(DoWhileLoop* element) {
 
 void
 SemanticValidator::Visit(ForLoop* element) {
-  // Verify that the "from" index is lower than or equal to the "to" index
-  if(element->GetFrom() > element->GetTo()) {
-    errors.push_back(Errors::Generate(Errors::LIST_BOUNDS_INVERTED,
-                                      element->GetToken().GetLocation(),
-                                      code,
-                                      element->GetFrom(),
-                                      element->GetTo()));
-  }
-
   element->GetConsequent()->Accept(this);
 }
 

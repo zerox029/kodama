@@ -226,15 +226,18 @@ Parser::ParseForLoop() {
   if(std::unique_ptr<Token> forToken = Consume(TK_FOR)) {
     std::unique_ptr<Token> identifierToken = Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
     Expect(TK_IN, Errors::EXPECTED_KEYWORD, currentToken.GetStr());
-    std::unique_ptr<Token> fromToken = Expect(TK_NUMBER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
+    AstNodePtr from = ParseAddExpression();
     std::unique_ptr<Token> toUntilToken = ExpectOneOf({TK_TO, TK_UNTIL}, Errors::EXPECTED_TO_UNTIL, currentToken.GetStr());
-    std::unique_ptr<Token> toToken = Expect(TK_NUMBER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
+    AstNodePtr to = ParseAddExpression();
     AstNodePtr consequent{ParseStatement()};
 
-    int fromInt = stoi(fromToken->GetStr());
-    int toInt = toUntilToken->GetTokenType() == TK_TO ? stoi(toToken->GetStr()) : stoi(toToken->GetStr()) - 1;
+    if(toUntilToken->GetTokenType() == TK_TO) {
+      Token subtractionToken = Token{TK_MINUS, "-", {"", 0, 0}};
+      AstNodePtr subOne = std::make_shared<IntegerLiteral>(*toUntilToken, "1");
+      to = std::make_shared<BinaryOperation>(subtractionToken, to, subOne);
+    }
 
-    return std::make_shared<ForLoop>(*forToken, identifierToken->GetStr(), fromInt, toInt, consequent);
+    return std::make_shared<ForLoop>(*forToken, identifierToken->GetStr(), from, to, consequent);
   }
 
   return nullptr;
@@ -401,7 +404,8 @@ Parser::ParseFunctionArguments() {
   std::vector<AstNodePtr> arguments{};
 
   do {
-    if (std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER)) {
+    if (Peek(1, TK_COLON)) {
+      std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER);
       Expect(TK_COLON, Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
       AstNodePtr value = ParseEqualityExpression();
 

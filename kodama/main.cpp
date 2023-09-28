@@ -25,8 +25,10 @@ ReadFile() {
 
 int
 main() {
+  std::string code = ReadFile();
+
   Compiler compiler{};
-  compiler.Compile(ReadFile());
+  compiler.Compile(code);
 
   system("lli ../out/out.ll");
 

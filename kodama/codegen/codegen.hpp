@@ -23,6 +23,7 @@ class Codegen : public AstVisitor {
   llvm::Value* lastGeneratedValue;
 
   TypePtr currentFunctionType;
+  std::string currentFunctionName;
   TypePtr currentVariableType;
 
   llvm::Function* CreateFunction(const std::string& fnName,

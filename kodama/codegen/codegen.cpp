@@ -16,6 +16,7 @@ Codegen::Codegen() {
   module = std::make_unique<llvm::Module>("KodamaGenTest", *context);
   currentVariableType = nullptr;
   currentFunctionType = nullptr;
+  currentFunctionName = "";
 }
 
 void
@@ -46,6 +47,7 @@ Codegen::Visit(Program* element) {
 void
 Codegen::Visit(FunctionDeclaration* element) {
   currentFunctionType = element->GetReturnType();
+  currentFunctionName = element->GetIdentifier();
 
   std::vector<AstNodePtr> parameterNodes = element->GetParameters();
   std::vector<llvm::Type*> parameters{element->GetParameters().size()};
@@ -79,6 +81,7 @@ Codegen::Visit(FunctionDeclaration* element) {
 
   lastGeneratedValue = function;
   currentFunctionType = nullptr;
+  currentFunctionName = "";
 }
 
 void
@@ -103,7 +106,7 @@ Codegen::Visit(ReturnStatement* element) {
 
 void
 Codegen::Visit(IfStatement* element) {
-  llvm::Function* fn = module->getFunction("main");
+  llvm::Function* fn = module->getFunction(currentFunctionName);
 
   llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
   llvm::BasicBlock* alternative = llvm::BasicBlock::Create(*context, "alternative", fn);
@@ -127,7 +130,7 @@ Codegen::Visit(IfStatement* element) {
 
 void
 Codegen::Visit(IfElseStatement* element) {
-  llvm::Function* fn = module->getFunction("main");
+  llvm::Function* fn = module->getFunction(currentFunctionName);
 
   llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
   llvm::BasicBlock* alternative = llvm::BasicBlock::Create(*context, "alternative", fn);
@@ -144,6 +147,7 @@ Codegen::Visit(IfElseStatement* element) {
   element->GetConsequent()->Accept(this);
   builder->CreateBr(merge);
 
+
   // Generate the alternative
   builder->SetInsertPoint(alternative);
   element->GetAlternative()->Accept(this);
@@ -157,7 +161,7 @@ Codegen::Visit(IfElseStatement* element) {
 
 void
 Codegen::Visit(WhileLoop* element) {
-  llvm::Function* fn = module->getFunction("main");
+  llvm::Function* fn = module->getFunction(currentFunctionName);
 
   llvm::BasicBlock* condition = llvm::BasicBlock::Create(*context, "condition", fn);
   llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
@@ -187,7 +191,7 @@ Codegen::Visit(WhileLoop* element) {
 
 void
 Codegen::Visit(DoWhileLoop* element) {
-  llvm::Function* fn = module->getFunction("main");
+  llvm::Function* fn = module->getFunction(currentFunctionName);
 
   llvm::BasicBlock* condition = llvm::BasicBlock::Create(*context, "condition", fn);
   llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
@@ -218,15 +222,17 @@ Codegen::Visit(DoWhileLoop* element) {
 
 void
 Codegen::Visit(ForLoop* element) {
-  llvm::Function* fn = module->getFunction("main");
+  llvm::Function* fn = module->getFunction(currentFunctionName);
 
   llvm::BasicBlock* condition = llvm::BasicBlock::Create(*context, "condition", fn);
   llvm::BasicBlock* consequent = llvm::BasicBlock::Create(*context, "consequent", fn);
   llvm::BasicBlock* alternative = llvm::BasicBlock::Create(*context, "alternative", fn);
 
   // Set up the counter
-  llvm::Value* fromValue = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetFrom()));
-  llvm::Value* toValue = llvm::ConstantInt::get(*context, llvm::APInt(64, element->GetTo()));
+  element->GetFrom()->Accept(this);
+  llvm::Value* fromValue = lastGeneratedValue;
+  element->GetTo()->Accept(this);
+  llvm::Value* toValue = lastGeneratedValue;
 
   llvm::AllocaInst* counterAllocation = builder->CreateAlloca(llvm::Type::getInt64Ty(*context),
                                                               nullptr,
@@ -293,7 +299,9 @@ Codegen::Visit(AssignmentExpression* element) {
 
 void
 Codegen::Visit(ReassignmentExpression* element) {
-
+  element->GetValue()->Accept(this);
+  llvm::AllocaInst* variableAllocation = namedValues[element->GetIdentifier()];
+  lastGeneratedValue = builder->CreateStore(lastGeneratedValue, variableAllocation);
 }
 
 void
@@ -302,6 +310,9 @@ Codegen::Visit(BinaryOperation* element) {
   llvm::Value* lhs = lastGeneratedValue;
   element->GetRhs()->Accept(this);
   llvm::Value* rhs = lastGeneratedValue;
+
+  // Todo: remove this and replace with a better typing system
+  if(!currentVariableType) currentVariableType = std::make_shared<I64Type>();
 
   switch (element->GetOperator().GetTokenType()) {
     case TK_PLUS:
@@ -372,6 +383,8 @@ Codegen::Visit(BinaryOperation* element) {
     default:
       break;
   }
+
+  currentVariableType = nullptr;
 }
 
 void
@@ -383,11 +396,6 @@ Codegen::Visit(FunctionCall* element) {
     exit(1);
   }
 
-  // If argument mismatch error.
-  if (callee->arg_size() != element->GetArguments().size()) {
-    fprintf(stderr, ("Incorrect # arguments passed"));
-    exit(1);
-  }
 
   std::vector<llvm::Value*> args;
   for (auto& argument : element->GetArguments()) {

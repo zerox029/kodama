@@ -8,7 +8,7 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
 
-class irtransform {
+class IRTransform {
  public:
   static void FixEmptyBlocks(std::unique_ptr<llvm::Module>& module, std::unique_ptr<llvm::IRBuilder<>>& builder);
 };

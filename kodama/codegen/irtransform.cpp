@@ -5,7 +5,7 @@
 #include "irtransform.hpp"
 
 void //Return void from empty blocks(temporary behavior)
-irtransform::FixEmptyBlocks(std::unique_ptr<llvm::Module>& module, std::unique_ptr<llvm::IRBuilder<>>& builder) {
+IRTransform::FixEmptyBlocks(std::unique_ptr<llvm::Module>& module, std::unique_ptr<llvm::IRBuilder<>>& builder) {
   for (auto& function : *module) {
     for (auto basicBlockIterator = function.begin(); basicBlockIterator != function.end();) {
       llvm::BasicBlock* basicBlock = &(*basicBlockIterator);

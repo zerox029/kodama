@@ -149,20 +149,20 @@ DoWhileLoop::GetKind() const { return AST_DO_WHILE; }
 
 
 /// For Loop
-ForLoop::ForLoop(Token token, std::string identifier, int from, int to, AstNodePtr consequent)
-    : AstNode(token),
+ForLoop::ForLoop(Token token, std::string identifier, AstNodePtr from, AstNodePtr to, AstNodePtr consequent)
+    : AstNode(std::move(token)),
       identifier{std::move(identifier)},
-      from{from},
-      to{to},
+      from{std::move(from)},
+      to{std::move(to)},
       consequent{std::move(consequent)} {}
 
 const std::string&
 ForLoop::GetIdentifier() const { return identifier; }
 
-const int
+AstNodePtr
 ForLoop::GetFrom() const { return from; }
 
-const int
+AstNodePtr
 ForLoop::GetTo() const { return to; }
 
 const AstNodePtr&

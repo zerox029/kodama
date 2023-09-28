@@ -14,6 +14,7 @@ statement : expression [';']
           | 'if' '(' equality ')' statement ['else' statement]
           | 'while' '(' equality ')' statement
           | 'do' statement 'while' '(' condition ')'
+          | 'for' identifier 'in' add_expression ('to' | 'until') add_expression statement
           | 'return' expression [';'];
 
 expression : assignment | reassignment | equality;

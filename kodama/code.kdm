@@ -1,7 +1,32 @@
-def main() -> i64 {
-    for i in 1 to 10 {
-        printf(message: "oh ");
+def fibonacci(n: i64) -> i64 {
+    let a: i64 = 0
+    let b: i64 = 1
+
+    if(n < 0) {
+        printf("Invalid value")
+        return 0;
     }
+    else if(n == 0) {
+        return a
+    }
+    else if(n == 1) {
+            return b
+    }
+    else {
+        for i in 2 until n {
+            val c: i64 = a + b
+            a = b
+            b = c
+        }
+
+        return b
+    }
+
+    return 0;
+}
+
+def main() -> i64 {
+    printf("The 40th fibonacci number is %d", fibonacci(n: 40))
 
     return 0;
 }

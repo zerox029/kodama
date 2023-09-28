@@ -193,16 +193,16 @@ class DoWhileLoop : public AstNode {
 class ForLoop : public AstNode {
  private:
   std::string identifier;
-  int from;
-  int to;
+  AstNodePtr from;
+  AstNodePtr to;
   AstNodePtr consequent;
 
  public:
-  ForLoop(Token token, std::string identifier, int from, int to, AstNodePtr consequent);
+  ForLoop(Token token, std::string identifier, AstNodePtr from, AstNodePtr to, AstNodePtr consequent);
 
   const std::string& GetIdentifier() const;
-  const int GetFrom() const;
-  const int GetTo() const;
+  AstNodePtr GetFrom() const;
+  AstNodePtr GetTo() const;
   const AstNodePtr& GetConsequent() const;
 
   AstNodeKind GetKind() const override;
