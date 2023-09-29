@@ -24,6 +24,7 @@ enum ErrorType {
   UNTERMINATED_STRING,
   EXPECTED_FUNCTION_BODY,
   EXPECTED_TO_UNTIL,
+  UNEXPECTED_EXPRESSION,
 
   // Semantic
   ID_NOT_FOUND,
@@ -72,6 +73,9 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
                                                          fmt::make_format_args(std::forward<T>(args)...)));
     case EXPECTED_TO_UNTIL:
       return std::make_pair("syntax error", fmt::vformat("expected keyword 'to' or 'until' but got '{}'",
+                                                         fmt::make_format_args(std::forward<T>(args)...)));
+    case UNEXPECTED_EXPRESSION:
+      return std::make_pair("syntax error", fmt::vformat("unexpected expression '{}'",
                                                          fmt::make_format_args(std::forward<T>(args)...)));
 
     // Semantic

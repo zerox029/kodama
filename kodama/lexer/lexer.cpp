@@ -16,6 +16,7 @@ Lexer::Peek() {
   Token token = Next();
   index -= token.GetStr().length();
   characterLineIndex -= token.GetStr().length();
+  lineNumber -= token.GetTokenType() == TK_NEW_LINE ? 1 : 0;
 
   isLexingString = isLexingStringOldValue;
   lastTokenIsString = lastTokenIsStringOldValue;
@@ -25,17 +26,19 @@ Lexer::Peek() {
 
 Token
 Lexer::Next() {
-  // Eliminate white spaces outside of strings
+  // Eliminate white spaces outside of strings and return new lines as tokens
   while (!isLexingString && isspace(static_cast<unsigned char>(input.at(index))) && index < input.length() - 1) {
     // Handle newlines
     if (isNewline()) {
       lineNumber++;
+      index++;
       characterLineIndex = 0;
+
+      return Token{TK_NEW_LINE, "\n", {filePath, lineNumber, characterLineIndex}};
     } else {
       characterLineIndex++;
+      index++;
     }
-
-    index++;
   }
 
   if (isLexingString && !lastTokenIsString) {

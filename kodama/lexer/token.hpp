@@ -75,6 +75,7 @@ enum TokenType {
   TK_NUMBER,
   TK_IDENTIFIER,
 
+  TK_NEW_LINE,    // new line (\n)
   TK_EOF          // end of file
 };
 

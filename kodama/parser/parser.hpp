@@ -107,9 +107,12 @@ class Parser {
    * Ideally, update this to be more context based and/or add phrase-level recovery
    */
   void Recover(TokenType synchronizationToken);
+  void RecoverWithOneOf(const std::set<TokenType>& synchronizationTokens);
 
   void Advance();
   bool IsFinishedParsing();
+  void IgnoreNewlines();
+  size_t GetNewLineCountFromCurrentToken();
 };
 
 #endif //KODAMA_SRC_PARSER_PARSER_HPP_

@@ -121,23 +121,32 @@ Parser::ParseFunctionBody() {
 /// statement: return | block | if_else | while | do_while | expression ';'
 AstNodePtr
 Parser::ParseStatement() {
-  if (AstNodePtr ret = ParseReturn()) {
-    return ret;
-  } else if (AstNodePtr block = ParseBlock()) {
-    return block;
-  } else if (AstNodePtr ifElseStatement = ParseIfElseStatement()) {
-    return ifElseStatement;
-  } else if (AstNodePtr whileLoop = ParseWhileLoop()) {
-    return whileLoop;
-  } else if (AstNodePtr doWhileLoop = ParseDoWhileLoop()) {
-    return doWhileLoop;
-  } else if(AstNodePtr forLoop = ParseForLoop()) {
-    return forLoop;
-  } else {
-    AstNodePtr expression = ParseExpression();
-    Consume(TK_SEMICOLON);
+  try {
+    if (AstNodePtr ret = ParseReturn()) {
+      return ret;
+    } else if (AstNodePtr block = ParseBlock()) {
+      return block;
+    } else if (AstNodePtr ifElseStatement = ParseIfElseStatement()) {
+      return ifElseStatement;
+    } else if (AstNodePtr whileLoop = ParseWhileLoop()) {
+      return whileLoop;
+    } else if (AstNodePtr doWhileLoop = ParseDoWhileLoop()) {
+      return doWhileLoop;
+    } else if (AstNodePtr forLoop = ParseForLoop()) {
+      return forLoop;
+    } else {
+      AstNodePtr expression = ParseExpression();
+      ExpectOneOf({TK_SEMICOLON, TK_NEW_LINE}, Errors::UNEXPECTED_EXPRESSION, currentToken.GetStr());
 
-    return expression;
+      return expression;
+    }
+  }
+  catch (const ParsingException& parsingException) {
+    Token errorToken = currentToken;
+
+    RecoverWithOneOf({TK_SEMICOLON, TK_NEW_LINE});
+
+    return std::make_shared<NullValue>(errorToken);
   }
 }
 
@@ -224,15 +233,16 @@ Parser::ParseDoWhileLoop() {
 /// forLoop: 'for' identifier 'in' add_expression ('to' | 'until') add_expression statement
 AstNodePtr
 Parser::ParseForLoop() {
-  if(std::unique_ptr<Token> forToken = Consume(TK_FOR)) {
+  if (std::unique_ptr<Token> forToken = Consume(TK_FOR)) {
     std::unique_ptr<Token> identifierToken = Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
     Expect(TK_IN, Errors::EXPECTED_KEYWORD, currentToken.GetStr());
     AstNodePtr from = ParseAddExpression();
-    std::unique_ptr<Token> toUntilToken = ExpectOneOf({TK_TO, TK_UNTIL}, Errors::EXPECTED_TO_UNTIL, currentToken.GetStr());
+    std::unique_ptr<Token>
+        toUntilToken = ExpectOneOf({TK_TO, TK_UNTIL}, Errors::EXPECTED_TO_UNTIL, currentToken.GetStr());
     AstNodePtr to = ParseAddExpression();
     AstNodePtr consequent{ParseStatement()};
 
-    if(toUntilToken->GetTokenType() == TK_TO) {
+    if (toUntilToken->GetTokenType() == TK_TO) {
       Token subtractionToken = Token{TK_MINUS, "-", {"", 0, 0}};
       AstNodePtr subOne = std::make_shared<IntegerLiteral>(*toUntilToken, "1");
       to = std::make_shared<BinaryOperation>(subtractionToken, to, subOne);
@@ -480,13 +490,23 @@ Parser::ParseBool() {
 
 std::unique_ptr<Token>
 Parser::Consume(TokenType tokenType) {
-  if (currentToken.GetTokenType() == tokenType) {
+  if (tokenType == TK_NEW_LINE && currentToken.GetTokenType() == TK_NEW_LINE) {
     std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
     Advance();
 
     return consumedToken;
   } else {
-    return nullptr;
+    size_t newlineCount = GetNewLineCountFromCurrentToken();
+
+    if (tokens.at(currentTokenIndex + newlineCount).GetTokenType() == tokenType) {
+      IgnoreNewlines();
+      std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
+      Advance();
+
+      return consumedToken;
+    } else {
+      return nullptr;
+    }
   }
 }
 
@@ -505,16 +525,27 @@ Parser::ConsumeOneOf(const std::list<TokenType>& possibleTokenTypes) {
 template<class... T>
 std::unique_ptr<Token>
 Parser::Expect(TokenType tokenType, Errors::ErrorType errorType, T&& ... args) {
-  if (currentToken.GetTokenType() == tokenType) {
+  if (tokenType == TK_NEW_LINE && currentToken.GetTokenType() == TK_NEW_LINE) {
     std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
     Advance();
 
     return consumedToken;
   }
+  else {
+    size_t newlineCount = GetNewLineCountFromCurrentToken();
 
-  errors.push_back(Errors::Generate(errorType, currentToken.GetLocation(), code, std::forward<T>(args)...));
+    if (tokens.at(currentTokenIndex + newlineCount).GetTokenType() == tokenType) {
+      IgnoreNewlines();
+      std::unique_ptr<Token> consumedToken = std::make_unique<Token>(currentToken);
+      Advance();
 
-  throw ParsingException();
+      return consumedToken;
+    }
+
+    errors.push_back(Errors::Generate(errorType, currentToken.GetLocation(), code, std::forward<T>(args)...));
+
+    throw ParsingException();
+  }
 }
 
 template<class... T>
@@ -553,6 +584,8 @@ Parser::ExpectDataType() {
 
 bool
 Parser::Peek(size_t lookaheadDistance, TokenType tokenType) {
+  lookaheadDistance += GetNewLineCountFromCurrentToken();
+
   //TODO: Add bound check
   return tokens.at(currentTokenIndex + lookaheadDistance).GetTokenType() == tokenType;
 }
@@ -581,6 +614,17 @@ Parser::Recover(TokenType synchronizationToken) {
 }
 
 void
+Parser::RecoverWithOneOf(const std::set<TokenType>& synchronizationTokens) {
+  while (!synchronizationTokens.contains(currentToken.GetTokenType()) && !IsFinishedParsing()) {
+    Advance();
+  }
+
+  if (!IsFinishedParsing()) {
+    Advance();
+  }
+}
+
+void
 Parser::Advance() {
   if (currentTokenIndex < tokens.size() - 1) {
     currentTokenIndex++;
@@ -593,4 +637,21 @@ Parser::Advance() {
 bool
 Parser::IsFinishedParsing() {
   return currentTokenIndex >= tokens.size() - 1;
+}
+
+void
+Parser::IgnoreNewlines() {
+  while (currentToken.GetTokenType() == TK_NEW_LINE) {
+    Advance();
+  }
+}
+
+size_t
+Parser::GetNewLineCountFromCurrentToken() {
+  size_t localIndex = currentTokenIndex;
+  while (tokens.at(localIndex).GetTokenType() == TK_NEW_LINE) {
+    localIndex++;
+  }
+
+  return localIndex - currentTokenIndex;
 }
