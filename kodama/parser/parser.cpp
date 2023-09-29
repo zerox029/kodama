@@ -221,6 +221,7 @@ Parser::ParseDoWhileLoop() {
   return nullptr;
 }
 
+/// forLoop: 'for' identifier 'in' add_expression ('to' | 'until') add_expression statement
 AstNodePtr
 Parser::ParseForLoop() {
   if(std::unique_ptr<Token> forToken = Consume(TK_FOR)) {

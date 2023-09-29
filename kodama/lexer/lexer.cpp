@@ -103,7 +103,7 @@ Lexer::isNewline() {
 std::optional<Token>
 Lexer::ReadKeyword() {
   for (const auto& symbol : keywords) {
-    if (input.substr(index).starts_with(symbol.first)) {
+    if (input.substr(index).starts_with(symbol.first) && !isalnum(input.at(index + symbol.first.length()))) {
       return Token{symbol.second, symbol.first, {filePath, lineNumber, characterLineIndex}};
     }
   }

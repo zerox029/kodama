@@ -14,7 +14,7 @@ def fibonacci(n: i64) -> i64 {
     }
     else {
         for i in 2 until n {
-            val c: i64 = a + b
+            value c: i64 = a + b
             a = b
             b = c
         }
