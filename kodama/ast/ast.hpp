@@ -216,6 +216,7 @@ class AssignmentExpression : public AstNode {
   AstNodePtr value;
 
  public:
+  AssignmentExpression(Token token, std::string identifier, const TypePtr& dataType); // TODO: Move this to its own 'varDeclaration' AST node
   AssignmentExpression(Token token, std::string identifier, TypePtr type, AstNodePtr value);
 
   std::string GetIdentifier() const;

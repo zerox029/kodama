@@ -171,6 +171,12 @@ AstNodeKind
 ForLoop::GetKind() const { return AST_FOR; }
 
 /// AssignmentExpression
+AssignmentExpression::AssignmentExpression(Token token, std::string identifier, const TypePtr& dataType)
+    : AstNode(token),
+      identifier{std::move(identifier)},
+      dataType(std::move(dataType)),
+      value{nullptr} {}
+
 AssignmentExpression::AssignmentExpression(Token token, std::string identifier, TypePtr dataType, AstNodePtr value)
     : AstNode(token),
       identifier{std::move(identifier)},
