@@ -35,7 +35,7 @@ Parser::ParseFunctionDeclaration() {
   if (std::unique_ptr<Token> defToken = Consume(TK_DEF)) {
     try {
       std::unique_ptr<Token> identifierToken =
-          Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, std::string("{"));
+          Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
 
       Expect(TK_OPEN_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
       std::vector<AstNodePtr> parameters = ParseFunctionParameters();

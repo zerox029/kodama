@@ -2,45 +2,7 @@
 // Created by emma on 24/09/23.
 //
 
-#include "../../parser/parser.hpp"
-#include "../../utils/stringUtils.hpp"
-#include <gtest/gtest.h>
-#include <string>
-#include <format>
-
-constexpr std::string DUMMY_FILE_LOCATION = "dummyLocation";
-
-AstNodePtr
-buildAST(const std::string& code) {
-  std::vector<std::string> codeLines = SplitString(code, "\n");
-
-  Lexer lexer{code, DUMMY_FILE_LOCATION};
-  std::vector<Token> tokens = lexer.Tokenize();
-
-  Parser parser{codeLines, tokens};
-  std::variant<AstNodePtr, std::vector<Error>> parseResult = parser.Parse();
-
-  return get<AstNodePtr>(parseResult);
-}
-
-std::vector<Error>
-getErrorsForAst(const std::string& code) {
-  std::vector<std::string> codeLines = SplitString(code, "\n");
-
-  Lexer lexer{code, DUMMY_FILE_LOCATION};
-  std::vector<Token> tokens = lexer.Tokenize();
-
-  Parser parser{codeLines, tokens};
-  std::variant<AstNodePtr, std::vector<Error>> parseResult = parser.Parse();
-
-  return get<std::vector<Error>>(parseResult);
-}
-
-void AssertEqLocation(const Location& expected, const Location& actual) {
-  EXPECT_EQ(expected.lineNumber, actual.lineNumber);
-  EXPECT_EQ(expected.characterLineIndex, actual.characterLineIndex);
-  EXPECT_EQ(expected.filePath, actual.filePath);
-}
+#include "../testUtils.hpp"
 
 TEST(FunctionDeclaration, HappyPath) {
   // GIVEN
@@ -48,7 +10,7 @@ TEST(FunctionDeclaration, HappyPath) {
 
   // WHEN
   AstNodePtr ast = buildAST(code);
-  Block* program = dynamic_cast<Block*>(ast.get());
+  auto* program = dynamic_cast<Program*>(ast.get());
 
   // THEN
   EXPECT_EQ(program->GetStatements().size(), 1);
@@ -165,4 +127,22 @@ TEST(FunctionDeclaration, AbortAfterFirstError) {
   EXPECT_EQ(errors.at(0).GetErrorClass(), "syntax error");
   EXPECT_EQ(errors.at(0).GetErrorMessage(),  expectedMessage);
   AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
+}
+
+TEST(FunctionParameters, HappyPathOneParameter) {
+  // GIVEN
+  std::string code = "def test(param: i32) -> i32 {}";
+
+  // WHEN
+  AstNodePtr ast = buildAST(code);
+  auto* program = dynamic_cast<Program*>(ast.get());
+  auto* functionDeclaration = dynamic_cast<FunctionDeclaration*>(program->GetStatements().at(0).get());
+  std::vector<AstNodePtr> parameters = functionDeclaration->GetParameters();
+
+  auto* parameter = dynamic_cast<FunctionParameter*>(parameters.at(0).get());
+
+  // THEN
+  EXPECT_EQ(parameters.size(), 1);
+  EXPECT_EQ(parameter->GetIdentifier(), "param");
+  EXPECT_EQ(parameter->GetDataType()->GetTypeName(), I32_TYPE);
 }

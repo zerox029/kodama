@@ -78,10 +78,10 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
       return std::make_pair("syntax error", fmt::vformat("unexpected expression '{}'",
                                                          fmt::make_format_args(std::forward<T>(args)...)));
 
-    // Semantic
+      // Semantic
     case ID_NOT_FOUND:
       return std::make_pair("error", fmt::vformat("cannot find symbol '{}' in scope",
-                                                         fmt::make_format_args(std::forward<T>(args)...)));
+                                                  fmt::make_format_args(std::forward<T>(args)...)));
     case ASSIGN_VAL:
       return std::make_pair("error", fmt::vformat("cannot assign twice to value '{}'",
                                                   fmt::make_format_args(std::forward<T>(args)...)));
@@ -105,10 +105,10 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
       return std::make_pair("error", fmt::vformat("list lower bound '{}' is greater than the greater bound '{}'",
                                                   fmt::make_format_args(std::forward<T>(args)...)));
 
-    // Type
+      // Type
     case RETURN_TYPE_MISMATCH:
       return std::make_pair("type mismatch", fmt::vformat("expected return type '{}' but got '{}'",
-                                                  fmt::make_format_args(std::forward<T>(args)...)));
+                                                          fmt::make_format_args(std::forward<T>(args)...)));
     case VAR_TYPE_MISMATCH:
       return std::make_pair("type mismatch", fmt::vformat("expected type '{}' but got '{}'",
                                                           fmt::make_format_args(std::forward<T>(args)...)));
@@ -117,18 +117,13 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
 
 template<class... T>
 Error
-Generate(ErrorType errorType, const Location& location, const std::vector<std::string>& code, const T&& ... args) {
+Generate(ErrorType errorType, Location location, const std::vector<std::string>& code, const T&& ... args) {
   std::pair<std::string, std::string> message = ErrorMessage(errorType, args...);
 
-  return Error{message.first, message.second, location, code.at(location.lineNumber)};
-}
+  location.lineNumber += 1;
+  location.characterLineIndex += 1;
 
-Error
-Expected(const std::string& errorMessage, const Token& actual, const std::vector<std::string>& code);
-Error
-Expected(TokenType expected, const Token& actual, const std::vector<std::string>& code);
-Error
-Expected(TokenType expected, const std::vector<std::string>& code);
+  return Error{message.first, message.second, location, code.at(location.lineNumber - 1)};
 }
-
+}
 #endif //KODAMA_SRC_ERRORS_ERRORFACTORY_HPP_

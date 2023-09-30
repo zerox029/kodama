@@ -67,7 +67,6 @@ Block::GetStatements() const { return statements; }
 AstNodeKind
 Block::GetKind() const { return AST_BLOCK; }
 
-
 /// ReturnStatement
 ReturnStatement::ReturnStatement(Token token, AstNodePtr returnValue)
     : AstNode(token),
