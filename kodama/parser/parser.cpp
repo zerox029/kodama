@@ -155,7 +155,8 @@ AstNodePtr
 Parser::ParseReturn() {
   if (std::unique_ptr<Token> retToken = Consume(TK_RET)) {
     AstNodePtr returnValue{ParseEqualityExpression()};
-    Consume(TK_SEMICOLON);
+
+    ExpectOneOf({TK_SEMICOLON, TK_NEW_LINE}, Errors::UNEXPECTED_EXPRESSION, currentToken.GetStr());
 
     return std::make_shared<ReturnStatement>(*retToken, returnValue);
   }
@@ -184,7 +185,12 @@ AstNodePtr
 Parser::ParseIfElseStatement() {
   if (std::unique_ptr<Token> ifToken = Consume(TK_IF)) {
     Expect(TK_OPEN_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
+
     AstNodePtr condition{ParseEqualityExpression()};
+    if(!condition) {
+      errors.push_back(Errors::Generate(Errors::EXPECTED_CONDITION, currentToken.GetLocation(), code));
+    }
+
     Expect(TK_CLOSED_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
     AstNodePtr consequent{ParseStatement()};
 
@@ -204,7 +210,12 @@ AstNodePtr
 Parser::ParseWhileLoop() {
   if (std::unique_ptr<Token> whileToken = Consume(TK_WHILE)) {
     Expect(TK_OPEN_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
+
     AstNodePtr condition{ParseEqualityExpression()};
+    if(!condition) {
+      errors.push_back(Errors::Generate(Errors::EXPECTED_CONDITION, currentToken.GetLocation(), code));
+    }
+
     Expect(TK_CLOSED_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
     AstNodePtr consequent{ParseStatement()};
 
@@ -221,8 +232,13 @@ Parser::ParseDoWhileLoop() {
     AstNodePtr consequent{ParseStatement()};
     Expect(TK_WHILE, Errors::EXPECTED_KEYWORD, std::string("while"), currentToken.GetStr());
     Expect(TK_OPEN_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
+
     AstNodePtr condition{ParseEqualityExpression()};
-    Expect(TK_CLOSED_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
+    if(!condition) {
+      errors.push_back(Errors::Generate(Errors::EXPECTED_CONDITION, currentToken.GetLocation(), code));
+    }
+
+    Expect(TK_CLOSED_PAREN, Errors::EXPECTED_CL_DELIMITER, std::string(")"), currentToken.GetStr());
 
     return std::make_shared<DoWhileLoop>(*doToken, condition, consequent);
   }
@@ -236,13 +252,23 @@ Parser::ParseForLoop() {
   if (std::unique_ptr<Token> forToken = Consume(TK_FOR)) {
     std::unique_ptr<Token> identifierToken = Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
     Expect(TK_IN, Errors::EXPECTED_KEYWORD, currentToken.GetStr());
+
     AstNodePtr from = ParseAddExpression();
+    if(!from) {
+      errors.push_back(Errors::Generate(Errors::UNEXPECTED_EXPRESSION, currentToken.GetLocation(), code, currentToken.GetStr()));
+    }
+
     std::unique_ptr<Token>
         toUntilToken = ExpectOneOf({TK_TO, TK_UNTIL}, Errors::EXPECTED_TO_UNTIL, currentToken.GetStr());
+
     AstNodePtr to = ParseAddExpression();
+    if(!to) {
+      errors.push_back(Errors::Generate(Errors::UNEXPECTED_EXPRESSION, currentToken.GetLocation(), code, currentToken.GetStr()));
+    }
+
     AstNodePtr consequent{ParseStatement()};
 
-    if (toUntilToken->GetTokenType() == TK_TO) {
+    if (toUntilToken->GetTokenType() == TK_UNTIL) {
       Token subtractionToken = Token{TK_MINUS, "-", {"", 0, 0}};
       AstNodePtr subOne = std::make_shared<IntegerLiteral>(*toUntilToken, "1");
       to = std::make_shared<BinaryOperation>(subtractionToken, to, subOne);

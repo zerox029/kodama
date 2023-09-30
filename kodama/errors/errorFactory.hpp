@@ -25,6 +25,7 @@ enum ErrorType {
   EXPECTED_FUNCTION_BODY,
   EXPECTED_TO_UNTIL,
   UNEXPECTED_EXPRESSION,
+  EXPECTED_CONDITION,
 
   // Semantic
   ID_NOT_FOUND,
@@ -77,6 +78,8 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
     case UNEXPECTED_EXPRESSION:
       return std::make_pair("syntax error", fmt::vformat(Strings::UNEXPECTED_EXPRESSION,
                                                          fmt::make_format_args(std::forward<T>(args)...)));
+    case EXPECTED_CONDITION:
+      return std::make_pair("syntax error", Strings::EXPECTED_CONDITION);
 
       // Semantic
     case ID_NOT_FOUND:

@@ -22,6 +22,7 @@ inline constexpr auto UNTERMINATED_STRING = "unterminated string";
 inline constexpr auto EXPECTED_FUNCTION_BODY = "expected function body delimiter '=>' or '{{' but got '{}'";
 inline constexpr auto EXPECTED_TO_UNTIL = "expected keyword 'to' or 'until' but got '{}'";
 inline constexpr auto UNEXPECTED_EXPRESSION = "unexpected expression '{}'";
+inline constexpr auto EXPECTED_CONDITION = "expected condition";
 
 // Semantic
 inline constexpr auto ID_NOT_FOUND = "cannot find symbol '{}' in scope";

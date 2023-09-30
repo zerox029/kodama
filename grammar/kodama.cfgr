@@ -9,7 +9,7 @@ function : 'def' identifier '(' function_parameters ')' '->' data_type function_
 function_parameters : { identifier ':' data_type ',' } identifier ':' data_type;
 function_body : '{' statement '}' | '=>' equality;
 
-statement : expression [';']
+statement : expression (';' | '\n')
           | '{' statement '}'
           | 'if' '(' equality ')' statement ['else' statement]
           | 'while' '(' equality ')' statement

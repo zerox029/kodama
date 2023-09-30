@@ -203,3 +203,19 @@ TEST(FunctionParameters, MissingType) {
   EXPECT_EQ(errors.at(0).GetErrorMessage(),  expectedMessage);
   AssertEqLocation(expectedLocation, errors.at(0).GetErrorLocation());
 }
+
+TEST(FunctionBody, HappyPathOneParameter) {
+  // GIVEN
+  std::string code = "def test(param: i32) -> i32 {"
+                     "  return 10;"
+                     "}";
+
+  // WHEN
+  AstNodePtr ast = buildAST(code);
+  auto* program = dynamic_cast<Program*>(ast.get());
+  auto* functionDeclaration = dynamic_cast<FunctionDeclaration*>(program->GetStatements().at(0).get());
+  Block* body = dynamic_cast<Block*>(functionDeclaration->GetBody().get());
+
+  // THEN
+  EXPECT_EQ(body->GetStatements().size(), 1);
+}
