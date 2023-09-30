@@ -188,7 +188,7 @@ Parser::ParseIfElseStatement() {
 
     AstNodePtr condition{ParseEqualityExpression()};
     if (!condition) {
-      errors.push_back(Errors::Generate(Errors::EXPECTED_CONDITION, currentToken.GetLocation(), code));
+      LogError(Errors::EXPECTED_CONDITION);
     }
 
     Expect(TK_CLOSED_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
@@ -213,7 +213,7 @@ Parser::ParseWhileLoop() {
 
     AstNodePtr condition{ParseEqualityExpression()};
     if (!condition) {
-      errors.push_back(Errors::Generate(Errors::EXPECTED_CONDITION, currentToken.GetLocation(), code));
+      LogError(Errors::EXPECTED_CONDITION);
     }
 
     Expect(TK_CLOSED_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string(")"), currentToken.GetStr());
@@ -235,7 +235,7 @@ Parser::ParseDoWhileLoop() {
 
     AstNodePtr condition{ParseEqualityExpression()};
     if (!condition) {
-      errors.push_back(Errors::Generate(Errors::EXPECTED_CONDITION, currentToken.GetLocation(), code));
+      LogError(Errors::EXPECTED_CONDITION);
     }
 
     Expect(TK_CLOSED_PAREN, Errors::EXPECTED_CL_DELIMITER, std::string(")"), currentToken.GetStr());
@@ -255,10 +255,7 @@ Parser::ParseForLoop() {
 
     AstNodePtr from = ParseAddExpression();
     if (!from) {
-      errors.push_back(Errors::Generate(Errors::UNEXPECTED_EXPRESSION,
-                                        currentToken.GetLocation(),
-                                        code,
-                                        currentToken.GetStr()));
+      LogError(Errors::UNEXPECTED_EXPRESSION, currentToken.GetStr());
     }
 
     std::unique_ptr<Token>
@@ -266,10 +263,7 @@ Parser::ParseForLoop() {
 
     AstNodePtr to = ParseAddExpression();
     if (!to) {
-      errors.push_back(Errors::Generate(Errors::UNEXPECTED_EXPRESSION,
-                                        currentToken.GetLocation(),
-                                        code,
-                                        currentToken.GetStr()));
+      LogError(Errors::UNEXPECTED_EXPRESSION, currentToken.GetStr());
     }
 
     AstNodePtr consequent{ParseStatement()};
@@ -311,10 +305,10 @@ Parser::ParseAssignment() {
     TypePtr dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
     dataType->SetMutability(assignmentToken->GetTokenType() == TK_LET);
 
-    if(Consume(TK_ASSIGN)) {
+    if (Consume(TK_ASSIGN)) {
       AstNodePtr rhs = ParseEqualityExpression();
       if (!rhs) {
-        errors.push_back(Errors::Generate(Errors::EXPECTED_VALUE_IDENTIFIER, currentToken.GetLocation(), code));
+        LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
       }
 
       return std::make_shared<AssignmentExpression>(*assignmentToken, identifier, dataType, rhs);
@@ -334,8 +328,8 @@ Parser::ParseReassignment() {
     Expect(TK_ASSIGN, Errors::EXPECTED_TOKEN, std::string("="), currentToken.GetStr());
 
     AstNodePtr rhs = ParseEqualityExpression();
-    if(!rhs) {
-      errors.push_back(Errors::Generate(Errors::EXPECTED_VALUE_IDENTIFIER, currentToken.GetLocation(), code));
+    if (!rhs) {
+      LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
     }
 
     return std::make_shared<ReassignmentExpression>(*identifierToken, identifierToken->GetStr(), rhs);
@@ -362,15 +356,12 @@ Parser::ParseEqualityExpression() {
                                                            TK_GREATER_EQ,
                                                            TK_LESS_EQ})) {
     if (!expression) { // Missing lhs
-      errors.push_back(Errors::Generate(Errors::UNEXPECTED_TOKEN,
-                                        operatorToken->GetLocation(),
-                                        code,
-                                        operatorToken->GetStr()));
+      LogErrorAtPosition(Errors::UNEXPECTED_TOKEN, operatorToken->GetLocation(), operatorToken->GetStr());
     }
 
     AstNodePtr rhs = ParseEqualityExpression();
     if (!rhs) {
-      errors.push_back(Errors::Generate(Errors::EXPECTED_VALUE_IDENTIFIER, currentToken.GetLocation(), code));
+      LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
     }
 
     return std::make_shared<BinaryOperation>(*operatorToken, expression, rhs);
@@ -389,7 +380,7 @@ Parser::ParseAddExpression() {
   if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_PLUS, TK_MINUS})) {
     AstNodePtr rhs = ParseAddExpression();
     if (!rhs) {
-      errors.push_back(Errors::Generate(Errors::EXPECTED_VALUE_IDENTIFIER, currentToken.GetLocation(), code));
+      LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
     }
 
     return std::make_shared<BinaryOperation>(*operatorToken, expression, rhs);
@@ -408,15 +399,12 @@ Parser::ParseMulExpression() {
 
   if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_STAR, TK_SLASH, TK_PERCENT})) {
     if (!expression && operatorToken->GetStr() != "*") { // Missing lhs
-      errors.push_back(Errors::Generate(Errors::UNEXPECTED_TOKEN,
-                                        operatorToken->GetLocation(),
-                                        code,
-                                        operatorToken->GetStr()));
+      LogErrorAtPosition(Errors::UNEXPECTED_TOKEN, operatorToken->GetLocation(), operatorToken->GetStr());
     }
 
     AstNodePtr rhs = ParseMulExpression();
     if (!rhs) {
-      errors.push_back(Errors::Generate(Errors::EXPECTED_VALUE_IDENTIFIER, currentToken.GetLocation(), code));
+      LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
     }
 
     return std::make_shared<BinaryOperation>(*operatorToken, expression, rhs);
@@ -608,7 +596,7 @@ Parser::Expect(TokenType tokenType, Errors::ErrorType errorType, T&& ... args) {
       return consumedToken;
     }
 
-    errors.push_back(Errors::Generate(errorType, currentToken.GetLocation(), code, std::forward<T>(args)...));
+    LogError(errorType, std::forward<T>(args)...);
 
     throw ParsingException();
   }
@@ -624,7 +612,7 @@ Parser::ExpectOneOf(const std::list<TokenType>& possibleTokenTypes, Errors::Erro
     }
   }
 
-  errors.push_back(Errors::Generate(errorType, currentToken.GetLocation(), code, std::forward<T>(args)...));
+  LogError(errorType, std::forward<T>(args)...);
 
   throw ParsingException();
 }
@@ -662,7 +650,7 @@ Parser::PeekWithError(size_t lookaheadDistance, TokenType tokenType, Errors::Err
   if (Peek(lookaheadDistance, tokenType)) {
     return true;
   } else {
-    errors.push_back(Errors::Generate(errorType, currentToken.GetLocation(), code, std::forward<T>(args)...));
+    LogError(errorType, std::forward<T>(args)...);
 
     return false;
   }
@@ -727,4 +715,16 @@ Parser::GetNewLineCountFromCurrentToken() {
   }
 
   return localIndex - currentTokenIndex;
+}
+
+template<class... T>
+void
+Parser::LogError(Errors::ErrorType errorType, T&& ... args) {
+  errors.push_back(Errors::Generate(errorType, currentToken.GetLocation(), code, std::forward<T>(args)...));
+}
+
+template<class... T>
+void
+Parser::LogErrorAtPosition(Errors::ErrorType errorType, Location location, T&& ... args) {
+  errors.push_back(Errors::Generate(errorType, location, code, std::forward<T>(args)...));
 }

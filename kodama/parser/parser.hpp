@@ -127,6 +127,12 @@ class Parser {
   bool IsFinishedParsing();
   void IgnoreNewlines();
   size_t GetNewLineCountFromCurrentToken();
+
+  template<class... T>
+  void LogError(Errors::ErrorType errorType, T&& ... args);
+
+  template<class... T>
+  void LogErrorAtPosition(Errors::ErrorType errorType, Location location, T&& ... args);
 };
 
 #endif //KODAMA_SRC_PARSER_PARSER_HPP_
