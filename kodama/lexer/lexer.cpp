@@ -80,20 +80,76 @@ Lexer::Next() {
 
 std::optional<Token>
 Lexer::ReadSymbol() {
-  for (const auto& symbol : symbols) {
-    if (input.substr(index).starts_with(symbol.first)) {
-      if (symbol.second == TK_QUOTATION && !lastTokenIsString) { //TODO: Find a better way to handle this
+  switch (input.at(index)) {
+    case '+':
+      return Token{TK_PLUS, "+", {filePath, lineNumber, characterLineIndex}};
+    case '-':
+      if (input.at(index + 1) == '>') {
+        return Token{TK_ARROW, "->", {filePath, lineNumber, characterLineIndex}};
+      }
+
+      return Token{TK_MINUS, "-", {filePath, lineNumber, characterLineIndex}};
+    case '*':
+      return Token{TK_STAR, "*", {filePath, lineNumber, characterLineIndex}};
+    case '/':
+      return Token{TK_SLASH, "/", {filePath, lineNumber, characterLineIndex}};
+    case '=':
+      if (input.at(index + 1) == '=') {
+        return Token{TK_EQUAL, "==", {filePath, lineNumber, characterLineIndex}};
+      } else if (input.at(index + 1) == '>') {
+        return Token{TK_DOUBLE_ARROW, "=>", {filePath, lineNumber, characterLineIndex}};
+
+      }
+
+      return Token{TK_ASSIGN, "=", {filePath, lineNumber, characterLineIndex}};
+    case '%':
+      return Token{TK_PERCENT, "%", {filePath, lineNumber, characterLineIndex}};
+    case ':':
+      return Token{TK_COLON, ":", {filePath, lineNumber, characterLineIndex}};
+    case ';':
+      return Token{TK_SEMICOLON, ";", {filePath, lineNumber, characterLineIndex}};
+    case '(':
+      return Token{TK_OPEN_PAREN, "(", {filePath, lineNumber, characterLineIndex}};
+    case ')':
+      return Token{TK_CLOSED_PAREN, ")", {filePath, lineNumber, characterLineIndex}};
+    case '{':
+      return Token{TK_OPEN_CURLY, "{", {filePath, lineNumber, characterLineIndex}};
+    case '}':
+      return Token{TK_CLOSED_CURLY, "}", {filePath, lineNumber, characterLineIndex}};
+    case ',':
+      return Token{TK_COMMA, ",", {filePath, lineNumber, characterLineIndex}};
+    case '.':
+      return Token{TK_DOT, ".", {filePath, lineNumber, characterLineIndex}};
+    case '"':
+      if (!lastTokenIsString) { //TODO: Find a better way to handle this
         isLexingString = true;
-      } else if (symbol.second == TK_QUOTATION && lastTokenIsString) {
+      } else {
         isLexingString = false;
         lastTokenIsString = false;
       }
 
-      return Token{symbol.second, symbol.first, {filePath, lineNumber, characterLineIndex}};
-    }
-  }
+      return Token{TK_QUOTATION, "\"", {filePath, lineNumber, characterLineIndex}};
+    case '>':
+      if (input.at(index + 1) == '=') {
+        return Token{TK_GREATER_EQ, ">=", {filePath, lineNumber, characterLineIndex}};
+      }
 
-  return {};
+      return Token{TK_GREATER, ">", {filePath, lineNumber, characterLineIndex}};
+    case '<':
+      if (input.at(index + 1) == '=') {
+        return Token{TK_LESS_EQ, "<=", {filePath, lineNumber, characterLineIndex}};
+      }
+
+      return Token{TK_LESS, "<", {filePath, lineNumber, characterLineIndex}};
+    case '!':
+      if (input.at(index + 1) == '=') {
+        return Token{TK_NOT_EQUAL, "!=", {filePath, lineNumber, characterLineIndex}};
+      }
+
+      return Token{TK_BANG, "!", {filePath, lineNumber, characterLineIndex}};
+    default:
+      return {};
+  }
 }
 
 bool
@@ -178,13 +234,4 @@ Lexer::Tokenize() {
   tokens.emplace_back(Token{TK_EOF, "", {filePath, lineNumber, characterLineIndex}});
 
   return tokens;
-}
-
-std::string
-Lexer::GetSymbolFromTokenType(TokenType tokenType) {
-  for (const auto& symbol : symbols) {
-    if (symbol.second == tokenType) return symbol.first;
-  }
-
-  return "";
 }

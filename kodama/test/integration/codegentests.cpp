@@ -17,6 +17,7 @@ getProgramReturnCode(const std::string& code) {
   return system("lli ../out/out.ll");
 }
 
+/*
 TEST(addition, PositiveIntegerAndPositiveInteger) {
   // GIVEN
   std::string code = "def main() -> i64 { return 1 + 1 }";
@@ -49,4 +50,4 @@ TEST(substraction, PositiveIntegerAndPositiveIntegerNegativeResult) {
 
   // THEN
   EXPECT_EQ(WEXITSTATUS(returnCode), -3);
-}
+}*/

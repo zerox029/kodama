@@ -348,8 +348,16 @@ Parser::ParseEqualityExpression() {
                                                            TK_LESS,
                                                            TK_GREATER_EQ,
                                                            TK_LESS_EQ})) {
+    if(!expression) { // Missing lhs
+      errors.push_back(Errors::Generate(Errors::UNEXPECTED_TOKEN, operatorToken->GetLocation(), code, operatorToken->GetStr()));
+    }
 
-    return std::make_shared<BinaryOperation>(*operatorToken, expression, ParseAddExpression());
+    AstNodePtr rhs = ParseEqualityExpression();
+    if(!rhs) {
+      errors.push_back(Errors::Generate(Errors::EXPECTED_VALUE_IDENTIFIER, currentToken.GetLocation(), code));
+    }
+
+    return std::make_shared<BinaryOperation>(*operatorToken, expression, rhs);
   }
 
   return expression;
@@ -363,7 +371,12 @@ Parser::ParseAddExpression() {
   AstNodePtr expression = ParseMulExpression();
 
   if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_PLUS, TK_MINUS})) {
-    return std::make_shared<BinaryOperation>(*operatorToken, expression, ParseMulExpression());
+    AstNodePtr rhs = ParseAddExpression();
+    if(!rhs) {
+      errors.push_back(Errors::Generate(Errors::EXPECTED_VALUE_IDENTIFIER, currentToken.GetLocation(), code));
+    }
+
+    return std::make_shared<BinaryOperation>(*operatorToken, expression, rhs);
   }
 
   return expression;
@@ -378,7 +391,16 @@ Parser::ParseMulExpression() {
   AstNodePtr expression = ParseUnaryExpression();
 
   if (std::shared_ptr<Token> operatorToken = ConsumeOneOf({TK_STAR, TK_SLASH, TK_PERCENT})) {
-    return std::make_shared<BinaryOperation>(*operatorToken, expression, ParseUnaryExpression());
+    if(!expression && operatorToken->GetStr() != "*") { // Missing lhs
+      errors.push_back(Errors::Generate(Errors::UNEXPECTED_TOKEN, operatorToken->GetLocation(), code, operatorToken->GetStr()));
+    }
+
+    AstNodePtr rhs = ParseMulExpression();
+    if(!rhs) {
+      errors.push_back(Errors::Generate(Errors::EXPECTED_VALUE_IDENTIFIER, currentToken.GetLocation(), code));
+    }
+
+    return std::make_shared<BinaryOperation>(*operatorToken, expression, rhs);
   }
 
   return expression;

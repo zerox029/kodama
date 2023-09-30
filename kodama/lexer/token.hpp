@@ -30,6 +30,7 @@ enum TokenType {
   TK_QUOTATION,   // "
   TK_COMMA,       // ,
   TK_DOT,         // .
+  TK_BANG,        // !
 
   // Delimiters
   TK_OPEN_PAREN,  // (

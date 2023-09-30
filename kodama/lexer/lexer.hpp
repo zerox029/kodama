@@ -13,16 +13,6 @@
 #include <utility>
 #include <unordered_map>
 
-const std::unordered_map<std::string, TokenType> symbols = {
-    {"==", TK_EQUAL}, {"!=", TK_NOT_EQUAL}, {"->", TK_ARROW},
-    {"=>", TK_DOUBLE_ARROW}, {">=", TK_GREATER_EQ}, {"<=", TK_LESS_EQ},
-    {"+", TK_PLUS}, {"-", TK_MINUS}, {"*", TK_STAR}, {"/", TK_SLASH},
-    {"=", TK_ASSIGN}, {"%", TK_PERCENT}, {":", TK_COLON}, {";", TK_SEMICOLON},
-    {"(", TK_OPEN_PAREN}, {")", TK_CLOSED_PAREN}, {"{", TK_OPEN_CURLY},
-    {"}", TK_CLOSED_CURLY}, {",", TK_COMMA}, {".", TK_DOT},
-    {"\"", TK_QUOTATION}, {">", TK_GREATER}, {"<", TK_LESS}
-};
-
 const std::unordered_map<std::string, TokenType> keywords = {
     {"u8", TK_U8}, {"u16", TK_U16}, {"u32", TK_U32},
     {"u64", TK_U64}, {"u128", TK_U128}, {"i8", TK_I8},
@@ -41,7 +31,6 @@ class Lexer {
   explicit Lexer(std::string input, std::string filePath) : input{std::move(input)}, filePath{std::move(filePath)} {}
 
   std::vector<Token> Tokenize();
-  static std::string GetSymbolFromTokenType(TokenType tokenType);
 
  private:
   std::string input;
