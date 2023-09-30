@@ -10,9 +10,9 @@
 #include "../utils/stringUtils.hpp"
 
 void
-Compiler::CheckForErrors(const std::vector<Error>& errors) {
+Compiler::CheckForErrors(const std::vector<Errors::Error>& errors) {
   if(!errors.empty()) {
-    for(const Error& error : errors) {
+    for(const Errors::Error& error : errors) {
       error.Throw();
     }
 
@@ -23,12 +23,12 @@ Compiler::CheckForErrors(const std::vector<Error>& errors) {
 std::optional<AstNodePtr>
 Compiler::Parse(const std::vector<std::string>& code, const std::vector<Token>& tokens) {
   Parser parser{code, tokens};
-  std::variant<AstNodePtr, std::vector<Error>> parseResult = parser.Parse();
+  std::variant<AstNodePtr, std::vector<Errors::Error>> parseResult = parser.Parse();
   if(parseResult.index() == 0) {
     return get<AstNodePtr>(parseResult);
   }
   else {
-    CheckForErrors(get<std::vector<Error>>(parseResult));
+    CheckForErrors(get<std::vector<Errors::Error>>(parseResult));
     return {};
   }
 }
@@ -36,7 +36,7 @@ Compiler::Parse(const std::vector<std::string>& code, const std::vector<Token>& 
 void
 Compiler::ValidateSemantics(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast) {
   SemanticValidator semanticValidator{code, tokens};
-  std::vector<Error> typeErrors = semanticValidator.Validate(ast);
+  std::vector<Errors::Error> typeErrors = semanticValidator.Validate(ast);
   CheckForErrors(typeErrors);
 }
 
@@ -44,7 +44,7 @@ Compiler::ValidateSemantics(const std::vector<std::string>& code, const std::vec
 void
 Compiler::TypeCheck(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast) {
   TypeChecker typeChecker{code, tokens};
-  std::vector<Error> typeErrors = typeChecker.TypeCheck(ast);
+  std::vector<Errors::Error> typeErrors = typeChecker.TypeCheck(ast);
   CheckForErrors(typeErrors);
 }
 

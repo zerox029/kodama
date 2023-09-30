@@ -19,6 +19,7 @@
 #include <iostream>
 #include <utility>
 
+namespace Errors {
 Error::Error(std::string errorType, std::string errorMessage, Location errorLocation, std::string codeLine)
     : errorClass{std::move(errorType)},
       errorMessage{std::move(errorMessage)},
@@ -58,4 +59,5 @@ Error::GetErrorLocation() const {
 const std::string&
 Error::GetCodeLine() const {
   return codeLine;
+}
 }

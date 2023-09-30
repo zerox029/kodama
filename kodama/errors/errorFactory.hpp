@@ -48,69 +48,69 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
   switch (errorType) {
     // Syntax errors
     case EXPECTED_IDENTIFIER:
-      return std::make_pair("syntax error", fmt::vformat("expected identifier but got '{}'",
+      return std::make_pair("syntax error", fmt::vformat(Strings::EXPECTED_IDENTIFIER,
                                                          fmt::make_format_args(std::forward<T>(args)...)));
     case EXPECTED_OP_DELIMITER:
-      return std::make_pair("syntax error", fmt::vformat("expected opening delimiter '{}' but got '{}'",
+      return std::make_pair("syntax error", fmt::vformat(Strings::EXPECTED_OP_DELIMITER,
                                                          fmt::make_format_args(std::forward<T>(args)...)));
     case EXPECTED_CL_DELIMITER:
-      return std::make_pair("syntax error", fmt::vformat("expected closing delimiter '{}' but got '{}'",
+      return std::make_pair("syntax error", fmt::vformat(Strings::EXPECTED_CL_DELIMITER,
                                                          fmt::make_format_args(std::forward<T>(args)...)));
     case EXPECTED_KEYWORD:
-      return std::make_pair("syntax error", fmt::vformat("expected keyword '{}' but got '{}'",
+      return std::make_pair("syntax error", fmt::vformat(Strings::EXPECTED_KEYWORD,
                                                          fmt::make_format_args(std::forward<T>(args)...)));
     case EXPECTED_TOKEN:
-      return std::make_pair("syntax error", fmt::vformat("expected token '{}' but got '{}'",
+      return std::make_pair("syntax error", fmt::vformat(Strings::EXPECTED_TOKEN,
                                                          fmt::make_format_args(std::forward<T>(args)...)));
     case EXPECTED_DATATYPE:
-      return std::make_pair("syntax error", "expected datatype");
+      return std::make_pair("syntax error", Strings::EXPECTED_DATATYPE);
     case EXPECTED_VALUE_IDENTIFIER:
-      return std::make_pair("syntax error", "expected value or identifier");
+      return std::make_pair("syntax error", Strings::EXPECTED_VALUE_IDENTIFIER);
     case UNTERMINATED_STRING:
-      return std::make_pair("syntax error", "unterminated string");
+      return std::make_pair("syntax error", Strings::UNTERMINATED_STRING);
     case EXPECTED_FUNCTION_BODY:
-      return std::make_pair("syntax error", fmt::vformat("expected function body delimiter '=>' or '{' but got '{}'",
+      return std::make_pair("syntax error", fmt::vformat(Strings::EXPECTED_FUNCTION_BODY,
                                                          fmt::make_format_args(std::forward<T>(args)...)));
     case EXPECTED_TO_UNTIL:
-      return std::make_pair("syntax error", fmt::vformat("expected keyword 'to' or 'until' but got '{}'",
+      return std::make_pair("syntax error", fmt::vformat(Strings::EXPECTED_TO_UNTIL,
                                                          fmt::make_format_args(std::forward<T>(args)...)));
     case UNEXPECTED_EXPRESSION:
-      return std::make_pair("syntax error", fmt::vformat("unexpected expression '{}'",
+      return std::make_pair("syntax error", fmt::vformat(Strings::UNEXPECTED_EXPRESSION,
                                                          fmt::make_format_args(std::forward<T>(args)...)));
 
       // Semantic
     case ID_NOT_FOUND:
-      return std::make_pair("error", fmt::vformat("cannot find symbol '{}' in scope",
+      return std::make_pair("error", fmt::vformat(Strings::ID_NOT_FOUND,
                                                   fmt::make_format_args(std::forward<T>(args)...)));
     case ASSIGN_VAL:
-      return std::make_pair("error", fmt::vformat("cannot assign twice to value '{}'",
+      return std::make_pair("error", fmt::vformat(Strings::ASSIGN_VAL,
                                                   fmt::make_format_args(std::forward<T>(args)...)));
     case ILLEGAL_REDEFINITION:
-      return std::make_pair("error", fmt::vformat("illegal redefinition of '{}'",
+      return std::make_pair("error", fmt::vformat(Strings::ILLEGAL_REDEFINITION,
                                                   fmt::make_format_args(std::forward<T>(args)...)));
     case UNASSIGNED_VALUE:
-      return std::make_pair("error", "expression result unused. Assign it or remove it.");
+      return std::make_pair("error", Strings::UNASSIGNED_VALUE);
     case INVALID_OUTSIDE_FUNCTION:
-      return std::make_pair("error", "out of place expression. use it inside a function");
+      return std::make_pair("error", Strings::INVALID_OUTSIDE_FUNCTION);
     case INVALID_INSIDE_FUNCTION:
-      return std::make_pair("error", fmt::vformat("{} is not allowed inside a function",
+      return std::make_pair("error", fmt::vformat(Strings::INVALID_INSIDE_FUNCTION,
                                                   fmt::make_format_args(std::forward<T>(args)...)));
     case UNREACHABLE_CODE:
-      return std::make_pair("error", fmt::vformat("everything after this statement is unreachable",
+      return std::make_pair("error", fmt::vformat(Strings::UNREACHABLE_CODE,
                                                   fmt::make_format_args(std::forward<T>(args)...)));
     case INVALID_POSITIONAL_ARGUMENT:
-      return std::make_pair("error", fmt::vformat("positional argument after named argument",
+      return std::make_pair("error", fmt::vformat(Strings::INVALID_POSITIONAL_ARGUMENT,
                                                   fmt::make_format_args(std::forward<T>(args)...)));
     case LIST_BOUNDS_INVERTED:
-      return std::make_pair("error", fmt::vformat("list lower bound '{}' is greater than the greater bound '{}'",
+      return std::make_pair("error", fmt::vformat(Strings::LIST_BOUNDS_INVERTED,
                                                   fmt::make_format_args(std::forward<T>(args)...)));
 
       // Type
     case RETURN_TYPE_MISMATCH:
-      return std::make_pair("type mismatch", fmt::vformat("expected return type '{}' but got '{}'",
+      return std::make_pair("type mismatch", fmt::vformat(Strings::RETURN_TYPE_MISMATCH,
                                                           fmt::make_format_args(std::forward<T>(args)...)));
     case VAR_TYPE_MISMATCH:
-      return std::make_pair("type mismatch", fmt::vformat("expected type '{}' but got '{}'",
+      return std::make_pair("type mismatch", fmt::vformat(Strings::VAR_TYPE_MISMATCH,
                                                           fmt::make_format_args(std::forward<T>(args)...)));
   }
 }

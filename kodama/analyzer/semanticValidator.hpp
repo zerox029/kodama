@@ -11,7 +11,7 @@
 class SemanticValidator : public AstVisitor {
  public:
   SemanticValidator(const std::vector<std::string>& code, const std::vector<Token>& tokens);
-  std::vector<Error> Validate(const AstNodePtr& ast);
+  std::vector<Errors::Error> Validate(const AstNodePtr& ast);
 
  private:
   std::vector<std::string> code;
@@ -19,7 +19,7 @@ class SemanticValidator : public AstVisitor {
 
   std::unordered_map<std::string, TypePtr> symbolTable;
 
-  std::vector<Error> errors;
+  std::vector<Errors::Error> errors;
 
   void Visit(Program* element) override;
   void Visit(FunctionDeclaration* element) override;

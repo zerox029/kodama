@@ -21,12 +21,12 @@ buildAST(const std::string& code) {
   std::vector<Token> tokens = lexer.Tokenize();
 
   Parser parser{codeLines, tokens};
-  std::variant<AstNodePtr, std::vector<Error>> parseResult = parser.Parse();
+  std::variant<AstNodePtr, std::vector<Errors::Error>> parseResult = parser.Parse();
 
   return get<AstNodePtr>(parseResult);
 }
 
-std::vector<Error>
+std::vector<Errors::Error>
 getErrorsForAst(const std::string& code) {
   std::vector<std::string> codeLines = SplitString(code, "\n");
 
@@ -34,9 +34,9 @@ getErrorsForAst(const std::string& code) {
   std::vector<Token> tokens = lexer.Tokenize();
 
   Parser parser{codeLines, tokens};
-  std::variant<AstNodePtr, std::vector<Error>> parseResult = parser.Parse();
+  std::variant<AstNodePtr, std::vector<Errors::Error>> parseResult = parser.Parse();
 
-  return get<std::vector<Error>>(parseResult);
+  return get<std::vector<Errors::Error>>(parseResult);
 }
 
 void AssertEqLocation(const Location& expected, const Location& actual) {

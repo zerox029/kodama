@@ -12,7 +12,7 @@
 #include "../errors/error.hpp"
 
 class Compiler {
-  void CheckForErrors(const std::vector<Error>& errors);
+  void CheckForErrors(const std::vector<Errors::Error>& errors);
   std::optional<AstNodePtr> Parse(const std::vector<std::string>& code, const std::vector<Token>& tokens);
   void ValidateSemantics(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast);
   void TypeCheck(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast);

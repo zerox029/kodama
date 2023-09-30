@@ -12,7 +12,7 @@ TypeChecker::TypeChecker(const std::vector<std::string>& code, const std::vector
       code{code},
       tokens{tokens} {}
 
-std::vector<Error>
+std::vector<Errors::Error>
 TypeChecker::TypeCheck(const AstNodePtr& ast) {
   ast->Accept(this);
 

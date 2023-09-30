@@ -13,7 +13,7 @@ Parser::Parser(std::vector<std::string> code, std::vector<Token> tokensVec) : co
                                                                               tokens{std::move(tokensVec)},
                                                                               currentToken{tokens.at(0)} {}
 
-std::variant<AstNodePtr, std::vector<Error>>
+std::variant<AstNodePtr, std::vector<Errors::Error>>
 Parser::Parse() {
   std::vector<AstNodePtr> statements;
 
@@ -39,7 +39,7 @@ Parser::ParseFunctionDeclaration() {
 
       Expect(TK_OPEN_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
       std::vector<AstNodePtr> parameters = ParseFunctionParameters();
-      Expect(TK_CLOSED_PAREN, Errors::EXPECTED_OP_DELIMITER, std::string("("), currentToken.GetStr());
+      Expect(TK_CLOSED_PAREN, Errors::EXPECTED_CL_DELIMITER, std::string(")"), currentToken.GetStr());
 
       Expect(TK_ARROW, Errors::EXPECTED_TOKEN, std::string("->"), currentToken.GetStr());
       std::unique_ptr<Token> datatypeToken = ExpectDataType();
@@ -81,7 +81,7 @@ Parser::ParseFunctionParameters() {
     return parameters;
   }
   catch (const ParsingException& parsingException) {
-    Recover(TK_CLOSED_PAREN);
+    RecoverKeepSynchronizationToken(TK_CLOSED_PAREN);
     return parameters;
   }
 }
@@ -609,6 +609,13 @@ Parser::Recover(TokenType synchronizationToken) {
   }
 
   if (!IsFinishedParsing()) {
+    Advance();
+  }
+}
+
+void
+Parser::RecoverKeepSynchronizationToken(TokenType synchronizationToken) {
+  while (currentToken.GetTokenType() != synchronizationToken && !IsFinishedParsing()) {
     Advance();
   }
 }

@@ -9,7 +9,7 @@
 SemanticValidator::SemanticValidator(const std::vector<std::string>& code, const std::vector<Token>& tokens)
     : code{code}, tokens{tokens} {}
 
-std::vector<Error>
+std::vector<Errors::Error>
 SemanticValidator::Validate(const AstNodePtr& ast) {
   ast->Accept(this);
 

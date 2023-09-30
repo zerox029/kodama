@@ -25,7 +25,7 @@ class ParsingException : public std::exception {
 class Parser {
  public:
   explicit Parser(std::vector<std::string> code, std::vector<Token> tokens);
-  std::variant<AstNodePtr, std::vector<Error>> Parse();
+  std::variant<AstNodePtr, std::vector<Errors::Error>> Parse();
 
  private:
   std::vector<std::string> code;
@@ -33,7 +33,7 @@ class Parser {
   size_t currentTokenIndex = 0;
   Token currentToken;
 
-  std::vector<Error> errors;
+  std::vector<Errors::Error> errors;
 
   std::unordered_map<std::string, TypePtr> symbolTable;
 
@@ -103,13 +103,27 @@ class Parser {
 
   /**
    * Panic-mode recovery
-   * When an error is found, skip tokens until a recovery token is hit.
+   * When an error is found, skip tokens until a recovery token is hit and consumes that token
    * Ideally, update this to be more context based and/or add phrase-level recovery
    */
   void Recover(TokenType synchronizationToken);
+  /**
+   * Panic-mode recovery
+   * When an error is found, skip tokens until a recovery token is hit without consuming that token.
+   * This is useful for example with function parameters where we want to recover at the ')' token but
+   * the consuming of that token is handled within the calling function.
+   */
+  void RecoverKeepSynchronizationToken(TokenType synchronizationToken);
   void RecoverWithOneOf(const std::set<TokenType>& synchronizationTokens);
 
+  /**
+   * Advance the currentTokenIndex and update currentToken
+   */
   void Advance();
+
+  /**
+   * Returns true if currentToken is TK_EOF
+   */
   bool IsFinishedParsing();
   void IgnoreNewlines();
   size_t GetNewLineCountFromCurrentToken();

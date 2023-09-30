@@ -12,7 +12,7 @@
 class TypeChecker : public AstVisitor {
  public:
   TypeChecker(const std::vector<std::string>& code, const std::vector<Token>& tokens);
-  std::vector<Error> TypeCheck(const AstNodePtr& ast);
+  std::vector<Errors::Error> TypeCheck(const AstNodePtr& ast);
 
  private:
   std::vector<std::string> code;
@@ -22,7 +22,7 @@ class TypeChecker : public AstVisitor {
   TypePtr currentScopeType;
   TypePtr lastVisitedType;
 
-  std::vector<Error> errors;
+  std::vector<Errors::Error> errors;
 
   void Visit(Program* element) override;
   void Visit(FunctionDeclaration* element) override;
