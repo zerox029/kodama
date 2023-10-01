@@ -24,6 +24,7 @@ inline constexpr auto EXPECTED_TO_UNTIL = "expected keyword 'to' or 'until' but 
 inline constexpr auto UNEXPECTED_EXPRESSION = "unexpected expression '{}'";
 inline constexpr auto UNEXPECTED_TOKEN = "unexpected token '{}'";
 inline constexpr auto EXPECTED_CONDITION = "expected condition";
+inline constexpr auto UNMATCHED_OP_DELIMITER = "unmatched opening delimiter '{}'";
 
 // Semantic
 inline constexpr auto ID_NOT_FOUND = "cannot find symbol '{}' in scope";

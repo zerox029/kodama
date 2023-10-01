@@ -28,6 +28,7 @@ enum ErrorType {
   UNEXPECTED_EXPRESSION,
   UNEXPECTED_TOKEN,
   EXPECTED_CONDITION,
+  UNMATCHED_OP_DELIMITER,
 
   // Semantic
   ID_NOT_FOUND,
@@ -85,6 +86,9 @@ ErrorMessage(const ErrorType errorType, T&& ... args) {
                                                          fmt::make_format_args(std::forward<T>(args)...)));
     case EXPECTED_CONDITION:
       return std::make_pair("syntax error", Strings::EXPECTED_CONDITION);
+    case UNMATCHED_OP_DELIMITER:
+      return std::make_pair("syntax error", fmt::vformat(Strings::UNMATCHED_OP_DELIMITER,
+                                                         fmt::make_format_args(std::forward<T>(args)...)));
 
       // Semantic
     case ID_NOT_FOUND:

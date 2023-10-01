@@ -24,7 +24,7 @@ Compiler::CheckForErrors(const std::vector<Errors::Error>& errors) {
 std::optional<std::vector<Token>>
 Compiler::Lex(const std::string& code, const std::vector<std::string> codeLines) {
   Lexer lexer{code, codeLines, "/home/emma/Desktop/Kodama/kodama/code.kdm"};
-  std::variant<std::vector<Token>, std::vector<Errors::Error>> lexerResult = lexer.Tokenize();
+  std::variant<std::vector<Token>, std::vector<Errors::Error>> lexerResult = lexer.Lex();
 
   if(lexerResult.index() == 0) {
     return get<std::vector<Token>>(lexerResult);
@@ -52,10 +52,9 @@ Compiler::Parse(const std::vector<std::string>& code, const std::vector<Token>& 
 void
 Compiler::ValidateSemantics(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast) {
   SemanticValidator semanticValidator{code, tokens};
-  std::vector<Errors::Error> typeErrors = semanticValidator.Validate(ast);
-  CheckForErrors(typeErrors);
+  std::vector<Errors::Error> semanticErrors = semanticValidator.Validate(ast);
+  CheckForErrors(semanticErrors);
 }
-
 
 void
 Compiler::TypeCheck(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast) {

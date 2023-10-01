@@ -15,6 +15,7 @@
 #include <utility>
 #include <unordered_map>
 #include <variant>
+#include <stack>
 
 const std::unordered_map<std::string, TokenType> keywords = {
     {"u8", TK_U8}, {"u16", TK_U16}, {"u32", TK_U32},
@@ -31,12 +32,12 @@ const std::unordered_map<std::string, TokenType> keywords = {
 
 class Lexer {
  public:
-  explicit Lexer(std::string input, std::vector<std::string> inputLines, std::string filePath)
+  Lexer(std::string input, std::vector<std::string> inputLines, std::string filePath)
       : input{std::move(input)},
-        inputLines{inputLines},
+        inputLines{std::move(inputLines)},
         filePath{std::move(filePath)} {}
 
-  std::variant<std::vector<Token>, std::vector<Errors::Error>> Tokenize();
+  std::variant<std::vector<Token>, std::vector<Errors::Error>> Lex();
 
  private:
   std::string input;
@@ -49,6 +50,8 @@ class Lexer {
 
   bool isLexingString = false;
   bool lastTokenIsString = false;
+
+  std::stack<Token> unclosedDelimiters;
 
   std::vector<Errors::Error> errors;
 

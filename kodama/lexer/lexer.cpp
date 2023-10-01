@@ -7,10 +7,12 @@
 #include <unordered_map>
 #include <iostream>
 
+// TODO: Find a better way to handle this
 Token
 Lexer::Peek() {
   bool isLexingStringOldValue = isLexingString;
   bool lastTokenIsStringOldValue = lastTokenIsString;
+  std::stack<Token> oldUnclosedDelimiters = unclosedDelimiters;
 
   Token token = Next();
   index -= token.GetStr().length();
@@ -19,6 +21,7 @@ Lexer::Peek() {
 
   isLexingString = isLexingStringOldValue;
   lastTokenIsString = lastTokenIsStringOldValue;
+  unclosedDelimiters = oldUnclosedDelimiters;
 
   return token;
 }
@@ -107,14 +110,32 @@ Lexer::ReadSymbol() {
       return Token{TK_COLON, ":", {filePath, lineNumber, characterLineIndex}};
     case ';':
       return Token{TK_SEMICOLON, ";", {filePath, lineNumber, characterLineIndex}};
-    case '(':
-      return Token{TK_OPEN_PAREN, "(", {filePath, lineNumber, characterLineIndex}};
-    case ')':
+    case '(': {
+      Token token = Token{TK_OPEN_PAREN, "(", {filePath, lineNumber, characterLineIndex}};
+      unclosedDelimiters.push(token);
+
+      return token;
+    }
+    case ')': {
+      if(!unclosedDelimiters.empty() && unclosedDelimiters.top().GetTokenType() == TK_OPEN_PAREN) {
+        unclosedDelimiters.pop();
+      }
+
       return Token{TK_CLOSED_PAREN, ")", {filePath, lineNumber, characterLineIndex}};
-    case '{':
-      return Token{TK_OPEN_CURLY, "{", {filePath, lineNumber, characterLineIndex}};
-    case '}':
+    }
+    case '{': {
+      Token token{TK_OPEN_CURLY, "{", {filePath, lineNumber, characterLineIndex}};
+      unclosedDelimiters.push(token);
+
+      return token;
+    }
+    case '}': {
+      if(!unclosedDelimiters.empty() && unclosedDelimiters.top().GetTokenType() == TK_OPEN_CURLY) {
+        unclosedDelimiters.pop();
+      }
+
       return Token{TK_CLOSED_CURLY, "}", {filePath, lineNumber, characterLineIndex}};
+    }
     case ',':
       return Token{TK_COMMA, ",", {filePath, lineNumber, characterLineIndex}};
     case '.':
@@ -211,7 +232,7 @@ Lexer::ReadString() {
 
   //TODO: Allow for escaped quotation marks
   while (index <= input.length() && input.at(index) != '\"') {
-    if(index == input.length() - 1) {
+    if (index == input.length() - 1) {
       Location startLocation = {filePath, lineNumber, characterLineIndex - stringValue.str().length() - 1};
       LogError(Errors::UNTERMINATED_STRING, startLocation);
 
@@ -231,7 +252,7 @@ Lexer::ReadString() {
 }
 
 std::variant<std::vector<Token>, std::vector<Errors::Error>>
-Lexer::Tokenize() {
+Lexer::Lex() {
   std::vector<Token> tokens{};
 
   while (index < input.length() && Peek().GetTokenType() != TK_EOF) {
@@ -240,13 +261,16 @@ Lexer::Tokenize() {
 
   tokens.emplace_back(Token{TK_EOF, "", {filePath, lineNumber, characterLineIndex}});
 
+  while(!unclosedDelimiters.empty()) {
+    LogError(Errors::UNMATCHED_OP_DELIMITER, unclosedDelimiters.top().GetLocation(), unclosedDelimiters.top().GetStr());
+    unclosedDelimiters.pop();
+  }
+
   if (errors.empty()) {
     return tokens;
   } else {
     return errors;
   }
-
-  return tokens;
 }
 
 template<class... T>
