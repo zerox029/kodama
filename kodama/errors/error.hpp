@@ -5,7 +5,7 @@
 #ifndef KODAMA_SRC_ERRORS_ERROR_HPP_
 #define KODAMA_SRC_ERRORS_ERROR_HPP_
 
-#include "../lexer/lexer.hpp"
+#include "../lexer/token.hpp"
 #include <string>
 
 namespace Errors {

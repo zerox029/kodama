@@ -8,10 +8,10 @@ AstNodePtr
 buildAST(const std::string& code) {
   std::vector<std::string> codeLines = SplitString(code, "\n");
 
-  Lexer lexer{code, DUMMY_FILE_LOCATION};
-  std::vector<Token> tokens = lexer.Tokenize();
+  Lexer lexer{code, codeLines, DUMMY_FILE_LOCATION};
+  std::variant<std::vector<Token>, std::vector<Errors::Error>> lexerResult = lexer.Tokenize();
 
-  Parser parser{codeLines, tokens};
+  Parser parser{codeLines, get<std::vector<Token>>(lexerResult)};
   std::variant<AstNodePtr, std::vector<Errors::Error>> parseResult = parser.Parse();
 
   return get<AstNodePtr>(parseResult);
@@ -21,10 +21,10 @@ std::vector<Errors::Error>
 getErrorsForAst(const std::string& code) {
   std::vector<std::string> codeLines = SplitString(code, "\n");
 
-  Lexer lexer{code, DUMMY_FILE_LOCATION};
-  std::vector<Token> tokens = lexer.Tokenize();
+  Lexer lexer{code, codeLines, DUMMY_FILE_LOCATION};
+  std::variant<std::vector<Token>, std::vector<Errors::Error>> lexerResult = lexer.Tokenize();
 
-  Parser parser{codeLines, tokens};
+  Parser parser{codeLines, get<std::vector<Token>>(lexerResult)};
   std::variant<AstNodePtr, std::vector<Errors::Error>> parseResult = parser.Parse();
 
   return get<std::vector<Errors::Error>>(parseResult);

@@ -6,12 +6,15 @@
 #define KODAMA_SRC_LEXER_LEXER_HPP_
 
 #include "token.hpp"
+#include "../errors/error.hpp"
+#include "../errors/errorFactory.hpp"
 #include <utility>
 #include <vector>
 #include <string>
 #include <optional>
 #include <utility>
 #include <unordered_map>
+#include <variant>
 
 const std::unordered_map<std::string, TokenType> keywords = {
     {"u8", TK_U8}, {"u16", TK_U16}, {"u32", TK_U32},
@@ -28,12 +31,16 @@ const std::unordered_map<std::string, TokenType> keywords = {
 
 class Lexer {
  public:
-  explicit Lexer(std::string input, std::string filePath) : input{std::move(input)}, filePath{std::move(filePath)} {}
+  explicit Lexer(std::string input, std::vector<std::string> inputLines, std::string filePath)
+      : input{std::move(input)},
+        inputLines{inputLines},
+        filePath{std::move(filePath)} {}
 
-  std::vector<Token> Tokenize();
+  std::variant<std::vector<Token>, std::vector<Errors::Error>> Tokenize();
 
  private:
   std::string input;
+  std::vector<std::string> inputLines;
   size_t index = 0;
 
   std::string filePath;
@@ -43,6 +50,8 @@ class Lexer {
   bool isLexingString = false;
   bool lastTokenIsString = false;
 
+  std::vector<Errors::Error> errors;
+
   Token Peek();
   Token Next();
   bool isNewline();
@@ -51,6 +60,9 @@ class Lexer {
   std::optional<Token> ReadNumber();
   std::optional<Token> ReadIdentifier();
   Token ReadString();
+
+  template<class... T>
+  void LogError(Errors::ErrorType errorType, Location location, T&& ... args);
 };
 
 #endif //KODAMA_SRC_LEXER_LEXER_HPP_

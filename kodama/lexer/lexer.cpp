@@ -3,7 +3,6 @@
 //
 
 #include "lexer.hpp"
-#include "../errors/error.hpp"
 #include <sstream>
 #include <unordered_map>
 #include <iostream>
@@ -211,9 +210,17 @@ Lexer::ReadString() {
   std::stringstream stringValue{};
 
   //TODO: Allow for escaped quotation marks
-  while (index < input.length() && input.at(index) != '\"') {
+  while (index <= input.length() && input.at(index) != '\"') {
+    if(index == input.length() - 1) {
+      Location startLocation = {filePath, lineNumber, characterLineIndex - stringValue.str().length() - 1};
+      LogError(Errors::UNTERMINATED_STRING, startLocation);
+
+      return Token{TK_EOF, "", startLocation};
+    }
+
     stringValue << input.at(index);
     index++;
+    characterLineIndex++;
   }
 
   lastTokenIsString = true;
@@ -223,7 +230,7 @@ Lexer::ReadString() {
                {filePath, lineNumber, characterLineIndex - stringValue.str().length()}};
 }
 
-std::vector<Token>
+std::variant<std::vector<Token>, std::vector<Errors::Error>>
 Lexer::Tokenize() {
   std::vector<Token> tokens{};
 
@@ -233,5 +240,21 @@ Lexer::Tokenize() {
 
   tokens.emplace_back(Token{TK_EOF, "", {filePath, lineNumber, characterLineIndex}});
 
+  if (errors.empty()) {
+    return tokens;
+  } else {
+    return errors;
+  }
+
   return tokens;
+}
+
+template<class... T>
+void
+Lexer::LogError(Errors::ErrorType errorType, Location location, T&& ... args) {
+  if constexpr (sizeof...(args) > 0) {
+    errors.push_back(Errors::Generate(errorType, location, inputLines, std::forward<T>(args)...));
+  } else {
+    errors.push_back(Errors::Generate(errorType, location, inputLines));
+  }
 }

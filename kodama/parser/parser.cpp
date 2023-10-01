@@ -417,10 +417,19 @@ Parser::ParseMulExpression() {
 AstNodePtr
 Parser::ParseUnaryExpression() {
   if (std::shared_ptr<Token> plusToken = Consume(TK_PLUS)) {
-    return ParsePrimaryExpression();
+    AstNodePtr rhs = ParsePrimaryExpression();
+    if (!rhs) {
+      LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
+    }
+
+    return rhs;
   } else if (std::shared_ptr<Token> minusToken = Consume(TK_MINUS)) {
     AstNodePtr lhs = std::make_shared<IntegerLiteral>(*minusToken, "0");
+
     AstNodePtr rhs = ParsePrimaryExpression();
+    if (!rhs) {
+      LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
+    }
 
     return std::make_shared<BinaryOperation>(*minusToken, lhs, rhs);
   }
@@ -469,22 +478,44 @@ std::vector<AstNodePtr>
 Parser::ParseFunctionArguments() {
   std::vector<AstNodePtr> arguments{};
 
+  if(Peek(0, TK_CLOSED_PAREN)) {
+    return arguments;
+  }
+
   do {
     if (Peek(1, TK_COLON)) {
       std::unique_ptr<Token> identifier = Consume(TK_IDENTIFIER);
       Expect(TK_COLON, Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
+
       AstNodePtr value = ParseEqualityExpression();
+      if(!value) {
+        LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
+        throw ParsingException();
+      }
 
       AstNodePtr parameter = std::make_shared<FunctionArgument>(*identifier, identifier->GetStr(), value);
       arguments.push_back(parameter);
-    } else if (AstNodePtr value = ParseEqualityExpression()) {
+    }
+    else if(Peek(0, TK_CLOSED_PAREN)) { // Trailing comma
+      LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
+      throw ParsingException();
+    }
+    else {
+      AstNodePtr value = ParseEqualityExpression();
+      if(!value) {
+        LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
+        throw ParsingException();
+      }
+
       AstNodePtr parameter = std::make_shared<FunctionArgument>(value->GetToken(), value);
       arguments.push_back(parameter);
     }
   } while (Consume(TK_COMMA));
 
   // If there are no more arguments, generate an error if the next token isn't a closing parenthesis
-  PeekWithError(0, TK_CLOSED_PAREN, Errors::EXPECTED_VALUE_IDENTIFIER);
+  if(!PeekWithError(0, TK_CLOSED_PAREN, Errors::UNEXPECTED_TOKEN, currentToken.GetStr())) {
+    throw ParsingException();
+  }
 
   return arguments;
 }
@@ -523,9 +554,8 @@ Parser::ParseString() {
 /// {'a'-'z' | 'A'-'Z'}
 AstNodePtr
 Parser::ParseIdentifier() {
-  if (std::shared_ptr<Token> identifierNode = Consume(TK_IDENTIFIER)) {
-    Variable numberLiteralNode{*identifierNode, identifierNode->GetStr()};
-    return std::make_shared<Variable>(numberLiteralNode);
+  if (std::shared_ptr<Token> identifierToken = Consume(TK_IDENTIFIER)) {
+    return std::make_shared<Variable>(*identifierToken, identifierToken->GetStr());
   } else {
     return nullptr;
   }

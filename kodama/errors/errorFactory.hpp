@@ -10,6 +10,7 @@
 #include <utility>
 #include <fmt/format.h>
 #include <format>
+#include <vector>
 
 namespace Errors {
 enum ErrorType {
@@ -132,5 +133,9 @@ Generate(ErrorType errorType, Location location, const std::vector<std::string>&
 
   return Error{message.first, message.second, location, code.at(location.lineNumber - 1)};
 }
+
+Error
+Generate(ErrorType errorType, Location location, const std::vector<std::string>& code);
 }
+
 #endif //KODAMA_SRC_ERRORS_ERRORFACTORY_HPP_

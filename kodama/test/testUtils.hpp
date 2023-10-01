@@ -5,6 +5,7 @@
 #ifndef KODAMA_SRC_TEST_TESTUTILS_HPP_
 #define KODAMA_SRC_TEST_TESTUTILS_HPP_
 
+#include "../lexer/lexer.hpp"
 #include "../parser/parser.hpp"
 #include "../utils/stringUtils.hpp"
 #include <gtest/gtest.h>

@@ -74,6 +74,7 @@ file(GLOB_RECURSE TEST_FILES
         ${SRC_DIR}/test/*.cpp
         ${SRC_DIR}/test/*.hpp)
 
-add_executable(tests ${SRC_FILES} ${TEST_FILES})
+add_executable(tests ${SRC_FILES} ${TEST_FILES}
+        kodama/test/parser/primaryTests.cpp)
 
 target_link_libraries(tests gtest gtest_main LLVM-16 fmt::fmt)

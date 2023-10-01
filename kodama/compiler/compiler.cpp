@@ -8,6 +8,7 @@
 #include "../analyzer/type/typeChecker.hpp"
 #include "../codegen/codegen.hpp"
 #include "../utils/stringUtils.hpp"
+#include "../lexer/lexer.hpp"
 
 void
 Compiler::CheckForErrors(const std::vector<Errors::Error>& errors) {
@@ -20,10 +21,25 @@ Compiler::CheckForErrors(const std::vector<Errors::Error>& errors) {
   }
 }
 
+std::optional<std::vector<Token>>
+Compiler::Lex(const std::string& code, const std::vector<std::string> codeLines) {
+  Lexer lexer{code, codeLines, "/home/emma/Desktop/Kodama/kodama/code.kdm"};
+  std::variant<std::vector<Token>, std::vector<Errors::Error>> lexerResult = lexer.Tokenize();
+
+  if(lexerResult.index() == 0) {
+    return get<std::vector<Token>>(lexerResult);
+  }
+  else {
+    CheckForErrors(get<std::vector<Errors::Error>>(lexerResult));
+    return {};
+  }
+}
+
 std::optional<AstNodePtr>
 Compiler::Parse(const std::vector<std::string>& code, const std::vector<Token>& tokens) {
   Parser parser{code, tokens};
   std::variant<AstNodePtr, std::vector<Errors::Error>> parseResult = parser.Parse();
+
   if(parseResult.index() == 0) {
     return get<AstNodePtr>(parseResult);
   }
@@ -59,9 +75,7 @@ void
 Compiler::Compile(const std::string& code) {
   std::vector<std::string> codeLines = SplitString(code, "\n");
 
-  Lexer lexer{code, "/home/emma/Desktop/Kodama/kodama/code.kdm"};
-  std::vector<Token> tokens = lexer.Tokenize();
-
+  std::vector<Token> tokens = Lex(code, codeLines).value();
   AstNodePtr ast = Parse(codeLines, tokens).value();
   //ValidateSemantics(codeLines, tokens, ast);
   //TypeCheck(codeLines, tokens, ast);
