@@ -20,7 +20,7 @@ statement : expression (';' | '\n')
 expression : assignment | reassignment | equality;
 
 assignment : ('let' | 'val') identifier ':' data_type '=' equality;
-reassignment : identifier '=' equality;
+reassignment : identifier reassignment_operator equality;
 
 equality : add_expression '==' equality
          | add_expression '!=' equality
@@ -44,3 +44,5 @@ unary : ['-' | '+'] primary;
 primary : call | number | identifier;
 call : identifier '(' function_arguments ')';
 function_arguments : { [identifier ':'] equality ',' } [identifier ':'] equality;
+
+reassignment_operator : '=' | '+=' | '-=' | '*=' | '/=' | '%=';

@@ -90,6 +90,7 @@ class Parser {
    * @return Whether or not the token was found
    */
   bool Peek(size_t lookaheadDistance, TokenType tokenType);
+  bool PeekOneOf(size_t lookaheadDistance, const std::list<TokenType>& possibleTokenTypes);
 
   /**
    * Checks if the specified token is of the specified type, reports an error otherwise.

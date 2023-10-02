@@ -16,6 +16,11 @@ enum TokenType {
   TK_STAR,        // *
   TK_SLASH,       // /
   TK_PERCENT,     // %
+  TK_PLUS_ASSIGN, // +=
+  TK_MINUS_ASSIGN,// -=
+  TK_STAR_ASSIGN, // *=
+  TK_SLASH_ASSIGN,// /=
+  TK_MOD_ASSIGN,  // %=
   TK_ASSIGN,      // =
   TK_EQUAL,       // ==
   TK_NOT_EQUAL,   // !=

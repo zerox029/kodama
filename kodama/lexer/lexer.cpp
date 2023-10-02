@@ -84,16 +84,31 @@ std::optional<Token>
 Lexer::ReadSymbol() {
   switch (input.at(index)) {
     case '+':
+      if (input.at(index + 1) == '=') {
+        return Token{TK_PLUS_ASSIGN, "+=", {filePath, lineNumber, characterLineIndex}};
+      }
+
       return Token{TK_PLUS, "+", {filePath, lineNumber, characterLineIndex}};
     case '-':
-      if (input.at(index + 1) == '>') {
+      if (input.at(index + 1) == '=') {
+        return Token{TK_MINUS_ASSIGN, "-=", {filePath, lineNumber, characterLineIndex}};
+      }
+      else if (input.at(index + 1) == '>') {
         return Token{TK_ARROW, "->", {filePath, lineNumber, characterLineIndex}};
       }
 
       return Token{TK_MINUS, "-", {filePath, lineNumber, characterLineIndex}};
     case '*':
+      if (input.at(index + 1) == '=') {
+        return Token{TK_STAR_ASSIGN, "*=", {filePath, lineNumber, characterLineIndex}};
+      }
+
       return Token{TK_STAR, "*", {filePath, lineNumber, characterLineIndex}};
     case '/':
+      if (input.at(index + 1) == '=') {
+        return Token{TK_SLASH_ASSIGN, "/=", {filePath, lineNumber, characterLineIndex}};
+      }
+
       return Token{TK_SLASH, "/", {filePath, lineNumber, characterLineIndex}};
     case '=':
       if (input.at(index + 1) == '=') {
@@ -105,6 +120,10 @@ Lexer::ReadSymbol() {
 
       return Token{TK_ASSIGN, "=", {filePath, lineNumber, characterLineIndex}};
     case '%':
+      if (input.at(index + 1) == '=') {
+        return Token{TK_MOD_ASSIGN, "%=", {filePath, lineNumber, characterLineIndex}};
+      }
+
       return Token{TK_PERCENT, "%", {filePath, lineNumber, characterLineIndex}};
     case ':':
       return Token{TK_COLON, ":", {filePath, lineNumber, characterLineIndex}};

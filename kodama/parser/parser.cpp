@@ -323,13 +323,44 @@ Parser::ParseAssignment() {
 ///reassignment: identifier '=' equality
 AstNodePtr
 Parser::ParseReassignment() {
-  if (Peek(1, TK_ASSIGN)) {
+  if (PeekOneOf(1, {TK_ASSIGN, TK_PLUS_ASSIGN, TK_MINUS_ASSIGN, TK_STAR_ASSIGN, TK_SLASH_ASSIGN, TK_MOD_ASSIGN})) {
     std::unique_ptr<Token> identifierToken = Consume(TK_IDENTIFIER);
-    Expect(TK_ASSIGN, Errors::EXPECTED_TOKEN, std::string("="), currentToken.GetStr());
+
+    std::unique_ptr<Token> assignmentToken =
+        ExpectOneOf({TK_ASSIGN, TK_PLUS_ASSIGN, TK_MINUS_ASSIGN, TK_STAR_ASSIGN, TK_SLASH_ASSIGN, TK_MOD_ASSIGN},
+                    Errors::UNEXPECTED_TOKEN,
+                    currentToken.GetStr());
 
     AstNodePtr rhs = ParseEqualityExpression();
     if (!rhs) {
       LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
+    }
+
+    // Handle arithmetic assignments
+    if(assignmentToken->GetTokenType() == TK_PLUS_ASSIGN) {
+      Token operatorToken{TK_PLUS, "+", {assignmentToken->GetLocation()}};
+      AstNodePtr lhs = std::make_shared<Variable>(*identifierToken, identifierToken->GetStr());
+      rhs = std::make_shared<BinaryOperation>(operatorToken, lhs, rhs);
+    }
+    else if(assignmentToken->GetTokenType() == TK_MINUS_ASSIGN) {
+      Token operatorToken{TK_MINUS, "-", {assignmentToken->GetLocation()}};
+      AstNodePtr lhs = std::make_shared<Variable>(*identifierToken, identifierToken->GetStr());
+      rhs = std::make_shared<BinaryOperation>(operatorToken, lhs, rhs);
+    }
+    else if(assignmentToken->GetTokenType() == TK_STAR_ASSIGN) {
+      Token operatorToken{TK_STAR, "*", {assignmentToken->GetLocation()}};
+      AstNodePtr lhs = std::make_shared<Variable>(*identifierToken, identifierToken->GetStr());
+      rhs = std::make_shared<BinaryOperation>(operatorToken, lhs, rhs);
+    }
+    else if(assignmentToken->GetTokenType() == TK_SLASH_ASSIGN) {
+      Token operatorToken{TK_SLASH_ASSIGN, "/", {assignmentToken->GetLocation()}};
+      AstNodePtr lhs = std::make_shared<Variable>(*identifierToken, identifierToken->GetStr());
+      rhs = std::make_shared<BinaryOperation>(operatorToken, lhs, rhs);
+    }
+    else if(assignmentToken->GetTokenType() == TK_MOD_ASSIGN) {
+      Token operatorToken{TK_PERCENT, "%", {assignmentToken->GetLocation()}};
+      AstNodePtr lhs = std::make_shared<Variable>(*identifierToken, identifierToken->GetStr());
+      rhs = std::make_shared<BinaryOperation>(operatorToken, lhs, rhs);
     }
 
     return std::make_shared<ReassignmentExpression>(*identifierToken, identifierToken->GetStr(), rhs);
@@ -478,7 +509,7 @@ std::vector<AstNodePtr>
 Parser::ParseFunctionArguments() {
   std::vector<AstNodePtr> arguments{};
 
-  if(Peek(0, TK_CLOSED_PAREN)) {
+  if (Peek(0, TK_CLOSED_PAREN)) {
     return arguments;
   }
 
@@ -488,21 +519,19 @@ Parser::ParseFunctionArguments() {
       Expect(TK_COLON, Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
 
       AstNodePtr value = ParseEqualityExpression();
-      if(!value) {
+      if (!value) {
         LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
         throw ParsingException();
       }
 
       AstNodePtr parameter = std::make_shared<FunctionArgument>(*identifier, identifier->GetStr(), value);
       arguments.push_back(parameter);
-    }
-    else if(Peek(0, TK_CLOSED_PAREN)) { // Trailing comma
+    } else if (Peek(0, TK_CLOSED_PAREN)) { // Trailing comma
       LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
       throw ParsingException();
-    }
-    else {
+    } else {
       AstNodePtr value = ParseEqualityExpression();
-      if(!value) {
+      if (!value) {
         LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
         throw ParsingException();
       }
@@ -513,7 +542,7 @@ Parser::ParseFunctionArguments() {
   } while (Consume(TK_COMMA));
 
   // If there are no more arguments, generate an error if the next token isn't a closing parenthesis
-  if(!PeekWithError(0, TK_CLOSED_PAREN, Errors::UNEXPECTED_TOKEN, currentToken.GetStr())) {
+  if (!PeekWithError(0, TK_CLOSED_PAREN, Errors::UNEXPECTED_TOKEN, currentToken.GetStr())) {
     throw ParsingException();
   }
 
@@ -672,6 +701,19 @@ Parser::Peek(size_t lookaheadDistance, TokenType tokenType) {
 
   //TODO: Add bound check
   return tokens.at(currentTokenIndex + lookaheadDistance).GetTokenType() == tokenType;
+}
+
+bool Parser::PeekOneOf(size_t lookaheadDistance, const std::list<TokenType>& possibleTokenTypes) {
+  lookaheadDistance += GetNewLineCountFromCurrentToken();
+
+  for (const TokenType& tokenType : possibleTokenTypes) {
+    //TODO: Add bound check
+    if(tokens.at(currentTokenIndex + lookaheadDistance).GetTokenType() == tokenType) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 template<class... T>
