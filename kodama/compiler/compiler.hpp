@@ -10,6 +10,7 @@
 #include "../lexer/token.hpp"
 #include "../ast/ast.hpp"
 #include "../errors/error.hpp"
+#include "../cli/cli.hpp"
 
 class Compiler {
   void CheckForErrors(const std::vector<Errors::Error>& errors);
@@ -17,10 +18,10 @@ class Compiler {
   std::optional<AstNodePtr> Parse(const std::vector<std::string>& code, const std::vector<Token>& tokens);
   void ValidateSemantics(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast);
   void TypeCheck(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast);
-  void GenerateCode(const AstNodePtr& ast);
+  void GenerateCode(const AstNodePtr& ast, const std::string& location);
 
  public:
-  void Compile(const std::string& code);
+  void Compile(const cli::CliState& state);
 };
 
 

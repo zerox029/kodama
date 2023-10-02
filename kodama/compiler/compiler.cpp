@@ -7,8 +7,9 @@
 #include "../analyzer/semanticValidator.hpp"
 #include "../analyzer/type/typeChecker.hpp"
 #include "../codegen/codegen.hpp"
-#include "../utils/stringUtils.hpp"
 #include "../lexer/lexer.hpp"
+#include "../utils/stringUtils.hpp"
+#include "../utils/fileUtils.hpp"
 
 void
 Compiler::CheckForErrors(const std::vector<Errors::Error>& errors) {
@@ -64,19 +65,20 @@ Compiler::TypeCheck(const std::vector<std::string>& code, const std::vector<Toke
 }
 
 void
-Compiler::GenerateCode(const AstNodePtr& ast) {
+Compiler::GenerateCode(const AstNodePtr& ast, const std::string& location) {
   Codegen codegen{};
   codegen.Generate(ast);
-  codegen.SaveModuleToFile("../out/out.ll");
+  codegen.SaveModuleToFile(location);
 }
 
 void
-Compiler::Compile(const std::string& code) {
-  std::vector<std::string> codeLines = SplitString(code, "\n");
+Compiler::Compile(const cli::CliState& state) {
+  std::string program = ReadFile(state.inputFileName);
+  std::vector<std::string> codeLines = SplitString(program, "\n");
 
-  std::vector<Token> tokens = Lex(code, codeLines).value();
+  std::vector<Token> tokens = Lex(program, codeLines).value();
   AstNodePtr ast = Parse(codeLines, tokens).value();
   //ValidateSemantics(codeLines, tokens, ast);
   //TypeCheck(codeLines, tokens, ast);
-  GenerateCode(ast);
+  GenerateCode(ast, state.outputFileName);
 }
