@@ -1,3 +1,5 @@
+// test comment
+
 def main() -> i64 {
     let i: i64 = 10;
     i -= 5;

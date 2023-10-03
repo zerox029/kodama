@@ -82,7 +82,8 @@ enum TokenType {
   TK_IDENTIFIER,
 
   TK_NEW_LINE,    // new line (\n)
-  TK_EOF          // end of file
+  TK_EOF,          // end of file
+  TK_COMMENT
 };
 
 struct Location {

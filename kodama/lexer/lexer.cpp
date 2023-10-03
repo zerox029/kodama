@@ -108,6 +108,12 @@ Lexer::ReadSymbol() {
       if (input.at(index + 1) == '=') {
         return Token{TK_SLASH_ASSIGN, "/=", {filePath, lineNumber, characterLineIndex}};
       }
+      else if(input.at(index + 1) == '/') {
+        Token commentToken{TK_COMMENT, "//", {filePath, lineNumber, characterLineIndex}};
+        SkipCurrentLine();
+
+        return commentToken;
+      }
 
       return Token{TK_SLASH, "/", {filePath, lineNumber, characterLineIndex}};
     case '=':
@@ -270,12 +276,26 @@ Lexer::ReadString() {
                {filePath, lineNumber, characterLineIndex - stringValue.str().length()}};
 }
 
+void
+Lexer::SkipCurrentLine() {
+  while(!isNewline()) {
+    index++;
+  }
+
+  index++;
+  lineNumber++;
+  characterLineIndex = 0;
+}
+
 std::variant<std::vector<Token>, std::vector<Errors::Error>>
 Lexer::Lex() {
   std::vector<Token> tokens{};
 
   while (index < input.length() && Peek().GetTokenType() != TK_EOF) {
-    tokens.push_back(Next());
+    Token nextToken = Next();
+    if(nextToken.GetTokenType() != TK_COMMENT) {
+      tokens.push_back(Next());
+    }
   }
 
   tokens.emplace_back(Token{TK_EOF, "", {filePath, lineNumber, characterLineIndex}});

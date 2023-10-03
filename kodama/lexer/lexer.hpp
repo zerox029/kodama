@@ -63,6 +63,7 @@ class Lexer {
   std::optional<Token> ReadNumber();
   std::optional<Token> ReadIdentifier();
   Token ReadString();
+  void SkipCurrentLine();
 
   template<class... T>
   void LogError(Errors::ErrorType errorType, Location location, T&& ... args);
