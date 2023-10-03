@@ -14,6 +14,7 @@ struct CliState {
   std::string outputFileName{};
 
   bool emitLLVM = false;
+  bool skipOptimizations = false;
 
   void ValidateState();
 };

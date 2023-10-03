@@ -36,6 +36,9 @@ CLI::ParseArguments() {
     if (arg == "--emit-llvm") {
       state.emitLLVM = true;
     }
+    else if(arg == "--skip-optimizations") {
+      state.skipOptimizations = true;
+    }
     else if (arg == "--help" || arg == "-h") {
       Help();
       exit(0);

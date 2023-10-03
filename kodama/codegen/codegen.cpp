@@ -9,14 +9,25 @@
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
+#include <llvm/Transforms/InstCombine/InstCombine.h>
+#include <llvm/Transforms/Scalar.h>
+#include <llvm/Transforms/Scalar/GVN.h>
+#include <llvm/Transforms/IPO/PassManagerBuilder.h>
 
-Codegen::Codegen() {
+Codegen::Codegen(const bool skipOptimizations)
+    : currentVariableType{}, currentFunctionType{}, currentFunctionName{}, skipOptimizations{skipOptimizations} {
   context = std::make_unique<llvm::LLVMContext>();
   builder = std::make_unique<llvm::IRBuilder<>>(*context);
   module = std::make_unique<llvm::Module>("KodamaGenTest", *context);
-  currentVariableType = nullptr;
-  currentFunctionType = nullptr;
-  currentFunctionName = "";
+
+  functionPassManager = std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+
+  functionPassManager->add(llvm::createInstructionCombiningPass());
+  functionPassManager->add(llvm::createReassociatePass());
+  functionPassManager->add(llvm::createGVNPass());
+  functionPassManager->add(llvm::createCFGSimplificationPass());
+
+  functionPassManager->doInitialization();
 }
 
 void
@@ -78,6 +89,12 @@ Codegen::Visit(FunctionDeclaration* element) {
   }
 
   element->GetBody()->Accept(this);
+
+  llvm::verifyFunction(*function);
+
+  if(!skipOptimizations) {
+    functionPassManager->run(*function);
+  }
 
   lastGeneratedValue = function;
   currentFunctionType = nullptr;
@@ -312,7 +329,7 @@ Codegen::Visit(BinaryOperation* element) {
   llvm::Value* rhs = lastGeneratedValue;
 
   // Todo: remove this and replace with a better typing system
-  if(!currentVariableType) currentVariableType = std::make_shared<I64Type>();
+  if (!currentVariableType) currentVariableType = std::make_shared<I64Type>();
 
   switch (element->GetOperator().GetTokenType()) {
     case TK_PLUS:
@@ -454,15 +471,13 @@ Codegen::CreateFunction(const std::string& fnName, llvm::FunctionType* fnType, s
   llvm::Function* function = module->getFunction(fnName);
 
   if (function == nullptr) {
-    function = llvm::Function::Create(fnType, llvm::Function::ExternalLinkage, fnName, *module);
+    function = llvm::Function::Create(fnType, llvm::Function::ExternalLinkage, fnName, module.get());
 
     unsigned idx = 0;
     for (auto& parameter : function->args()) {
       std::string identifier = (std::static_pointer_cast<FunctionParameter>((parameters.at(idx++))))->GetIdentifier();
       parameter.setName(identifier);
     }
-
-    llvm::verifyFunction(*function);
   }
 
   llvm::BasicBlock* entry = llvm::BasicBlock::Create(*context, "entry", function);

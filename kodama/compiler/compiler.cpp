@@ -65,10 +65,10 @@ Compiler::TypeCheck(const std::vector<std::string>& code, const std::vector<Toke
 }
 
 void
-Compiler::GenerateCode(const AstNodePtr& ast, const std::string& location) {
-  Codegen codegen{};
+Compiler::GenerateCode(const AstNodePtr& ast, const cli::CliState& state) {
+  Codegen codegen{state.skipOptimizations};
   codegen.Generate(ast);
-  codegen.SaveModuleToFile(location);
+  codegen.SaveModuleToFile(state.outputFileName);
 }
 
 void
@@ -80,5 +80,5 @@ Compiler::Compile(const cli::CliState& state) {
   AstNodePtr ast = Parse(codeLines, tokens).value();
   //ValidateSemantics(codeLines, tokens, ast);
   //TypeCheck(codeLines, tokens, ast);
-  GenerateCode(ast, state.outputFileName);
+  GenerateCode(ast, state);
 }

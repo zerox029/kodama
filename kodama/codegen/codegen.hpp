@@ -11,6 +11,7 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Function.h>
+#include <llvm/IR/LegacyPassManager.h>
 #include <map>
 
 class Codegen : public AstVisitor {
@@ -20,11 +21,15 @@ class Codegen : public AstVisitor {
   std::unique_ptr<llvm::Module> module;
   std::map<std::string, llvm::AllocaInst*> namedValues;
 
+  std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager;
+
   llvm::Value* lastGeneratedValue;
 
   TypePtr currentFunctionType;
   std::string currentFunctionName;
   TypePtr currentVariableType;
+
+  bool skipOptimizations;
 
   llvm::Function* CreateFunction(const std::string& fnName,
                                  llvm::FunctionType* fnType,
@@ -32,7 +37,7 @@ class Codegen : public AstVisitor {
   void setupExternFunctions();
 
  public:
-  Codegen();
+  Codegen(const bool skipOptimizations);
 
   void Print();
   void SaveModuleToFile(const std::string& fileName);

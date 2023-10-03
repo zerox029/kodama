@@ -18,7 +18,7 @@ class Compiler {
   std::optional<AstNodePtr> Parse(const std::vector<std::string>& code, const std::vector<Token>& tokens);
   void ValidateSemantics(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast);
   void TypeCheck(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast);
-  void GenerateCode(const AstNodePtr& ast, const std::string& location);
+  void GenerateCode(const AstNodePtr& ast, const cli::CliState& state);
 
  public:
   void Compile(const cli::CliState& state);
