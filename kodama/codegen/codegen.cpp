@@ -12,7 +12,12 @@
 #include <llvm/Transforms/InstCombine/InstCombine.h>
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Transforms/Scalar/GVN.h>
-#include <llvm/Transforms/IPO/PassManagerBuilder.h>
+#include <llvm/Support/Host.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/MC/TargetRegistry.h>
+#include <llvm/Target/TargetOptions.h>
+#include <llvm/Target/TargetMachine.h>
+#include <llvm/Support/FileSystem.h>
 
 Codegen::Codegen(const bool skipOptimizations)
     : currentVariableType{}, currentFunctionType{}, currentFunctionName{}, skipOptimizations{skipOptimizations} {
@@ -36,10 +41,57 @@ Codegen::Print() {
 }
 
 void
-Codegen::SaveModuleToFile(const std::string& fileName) {
+Codegen::EmitLLVMIR(const std::string& fileName) {
   std::error_code errorCode;
   llvm::raw_fd_ostream outLL(fileName, errorCode);
   module->print(outLL, nullptr);
+}
+
+void Codegen::EmitObjectCode(const std::string& fileName) {
+  std::string targetTriple = llvm::sys::getDefaultTargetTriple();
+
+  llvm::InitializeAllTargetInfos();
+  llvm::InitializeAllTargets();
+  llvm::InitializeAllTargetMCs();
+  llvm::InitializeAllAsmParsers();
+  llvm::InitializeAllAsmPrinters();
+
+  std::string error;
+  const llvm::Target* target = llvm::TargetRegistry::lookupTarget(targetTriple, error);
+
+  if(!target) {
+    std::cout << error << std::endl;
+    exit(1);
+  }
+
+  std::string cpu = "generic";
+  std::string features{};
+
+  llvm::TargetOptions opt;
+  auto rm = std::optional<llvm::Reloc::Model>();
+  llvm::TargetMachine* targetMachine = target->createTargetMachine(targetTriple, cpu, features, opt, rm);
+
+  module->setDataLayout(targetMachine->createDataLayout());
+  module->setTargetTriple(targetTriple);
+
+  std::error_code errorCode{};
+  llvm::raw_fd_ostream dest(fileName, errorCode, llvm::sys::fs::OF_None);
+
+  if(errorCode) {
+    std::cout << "Could no open file: " << errorCode.message() << std::endl;
+    exit(1);
+  }
+
+  llvm::legacy::PassManager passManager;
+  auto fileType = llvm::CodeGenFileType::CGFT_ObjectFile;
+
+  if(targetMachine->addPassesToEmitFile(passManager, dest, nullptr, fileType)) {
+    std::cout << "TargetMachine can't emit a file of this type" << std::endl;
+    exit(1);
+  }
+
+  passManager.run(*module);
+  dest.flush();
 }
 
 void

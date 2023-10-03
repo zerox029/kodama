@@ -15,6 +15,9 @@ CliState::ValidateState() {
   if(emitLLVM && outputFileName.empty()) {
     outputFileName = inputFileName.substr(0, inputFileName.size() - 4)+".ll";
   }
+  else if(!emitLLVM && outputFileName.empty()) {
+    outputFileName = inputFileName.substr(0, inputFileName.size() - 4)+".o";
+  }
 }
 
 CLI::CLI(int argc, char** argv) {

@@ -13,8 +13,8 @@
 
 void
 Compiler::CheckForErrors(const std::vector<Errors::Error>& errors) {
-  if(!errors.empty()) {
-    for(const Errors::Error& error : errors) {
+  if (!errors.empty()) {
+    for (const Errors::Error& error : errors) {
       error.Throw();
     }
 
@@ -27,10 +27,9 @@ Compiler::Lex(const std::string& code, const std::vector<std::string> codeLines)
   Lexer lexer{code, codeLines, "/home/emma/Desktop/Kodama/kodama/code.kdm"};
   std::variant<std::vector<Token>, std::vector<Errors::Error>> lexerResult = lexer.Lex();
 
-  if(lexerResult.index() == 0) {
+  if (lexerResult.index() == 0) {
     return get<std::vector<Token>>(lexerResult);
-  }
-  else {
+  } else {
     CheckForErrors(get<std::vector<Errors::Error>>(lexerResult));
     return {};
   }
@@ -41,17 +40,18 @@ Compiler::Parse(const std::vector<std::string>& code, const std::vector<Token>& 
   Parser parser{code, tokens};
   std::variant<AstNodePtr, std::vector<Errors::Error>> parseResult = parser.Parse();
 
-  if(parseResult.index() == 0) {
+  if (parseResult.index() == 0) {
     return get<AstNodePtr>(parseResult);
-  }
-  else {
+  } else {
     CheckForErrors(get<std::vector<Errors::Error>>(parseResult));
     return {};
   }
 }
 
 void
-Compiler::ValidateSemantics(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast) {
+Compiler::ValidateSemantics(const std::vector<std::string>& code,
+                            const std::vector<Token>& tokens,
+                            const AstNodePtr& ast) {
   SemanticValidator semanticValidator{code, tokens};
   std::vector<Errors::Error> semanticErrors = semanticValidator.Validate(ast);
   CheckForErrors(semanticErrors);
@@ -68,7 +68,12 @@ void
 Compiler::GenerateCode(const AstNodePtr& ast, const cli::CliState& state) {
   Codegen codegen{state.skipOptimizations};
   codegen.Generate(ast);
-  codegen.SaveModuleToFile(state.outputFileName);
+
+  if (state.emitLLVM) {
+    codegen.EmitLLVMIR(state.outputFileName);
+  } else {
+    codegen.EmitObjectCode(state.outputFileName);
+  }
 }
 
 void

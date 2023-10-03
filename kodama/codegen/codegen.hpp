@@ -40,7 +40,8 @@ class Codegen : public AstVisitor {
   Codegen(const bool skipOptimizations);
 
   void Print();
-  void SaveModuleToFile(const std::string& fileName);
+  void EmitLLVMIR(const std::string& fileName);
+  void EmitObjectCode(const std::string& fileName);
   void Generate(const AstNodePtr& ast);
 
   void Visit(Program* element) override;
