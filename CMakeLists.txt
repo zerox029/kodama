@@ -28,6 +28,8 @@ file(GLOB_RECURSE SRC_FILES
         ${SRC_DIR}/codegen/*.hpp
         ${SRC_DIR}/compiler/*.cpp
         ${SRC_DIR}/compiler/*.hpp
+        ${SRC_DIR}/cli/*.cpp
+        ${SRC_DIR}/cli/*.hpp
         ${SRC_DIR}/errors/*.cpp
         ${SRC_DIR}/errors/*.hpp
         ${SRC_DIR}/lexer/*.cpp

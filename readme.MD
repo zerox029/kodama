@@ -22,7 +22,7 @@ x++ // Will overflow without causing an error
 ## Values and Variables
 Values represent the result of an expression. They are immutable and are declared with the `val` keyword.
 ```
-// Creates an mutable variable x with value 5
+// Creates an immutable value x with value 5
 val x = 5+5
 x = 20-5 // This will not work
 ```
