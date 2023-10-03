@@ -7,25 +7,6 @@
 #include <unordered_map>
 #include <iostream>
 
-// TODO: Find a better way to handle this
-Token
-Lexer::Peek() {
-  bool isLexingStringOldValue = isLexingString;
-  bool lastTokenIsStringOldValue = lastTokenIsString;
-  std::stack<Token> oldUnclosedDelimiters = unclosedDelimiters;
-
-  Token token = Next();
-  index -= token.GetStr().length();
-  characterLineIndex -= token.GetStr().length();
-  lineNumber -= token.GetTokenType() == TK_NEW_LINE ? 1 : 0;
-
-  isLexingString = isLexingStringOldValue;
-  lastTokenIsString = lastTokenIsStringOldValue;
-  unclosedDelimiters = oldUnclosedDelimiters;
-
-  return token;
-}
-
 Token
 Lexer::Next() {
   // Eliminate white spaces outside of strings and return new lines as tokens
@@ -291,14 +272,17 @@ std::variant<std::vector<Token>, std::vector<Errors::Error>>
 Lexer::Lex() {
   std::vector<Token> tokens{};
 
-  while (index < input.length() && Peek().GetTokenType() != TK_EOF) {
+  while (index < input.length()) {
     Token nextToken = Next();
+
     if(nextToken.GetTokenType() != TK_COMMENT) {
-      tokens.push_back(Next());
+      tokens.push_back(nextToken);
+    }
+
+    if(nextToken.GetTokenType() == TK_EOF) {
+      break;
     }
   }
-
-  tokens.emplace_back(Token{TK_EOF, "", {filePath, lineNumber, characterLineIndex}});
 
   while(!unclosedDelimiters.empty()) {
     LogError(Errors::UNMATCHED_OP_DELIMITER, unclosedDelimiters.top().GetLocation(), unclosedDelimiters.top().GetStr());

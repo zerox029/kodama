@@ -55,7 +55,6 @@ class Lexer {
 
   std::vector<Errors::Error> errors;
 
-  Token Peek();
   Token Next();
   bool isNewline();
   std::optional<Token> ReadSymbol();
