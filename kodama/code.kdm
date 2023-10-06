@@ -1,4 +1,9 @@
-struct test {
-    a: i32;
-    b: bool;
+def main() -> i32 {
+    let a: i64 = 10;
+
+    {
+        let b: i64 = 10;
+    }
+
+    return 0;
 }

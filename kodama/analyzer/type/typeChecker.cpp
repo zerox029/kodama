@@ -49,9 +49,13 @@ TypeChecker::Visit(Parameter* element) {
 
 void
 TypeChecker::Visit(Block* element) {
+  std::unordered_map<std::string, TypePtr> oldSymbolTable = symbolTable;
+
   for (const AstNodePtr& statement : element->GetStatements()) {
     statement->Accept(this);
   }
+
+  symbolTable = oldSymbolTable;
 }
 
 void

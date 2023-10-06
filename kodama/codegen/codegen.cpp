@@ -133,7 +133,6 @@ Codegen::Visit(FunctionDeclaration* element) {
                                             functionType,
                                             element->GetParameters());
 
-  namedValues.clear();
   for (auto& argument : function->args()) {
     llvm::AllocaInst* alloca = builder->CreateAlloca(argument.getType(),
                                                      nullptr,
@@ -164,9 +163,13 @@ Codegen::Visit(Parameter* element) {
 
 void
 Codegen::Visit(Block* element) {
+  std::map<std::string, llvm::AllocaInst*> oldNamedValues = namedValues;
+
   for (const AstNodePtr& node : element->GetStatements()) {
     node->Accept(this);
   }
+
+  namedValues = oldNamedValues;
 }
 
 void

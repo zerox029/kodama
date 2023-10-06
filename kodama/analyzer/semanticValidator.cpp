@@ -68,6 +68,8 @@ SemanticValidator::Visit(Parameter* element) {
 
 void
 SemanticValidator::Visit(Block* element) {
+  std::unordered_map<std::string, TypePtr> oldSymbolTable;
+
   for (size_t i = 0; i < element->GetStatements().size(); i++) {
     switch (element->GetStatements().at(i)->GetKind()) {
       case AST_BINARY_OPERATION:
@@ -92,6 +94,8 @@ SemanticValidator::Visit(Block* element) {
         element->GetStatements().at(i)->Accept(this);
     }
   }
+
+  symbolTable = oldSymbolTable;
 }
 
 void

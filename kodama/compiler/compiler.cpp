@@ -10,6 +10,7 @@
 #include "../lexer/lexer.hpp"
 #include "../utils/stringUtils.hpp"
 #include "../utils/fileUtils.hpp"
+#include <filesystem>
 
 void
 Compiler::CheckForErrors(const std::vector<Errors::Error>& errors) {
@@ -22,6 +23,8 @@ Compiler::CheckForErrors(const std::vector<Errors::Error>& errors) {
   }
 }
 
+
+// TODO: Only pass codeLines
 std::optional<std::vector<Token>>
 Compiler::Lex(const std::string& code, const std::vector<std::string>& codeLines) {
   Lexer lexer{code, codeLines, "/home/emma/Desktop/Kodama/kodama/code.kdm"};
