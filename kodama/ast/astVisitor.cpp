@@ -20,7 +20,7 @@ FunctionDeclaration::Accept(AstVisitor* visitor) {
 }
 
 void
-FunctionParameter::Accept(AstVisitor* visitor) {
+Parameter::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 

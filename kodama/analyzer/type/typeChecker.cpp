@@ -43,7 +43,7 @@ TypeChecker::Visit(FunctionDeclaration* element) {
 }
 
 void
-TypeChecker::Visit(FunctionParameter* element) {
+TypeChecker::Visit(Parameter* element) {
   symbolTable.insert({element->GetIdentifier(), element->GetDataType()});
 }
 

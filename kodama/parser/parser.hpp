@@ -37,6 +37,8 @@ class Parser {
 
   std::unordered_map<std::string, TypePtr> symbolTable;
 
+  AstNodePtr ParseStruct();
+  AstNodePtr ParseStructMember();
   AstNodePtr ParseFunctionDeclaration();
   std::vector<AstNodePtr> ParseFunctionParameters();
   AstNodePtr ParseFunctionBody();

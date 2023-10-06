@@ -141,7 +141,7 @@ TEST(FunctionParameters, HappyPathOneParameter) {
   auto* functionDeclaration = dynamic_cast<FunctionDeclaration*>(program->GetStatements().at(0).get());
   std::vector<AstNodePtr> parameters = functionDeclaration->GetParameters();
 
-  auto* parameter = dynamic_cast<FunctionParameter*>(parameters.at(0).get());
+  auto* parameter = dynamic_cast<Parameter*>(parameters.at(0).get());
 
   // THEN
   EXPECT_EQ(parameters.size(), 1);
@@ -159,8 +159,8 @@ TEST(FunctionParameters, HappyPathTwoParameter) {
   auto* functionDeclaration = dynamic_cast<FunctionDeclaration*>(program->GetStatements().at(0).get());
   std::vector<AstNodePtr> parameters = functionDeclaration->GetParameters();
 
-  auto* parameterOne = dynamic_cast<FunctionParameter*>(parameters.at(0).get());
-  auto* parameterTwo = dynamic_cast<FunctionParameter*>(parameters.at(1).get());
+  auto* parameterOne = dynamic_cast<Parameter*>(parameters.at(0).get());
+  auto* parameterTwo = dynamic_cast<Parameter*>(parameters.at(1).get());
 
   // THEN
   EXPECT_EQ(parameters.size(), 2);

@@ -73,7 +73,7 @@ Parser::ParseFunctionParameters() {
         Expect(TK_COLON, Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
         TypePtr dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
 
-        AstNodePtr parameter = std::make_shared<FunctionParameter>(*identifier, identifier->GetStr(), dataType);
+        AstNodePtr parameter = std::make_shared<Parameter>(*identifier, identifier->GetStr(), dataType);
         parameters.push_back(parameter);
       }
     } while (Consume(TK_COMMA));
@@ -134,6 +134,8 @@ Parser::ParseStatement() {
       return doWhileLoop;
     } else if (AstNodePtr forLoop = ParseForLoop()) {
       return forLoop;
+    } else if(AstNodePtr structNode = ParseStruct()) {
+      return structNode;
     } else {
       AstNodePtr expression = ParseExpression();
       ExpectOneOf({TK_SEMICOLON, TK_NEW_LINE}, Errors::UNEXPECTED_EXPRESSION, currentToken.GetStr());
@@ -148,6 +150,47 @@ Parser::ParseStatement() {
 
     return std::make_shared<NullValue>(errorToken);
   }
+}
+
+/// struct : 'struct' identifier '{' [ identifier ':' data_type (';' | '\n') ] '}'
+AstNodePtr
+Parser::ParseStruct() {
+  if(std::unique_ptr<Token> structToken = Consume(TK_STRUCT)) {
+    std::unique_ptr<Token> identifierToken =
+        Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
+
+    Expect(TK_OPEN_CURLY, Errors::EXPECTED_OP_DELIMITER, std::string("{"), currentToken.GetStr());
+
+    std::vector<AstNodePtr> structMembers{};
+    while(!Peek(0, TK_CLOSED_CURLY)) {
+      AstNodePtr member = ParseStructMember();
+      if(member) {
+        structMembers.push_back(member);
+      }
+    }
+
+    Expect(TK_CLOSED_CURLY, Errors::EXPECTED_CL_DELIMITER, std::string("}"), currentToken.GetStr());
+
+    std::string identifier = identifierToken ? identifierToken->GetStr() : "";
+    return std::make_shared<Struct>(*structToken, identifier, structMembers);
+  }
+
+  return nullptr;
+}
+
+AstNodePtr
+Parser::ParseStructMember() {
+  std::unique_ptr<Token> identifierToken =
+      Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
+
+  Expect(TK_COLON, Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
+
+  TypePtr dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
+
+  ExpectOneOf({TK_SEMICOLON, TK_NEW_LINE}, Errors::UNEXPECTED_EXPRESSION, currentToken.GetStr());
+
+  std::string identifier = identifierToken ? identifierToken->GetStr() : "";
+  return std::make_shared<Parameter>(*identifierToken, identifier, dataType);
 }
 
 /// return: 'return' expression [';'];

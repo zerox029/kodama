@@ -122,7 +122,7 @@ Codegen::Visit(FunctionDeclaration* element) {
                  parameterNodes.end(),
                  parameters.begin(),
                  [this](const AstNodePtr& node) {
-                   return (std::static_pointer_cast<FunctionParameter>(node))->GetDataType()->GetLLVMType(*context);
+                   return (std::static_pointer_cast<Parameter>(node))->GetDataType()->GetLLVMType(*context);
                  });
 
   llvm::FunctionType* functionType = llvm::FunctionType::get(element->GetReturnType()->GetLLVMType(*context),
@@ -158,7 +158,7 @@ Codegen::Visit(FunctionDeclaration* element) {
 }
 
 void
-Codegen::Visit(FunctionParameter* element) {
+Codegen::Visit(Parameter* element) {
 
 }
 
@@ -531,7 +531,7 @@ Codegen::CreateFunction(const std::string& fnName, llvm::FunctionType* fnType, s
 
     unsigned idx = 0;
     for (auto& parameter : function->args()) {
-      std::string identifier = (std::static_pointer_cast<FunctionParameter>((parameters.at(idx++))))->GetIdentifier();
+      std::string identifier = (std::static_pointer_cast<Parameter>((parameters.at(idx++))))->GetIdentifier();
       parameter.setName(identifier);
     }
   }

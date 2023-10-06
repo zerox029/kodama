@@ -45,7 +45,11 @@ FunctionDeclaration::GetKind() const { return AST_FUNC_DEC; }
 
 
 /// Struct
-Struct::Struct(Token token, std::vector<AstNodePtr> members) : AstNode(std::move(token)), members{std::move(members)} {}
+Struct::Struct(Token token, std::string identifier, std::vector<AstNodePtr> members)
+    : AstNode(std::move(token)), identifier{std::move(identifier)}, members{std::move(members)} {}
+
+std::string
+Struct::GetIdentifier() const { return identifier; }
 
 std::vector<AstNodePtr>
 Struct::GetMembers() const { return members; }
@@ -55,17 +59,17 @@ Struct::GetKind() const { AST_STRUCT; }
 
 
 /// Function Parameter
-FunctionParameter::FunctionParameter(Token token, std::string identifier, TypePtr dataType)
+Parameter::Parameter(Token token, std::string identifier, TypePtr dataType)
     : AstNode(token), identifier{std::move(identifier)}, datatype{std::move(dataType)} {}
 
 std::string
-FunctionParameter::GetIdentifier() const { return identifier; }
+Parameter::GetIdentifier() const { return identifier; }
 
 TypePtr
-FunctionParameter::GetDataType() const { return datatype; }
+Parameter::GetDataType() const { return datatype; }
 
 AstNodeKind
-FunctionParameter::GetKind() const { return AST_FUNC_PARAM; }
+Parameter::GetKind() const { return AST_FUNC_PARAM; }
 
 
 /// Block

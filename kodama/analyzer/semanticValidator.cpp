@@ -62,7 +62,7 @@ SemanticValidator::Visit(FunctionDeclaration* element) {
 }
 
 void
-SemanticValidator::Visit(FunctionParameter* element) {
+SemanticValidator::Visit(Parameter* element) {
 
 }
 

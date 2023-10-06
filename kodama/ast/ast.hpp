@@ -67,11 +67,13 @@ class Program : public AstNode {
 
 class Struct : public AstNode {
  private:
+  std::string identifier;
   std::vector<AstNodePtr> members;
 
  public:
-  Struct(Token token, std::vector<AstNodePtr> members);
+  Struct(Token token, std::string identifier, std::vector<AstNodePtr> members);
 
+  std::string GetIdentifier() const;
   std::vector<AstNodePtr> GetMembers() const;
 
   AstNodeKind GetKind() const override;
@@ -101,13 +103,13 @@ class FunctionDeclaration : public AstNode {
   void Accept(AstVisitor* visitor) override;
 };
 
-class FunctionParameter : public AstNode {
+class Parameter : public AstNode {
  private:
   std::string identifier;
   TypePtr datatype;
 
  public:
-  FunctionParameter(Token token, std::string identifier, TypePtr dataType);
+  Parameter(Token token, std::string identifier, TypePtr dataType);
 
   std::string GetIdentifier() const;
   TypePtr GetDataType() const;

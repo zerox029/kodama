@@ -22,7 +22,7 @@ TypeInference::Visit(FunctionDeclaration* element) {
 }
 
 void
-TypeInference::Visit(FunctionParameter* element) {
+TypeInference::Visit(Parameter* element) {
 
 }
 

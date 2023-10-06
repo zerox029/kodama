@@ -13,7 +13,7 @@ class AstVisitor {
   virtual void Visit(Program* element) = 0;
   virtual void Visit(Struct* element) = 0;
   virtual void Visit(FunctionDeclaration* element) = 0;
-  virtual void Visit(FunctionParameter* element) = 0;
+  virtual void Visit(Parameter* element) = 0;
   virtual void Visit(Block* element) = 0;
   virtual void Visit(ReturnStatement* element) = 0;
   virtual void Visit(IfStatement* element) = 0;
