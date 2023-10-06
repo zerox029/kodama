@@ -14,7 +14,7 @@
 
 class Compiler {
   void CheckForErrors(const std::vector<Errors::Error>& errors);
-  std::optional<std::vector<Token>> Lex(const std::string& code, const std::vector<std::string> codeLines);
+  std::optional<std::vector<Token>> Lex(const std::string& code, const std::vector<std::string>& codeLines);
   std::optional<AstNodePtr> Parse(const std::vector<std::string>& code, const std::vector<Token>& tokens);
   void ValidateSemantics(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast);
   void TypeCheck(const std::vector<std::string>& code, const std::vector<Token>& tokens, const AstNodePtr& ast);

@@ -23,7 +23,7 @@ Compiler::CheckForErrors(const std::vector<Errors::Error>& errors) {
 }
 
 std::optional<std::vector<Token>>
-Compiler::Lex(const std::string& code, const std::vector<std::string> codeLines) {
+Compiler::Lex(const std::string& code, const std::vector<std::string>& codeLines) {
   Lexer lexer{code, codeLines, "/home/emma/Desktop/Kodama/kodama/code.kdm"};
   std::variant<std::vector<Token>, std::vector<Errors::Error>> lexerResult = lexer.Lex();
 

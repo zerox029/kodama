@@ -34,6 +34,10 @@ Lexer::Next() {
     index += token.value().GetStr().length();
     characterLineIndex += token.value().GetStr().length();
 
+    if(token->GetTokenType() == TK_COMMENT) {
+      SkipCurrentLine();
+    }
+
     return token.value();
   }
 
@@ -91,7 +95,6 @@ Lexer::ReadSymbol() {
       }
       else if(input.at(index + 1) == '/') {
         Token commentToken{TK_COMMENT, "//", {filePath, lineNumber, characterLineIndex}};
-        SkipCurrentLine();
 
         return commentToken;
       }
