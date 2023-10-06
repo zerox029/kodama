@@ -76,13 +76,14 @@ enum TokenType {
   TK_NULL,        // null
   TK_TRUE,        // true
   TK_FALSE,       // false
+  TK_STRUCT,      // struct
 
   // Value types
   TK_NUMBER,
   TK_IDENTIFIER,
 
   TK_NEW_LINE,    // new line (\n)
-  TK_EOF,          // end of file
+  TK_EOF,         // end of file
   TK_COMMENT
 };
 

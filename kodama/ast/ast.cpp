@@ -44,6 +44,16 @@ AstNodeKind
 FunctionDeclaration::GetKind() const { return AST_FUNC_DEC; }
 
 
+/// Struct
+Struct::Struct(Token token, std::vector<AstNodePtr> members) : AstNode(std::move(token)), members{std::move(members)} {}
+
+std::vector<AstNodePtr>
+Struct::GetMembers() const { return members; }
+
+AstNodeKind
+Struct::GetKind() const { AST_STRUCT; }
+
+
 /// Function Parameter
 FunctionParameter::FunctionParameter(Token token, std::string identifier, TypePtr dataType)
     : AstNode(token), identifier{std::move(identifier)}, datatype{std::move(dataType)} {}

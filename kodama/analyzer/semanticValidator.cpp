@@ -51,6 +51,12 @@ SemanticValidator::Visit(Program* element) {
 }
 
 void
+SemanticValidator::Visit(Struct* element) {
+
+}
+
+
+void
 SemanticValidator::Visit(FunctionDeclaration* element) {
   element->GetBody()->Accept(this);
 }

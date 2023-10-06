@@ -27,6 +27,10 @@ TypeChecker::Visit(Program* element) {
 }
 
 void
+TypeChecker::Visit(Struct* element) {
+}
+
+void
 TypeChecker::Visit(FunctionDeclaration* element) {
   symbolTable.insert({element->GetIdentifier(), element->GetReturnType()});
   currentScopeType = element->GetReturnType();

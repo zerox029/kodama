@@ -45,6 +45,7 @@ class Codegen : public AstVisitor {
   void Generate(const AstNodePtr& ast);
 
   void Visit(Program* element) override;
+  void Visit(Struct* element) override;
   void Visit(FunctionDeclaration* element) override;
   void Visit(FunctionParameter* element) override;
   void Visit(Block* element) override;

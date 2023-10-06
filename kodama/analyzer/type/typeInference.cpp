@@ -12,6 +12,11 @@ TypeInference::Visit(Program* element) {
 }
 
 void
+TypeInference::Visit(Struct* element) {
+}
+
+
+void
 TypeInference::Visit(FunctionDeclaration* element) {
   element->GetBody()->Accept(this);
 }

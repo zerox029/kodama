@@ -12,6 +12,7 @@
 
 enum AstNodeKind {
   AST_PROGRAM,
+  AST_STRUCT,
   AST_FUNC_DEC,
   AST_FUNC_PARAM,
   AST_BLOCK,
@@ -59,6 +60,19 @@ class Program : public AstNode {
   Program(Token token, std::vector<AstNodePtr> statements);
 
   std::vector<AstNodePtr> GetStatements() const;
+
+  AstNodeKind GetKind() const override;
+  void Accept(AstVisitor* visitor) override;
+};
+
+class Struct : public AstNode {
+ private:
+  std::vector<AstNodePtr> members;
+
+ public:
+  Struct(Token token, std::vector<AstNodePtr> members);
+
+  std::vector<AstNodePtr> GetMembers() const;
 
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) override;

@@ -108,6 +108,10 @@ Codegen::Visit(Program* element) {
 }
 
 void
+Codegen::Visit(Struct* element) {
+}
+
+void
 Codegen::Visit(FunctionDeclaration* element) {
   currentFunctionType = element->GetReturnType();
   currentFunctionName = element->GetIdentifier();
