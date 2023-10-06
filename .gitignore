@@ -70,3 +70,5 @@ fabric.properties
 # LLVM Lit output files
 test/lit/Output/
 test/lit/.lit*
+.lit_test_times.txt
+*.profraw

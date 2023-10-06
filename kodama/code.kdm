@@ -2,6 +2,6 @@
 // CHECK: 19
 
 def main() -> i64 {
-    printf("19");
-    return 19;
+    printf("test");
+    return 0;
 }

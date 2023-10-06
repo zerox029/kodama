@@ -1,7 +1,7 @@
-// RUN: %S/../../../cmake-build-debug-coverage/Kodama %s -o %S/Output/out.o && clang %S/Output/out.o -o out && %S/Output/out | FileCheck %s
+// RUN: %S/../../../cmake-build-debug-coverage/Kodama %s -o %S/Output/out.o && clang %S/Output/out.o -o Output/out -no-pie && %S/Output/out | FileCheck %s
 // CHECK: 19
 
 def main() -> i64 {
     printf("19");
-    return 19;
+    return 0;
 }
