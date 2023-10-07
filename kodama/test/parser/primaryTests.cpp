@@ -132,11 +132,11 @@ TEST(Call, HappyPathWithUnnamedArguments) {
   EXPECT_EQ(program->GetStatements().at(0)->GetKind(), AST_FUNCTION_CALL);
   EXPECT_EQ(call->GetArguments().size(), 3);
   EXPECT_EQ(call->GetArguments().at(0)->GetKind(), AST_FUNCTION_ARGUMENT);
-  EXPECT_EQ(dynamic_cast<FunctionArgument*>(call->GetArguments().at(0).get())->GetIdentifier(), "");
+  EXPECT_EQ(dynamic_cast<Argument*>(call->GetArguments().at(0).get())->GetIdentifier(), "");
   EXPECT_EQ(call->GetArguments().at(1)->GetKind(), AST_FUNCTION_ARGUMENT);
-  EXPECT_EQ(dynamic_cast<FunctionArgument*>(call->GetArguments().at(1).get())->GetIdentifier(), "");
+  EXPECT_EQ(dynamic_cast<Argument*>(call->GetArguments().at(1).get())->GetIdentifier(), "");
   EXPECT_EQ(call->GetArguments().at(2)->GetKind(), AST_FUNCTION_ARGUMENT);
-  EXPECT_EQ(dynamic_cast<FunctionArgument*>(call->GetArguments().at(2).get())->GetIdentifier(), "");
+  EXPECT_EQ(dynamic_cast<Argument*>(call->GetArguments().at(2).get())->GetIdentifier(), "");
   EXPECT_EQ(call->GetIdentifier(), "test");
 }
 
@@ -153,11 +153,11 @@ TEST(Call, HappyPathWithNamedArguments) {
   EXPECT_EQ(program->GetStatements().at(0)->GetKind(), AST_FUNCTION_CALL);
   EXPECT_EQ(call->GetArguments().size(), 3);
   EXPECT_EQ(call->GetArguments().at(0)->GetKind(), AST_FUNCTION_ARGUMENT);
-  EXPECT_EQ(dynamic_cast<FunctionArgument*>(call->GetArguments().at(0).get())->GetIdentifier(), "arg");
+  EXPECT_EQ(dynamic_cast<Argument*>(call->GetArguments().at(0).get())->GetIdentifier(), "arg");
   EXPECT_EQ(call->GetArguments().at(1)->GetKind(), AST_FUNCTION_ARGUMENT);
-  EXPECT_EQ(dynamic_cast<FunctionArgument*>(call->GetArguments().at(1).get())->GetIdentifier(), "otherArg");
+  EXPECT_EQ(dynamic_cast<Argument*>(call->GetArguments().at(1).get())->GetIdentifier(), "otherArg");
   EXPECT_EQ(call->GetArguments().at(2)->GetKind(), AST_FUNCTION_ARGUMENT);
-  EXPECT_EQ(dynamic_cast<FunctionArgument*>(call->GetArguments().at(2).get())->GetIdentifier(), "ok");
+  EXPECT_EQ(dynamic_cast<Argument*>(call->GetArguments().at(2).get())->GetIdentifier(), "ok");
   EXPECT_EQ(call->GetIdentifier(), "test");
 }
 

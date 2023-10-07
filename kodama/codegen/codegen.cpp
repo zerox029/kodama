@@ -115,10 +115,10 @@ Codegen::Visit(Struct* element) {
     members.push_back(std::static_pointer_cast<Parameter>(member)->GetDataType()->GetLLVMType(*context));
   }
 
-  llvm::StructType* structType = llvm::StructType::create(members, element->GetIdentifier());
+  llvm::StructType* structType = llvm::StructType::create(members, element->GetDatatype()->GetTypeNameString());
 
   llvm::AllocaInst* structInstance = builder->CreateAlloca(structType, nullptr, "structInstance");
-  namedValues[element->GetIdentifier()] = structAllocation;
+  namedValues[element->GetDatatype()->GetTypeNameString()] = structInstance;
 
   /*
   llvm::Value* firstFieldPtr = builder->CreateStructGEP(structType, structInstance, 0, "valueOne");
@@ -501,7 +501,7 @@ Codegen::Visit(FunctionCall* element) {
 }
 
 void
-Codegen::Visit(FunctionArgument* element) {
+Codegen::Visit(Argument* element) {
   element->GetValue()->Accept(this);
 }
 

@@ -149,7 +149,7 @@ TypeChecker::Visit(FunctionCall* element) {
 }
 
 void
-TypeChecker::Visit(FunctionArgument* element) {
+TypeChecker::Visit(Argument* element) {
   element->Accept(this);
 }
 

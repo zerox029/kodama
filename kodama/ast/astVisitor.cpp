@@ -80,7 +80,7 @@ FunctionCall::Accept(AstVisitor* visitor) {
 }
 
 void
-FunctionArgument::Accept(AstVisitor* visitor) {
+Argument::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 

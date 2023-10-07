@@ -16,14 +16,16 @@ statement : expression (';' | '\n')
           | 'do' statement 'while' '(' condition ')'
           | 'for' identifier 'in' add_expression ('to' | 'until') add_expression statement
           | 'return' expression (';' | '\n')
-          | struct;
+          | structDefinition;
 
-struct : 'struct' identifier '{' [ identifier ':' data_type (';' | '\n') ] '}';
+structDefinition : 'struct' identifier '{' [ identifier ':' data_type (';' | '\n') ] '}';
 
 expression : assignment | reassignment | equality;
 
-assignment : ('let' | 'val') identifier ':' data_type '=' equality;
+assignment : ('let' | 'val') identifier ':' data_type '='  (structInit | equality);
 reassignment : identifier reassignment_operator equality;
+
+structInit : identifier '{' [ identifier ':' equality (';' | '\n') ] '}';
 
 equality : add_expression '==' equality
          | add_expression '!=' equality

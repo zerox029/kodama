@@ -88,7 +88,7 @@ TypeInference::Visit(FunctionCall* element) {
 }
 
 void
-TypeInference::Visit(FunctionArgument* element) {
+TypeInference::Visit(Argument* element) {
 
 }
 

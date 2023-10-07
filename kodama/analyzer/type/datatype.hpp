@@ -73,8 +73,6 @@ class StructType : public Datatype {
  public:
   StructType(std::string identifier);
 
-  std::string GetIdentifier();
-
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
   std::string GetTypeNameString() const override;

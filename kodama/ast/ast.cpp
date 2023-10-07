@@ -45,13 +45,10 @@ FunctionDeclaration::GetKind() const { return AST_FUNC_DEC; }
 
 
 /// Struct
-Struct::Struct(Token token, std::string identifier, std::vector<AstNodePtr> members)
-    : AstNode(std::move(token)), identifier{std::move(identifier)}, members{std::move(members)} {
+Struct::Struct(Token token, std::string identifier, std::vector<AstNodePtr> members, bool isDefinition)
+    : AstNode(std::move(token)), members{std::move(members)} {
   datatype = std::make_shared<StructType>(identifier);
 }
-
-std::string
-Struct::GetIdentifier() const { return identifier; }
 
 std::vector<AstNodePtr>
 Struct::GetMembers() const { return members; }
@@ -61,6 +58,9 @@ Struct::GetKind() const { AST_STRUCT; }
 
 TypePtr
 Struct::GetDatatype() const { return datatype; }
+
+bool
+Struct::IsDefinition() const { return isDefinition; }
 
 
 /// Function Parameter
@@ -315,20 +315,20 @@ FunctionCall::GetKind() const { return AST_FUNCTION_CALL; }
 
 
 /// Function argument
-FunctionArgument::FunctionArgument(Token token, AstNodePtr value)
+Argument::Argument(Token token, AstNodePtr value)
     : AstNode(token), identifier{""}, value{std::move(value)} {}
 
-FunctionArgument::FunctionArgument(Token token, std::string_view identifier, AstNodePtr value)
+Argument::Argument(Token token, std::string_view identifier, AstNodePtr value)
     : AstNode(token), identifier{identifier}, value{std::move(value)} {}
 
 std::string
-FunctionArgument::GetIdentifier() const { return identifier; }
+Argument::GetIdentifier() const { return identifier; }
 
 AstNodePtr
-FunctionArgument::GetValue() const { return value; }
+Argument::GetValue() const { return value; }
 
 AstNodeKind
-FunctionArgument::GetKind() const { return AST_FUNCTION_ARGUMENT; }
+Argument::GetKind() const { return AST_FUNCTION_ARGUMENT; }
 
 
 /// Variable

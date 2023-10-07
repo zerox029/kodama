@@ -11,9 +11,6 @@
 /// STRUCT_TYPE
 StructType::StructType(std::string identifier) : identifier{std::move(identifier)} {}
 
-std::string
-StructType::GetIdentifier() { return identifier; }
-
 TypeCategory
 StructType::GetTypeCategory() const { return STRUCT; }
 
@@ -21,7 +18,7 @@ TypeName
 StructType::GetTypeName() const { return STRUCT_TYPE; }
 
 std::string
-StructType::GetTypeNameString() const { return "struct"; }
+StructType::GetTypeNameString() const { return identifier; }
 
 llvm::Type*
 StructType::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt8Ty(context); }

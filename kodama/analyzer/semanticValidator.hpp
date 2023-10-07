@@ -36,7 +36,7 @@ class SemanticValidator : public AstVisitor {
   void Visit(ReassignmentExpression* element) override;
   void Visit(BinaryOperation* element) override;
   void Visit(FunctionCall* element) override;
-  void Visit(FunctionArgument* element) override;
+  void Visit(Argument* element) override;
   void Visit(Variable* element) override;
   void Visit(IntegerLiteral* element) override;
   void Visit(DecimalLiteral* element) override;

@@ -67,16 +67,16 @@ class Program : public AstNode {
 
 class Struct : public AstNode {
  private:
-  std::string identifier;
-  std::vector<AstNodePtr> members;
+  std::vector<AstNodePtr> members; // Must be Parameters
   TypePtr datatype;
+  bool isDefinition;
 
  public:
-  Struct(Token token, std::string identifier, std::vector<AstNodePtr> members);
+  Struct(Token token, std::string identifier, std::vector<AstNodePtr> members, bool isDefinition);
 
-  std::string GetIdentifier() const;
   std::vector<AstNodePtr> GetMembers() const;
   TypePtr GetDatatype() const;
+  bool IsDefinition() const;
 
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) override;
@@ -293,14 +293,14 @@ class FunctionCall : public AstNode {
   void Accept(AstVisitor* visitor) override;
 };
 
-class FunctionArgument : public AstNode {
+class Argument : public AstNode {
  private:
   std::string identifier;
   AstNodePtr value;
 
  public:
-  FunctionArgument(Token token, AstNodePtr value);
-  FunctionArgument(Token token, std::string_view identifier, AstNodePtr value);
+  Argument(Token token, AstNodePtr value);
+  Argument(Token token, std::string_view identifier, AstNodePtr value);
 
   std::string GetIdentifier() const;
   AstNodePtr GetValue() const;

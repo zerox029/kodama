@@ -25,7 +25,7 @@ class AstVisitor {
   virtual void Visit(ReassignmentExpression* element) = 0;
   virtual void Visit(BinaryOperation* element) = 0;
   virtual void Visit(FunctionCall* element) = 0;
-  virtual void Visit(FunctionArgument* element) = 0;
+  virtual void Visit(Argument* element) = 0;
   virtual void Visit(Variable* element) = 0;
   virtual void Visit(IntegerLiteral* element) = 0;
   virtual void Visit(DecimalLiteral* element) = 0;

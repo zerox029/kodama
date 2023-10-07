@@ -189,7 +189,7 @@ SemanticValidator::ValidateFunctionArguments(const std::vector<AstNodePtr>& argu
   // Verify that no positional argument is found after a named argument
   bool foundNamedArgument = false;
   for (const AstNodePtr arg : arguments) {
-    FunctionArgument* argument = dynamic_cast<FunctionArgument*>(arg.get());
+    Argument* argument = dynamic_cast<Argument*>(arg.get());
     if (argument->GetIdentifier() != "") {
       foundNamedArgument = true;
     }
@@ -200,7 +200,7 @@ SemanticValidator::ValidateFunctionArguments(const std::vector<AstNodePtr>& argu
 }
 
 void
-SemanticValidator::Visit(FunctionArgument* element) {
+SemanticValidator::Visit(Argument* element) {
 
 }
 

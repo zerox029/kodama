@@ -134,7 +134,7 @@ Parser::ParseStatement() {
       return doWhileLoop;
     } else if (AstNodePtr forLoop = ParseForLoop()) {
       return forLoop;
-    } else if(AstNodePtr structNode = ParseStruct()) {
+    } else if(AstNodePtr structNode = ParseStructDefinition()) {
       return structNode;
     } else {
       AstNodePtr expression = ParseExpression();
@@ -152,9 +152,9 @@ Parser::ParseStatement() {
   }
 }
 
-/// struct : 'struct' identifier '{' [ identifier ':' data_type (';' | '\n') ] '}'
+/// struct : 'struct' identifier '{' [ structMemberDefinition ] '}'
 AstNodePtr
-Parser::ParseStruct() {
+Parser::ParseStructDefinition() {
   if(std::unique_ptr<Token> structToken = Consume(TK_STRUCT)) {
     std::unique_ptr<Token> identifierToken =
         Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
@@ -163,7 +163,7 @@ Parser::ParseStruct() {
 
     std::vector<AstNodePtr> structMembers{};
     while(!Peek(0, TK_CLOSED_CURLY)) {
-      AstNodePtr member = ParseStructMember();
+      AstNodePtr member = ParseStructMemberDefinition();
       if(member) {
         structMembers.push_back(member);
       }
@@ -172,14 +172,15 @@ Parser::ParseStruct() {
     Expect(TK_CLOSED_CURLY, Errors::EXPECTED_CL_DELIMITER, std::string("}"), currentToken.GetStr());
 
     std::string identifier = identifierToken ? identifierToken->GetStr() : "";
-    return std::make_shared<Struct>(*structToken, identifier, structMembers);
+    return std::make_shared<Struct>(*structToken, identifier, structMembers, true);
   }
 
   return nullptr;
 }
 
+/// structMemberDefinition : identifier ':' data_type (';' | '\n')
 AstNodePtr
-Parser::ParseStructMember() {
+Parser::ParseStructMemberDefinition() {
   std::unique_ptr<Token> identifierToken =
       Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
 
@@ -191,6 +192,48 @@ Parser::ParseStructMember() {
 
   std::string identifier = identifierToken ? identifierToken->GetStr() : "";
   return std::make_shared<Parameter>(*identifierToken, identifier, dataType);
+}
+
+/// structInit : identifier '{' [ structMemberInit ] '}'
+AstNodePtr
+Parser::ParseStructInit() {
+  if(std::unique_ptr<Token> identifierToken = Consume(TK_IDENTIFIER)) {
+    Expect(TK_OPEN_CURLY, Errors::EXPECTED_OP_DELIMITER, std::string("{"), currentToken.GetStr());
+
+    std::vector<AstNodePtr> structMembers{};
+    while(!Peek(0, TK_CLOSED_CURLY)) {
+      AstNodePtr member = ParseStructMemberInit();
+      if(member) {
+        structMembers.push_back(member);
+      }
+    }
+
+    Expect(TK_CLOSED_CURLY, Errors::EXPECTED_CL_DELIMITER, std::string("}"), currentToken.GetStr());
+
+    std::string identifier = identifierToken ? identifierToken->GetStr() : "";
+    return std::make_shared<Struct>(*identifierToken, identifier, structMembers, false);
+  }
+
+  return nullptr;
+}
+
+/// structMemberInit : identifier ':' equality (';' | '\n')
+AstNodePtr
+Parser::ParseStructMemberInit() {
+  std::unique_ptr<Token> identifierToken =
+      Expect(TK_IDENTIFIER, Errors::EXPECTED_IDENTIFIER, currentToken.GetStr());
+
+  Expect(TK_COLON, Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
+
+  AstNodePtr value = ParseEqualityExpression();
+  if(!value) {
+    LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
+  }
+
+  ExpectOneOf({TK_SEMICOLON, TK_NEW_LINE}, Errors::UNEXPECTED_EXPRESSION, currentToken.GetStr());
+
+  std::string identifier = identifierToken ? identifierToken->GetStr() : "";
+  return std::make_shared<Argument>(*identifierToken, identifier, value);
 }
 
 /// return: 'return' expression [';'];
@@ -337,7 +380,7 @@ Parser::ParseExpression() {
   return nullptr;
 }
 
-///assignment: ('let' | 'val') identifier ':' data_type '=' equality
+///assignment: ('let' | 'val') identifier ':' data_type '=' (structInit | equality)
 AstNodePtr
 Parser::ParseAssignment() {
   if (std::unique_ptr<Token> assignmentToken = ConsumeOneOf({TK_LET, TK_VAL})) {
@@ -345,11 +388,18 @@ Parser::ParseAssignment() {
 
     Expect(TK_COLON, Errors::EXPECTED_TOKEN, std::string(":"), currentToken.GetStr());
 
-    TypePtr dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
+    TypePtr dataType{};
+    if(std::unique_ptr<Token> userType = Consume(TK_IDENTIFIER)) {
+      dataType = std::make_shared<StructType>(userType->GetStr());
+    }
+    else {
+      dataType = TokenTypeToDataType(ExpectDataType()->GetTokenType());
+    }
+
     dataType->SetMutability(assignmentToken->GetTokenType() == TK_LET);
 
     if (Consume(TK_ASSIGN)) {
-      AstNodePtr rhs = ParseEqualityExpression();
+      AstNodePtr rhs = ParseStructInit() ?: ParseEqualityExpression();
       if (!rhs) {
         LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
       }
@@ -567,7 +617,7 @@ Parser::ParseFunctionArguments() {
         throw ParsingException();
       }
 
-      AstNodePtr parameter = std::make_shared<FunctionArgument>(*identifier, identifier->GetStr(), value);
+      AstNodePtr parameter = std::make_shared<Argument>(*identifier, identifier->GetStr(), value);
       arguments.push_back(parameter);
     } else if (Peek(0, TK_CLOSED_PAREN)) { // Trailing comma
       LogError(Errors::EXPECTED_VALUE_IDENTIFIER);
@@ -579,7 +629,7 @@ Parser::ParseFunctionArguments() {
         throw ParsingException();
       }
 
-      AstNodePtr parameter = std::make_shared<FunctionArgument>(value->GetToken(), value);
+      AstNodePtr parameter = std::make_shared<Argument>(value->GetToken(), value);
       arguments.push_back(parameter);
     }
   } while (Consume(TK_COMMA));
