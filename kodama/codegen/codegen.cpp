@@ -109,6 +109,22 @@ Codegen::Visit(Program* element) {
 
 void
 Codegen::Visit(Struct* element) {
+  std::vector<llvm::Type*> members;
+
+  for(const AstNodePtr& member : element->GetMembers()) {
+    members.push_back(std::static_pointer_cast<Parameter>(member)->GetDataType()->GetLLVMType(*context));
+  }
+
+  llvm::StructType* structType = llvm::StructType::create(members, element->GetIdentifier());
+
+  llvm::AllocaInst* structInstance = builder->CreateAlloca(structType, nullptr, "structInstance");
+  namedValues[element->GetIdentifier()] = structAllocation;
+
+  /*
+  llvm::Value* firstFieldPtr = builder->CreateStructGEP(structType, structInstance, 0, "valueOne");
+  llvm::Value* secondFieldPtr = builder->CreateStructGEP(structType, structInstance, 0, "valueTwo");
+
+  builder->CreateRet(builder->CreateAdd(firstFieldPtr, secondFieldPtr, "sum"));*/
 }
 
 void
@@ -146,6 +162,8 @@ Codegen::Visit(FunctionDeclaration* element) {
   element->GetBody()->Accept(this);
 
   llvm::verifyFunction(*function);
+
+  function->print(llvm::outs());
 
   if(!skipOptimizations) {
     functionPassManager->run(*function);

@@ -1,8 +1,7 @@
 def main() -> i32 {
-    let a: i64 = 10;
-
-    {
-        let b: i64 = 10;
+    struct test {
+        a: i32;
+        b: i64;
     }
 
     return 0;
