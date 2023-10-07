@@ -69,12 +69,14 @@ class Struct : public AstNode {
  private:
   std::string identifier;
   std::vector<AstNodePtr> members;
+  TypePtr datatype;
 
  public:
   Struct(Token token, std::string identifier, std::vector<AstNodePtr> members);
 
   std::string GetIdentifier() const;
   std::vector<AstNodePtr> GetMembers() const;
+  TypePtr GetDatatype() const;
 
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) override;

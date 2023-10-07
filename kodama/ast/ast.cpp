@@ -46,7 +46,9 @@ FunctionDeclaration::GetKind() const { return AST_FUNC_DEC; }
 
 /// Struct
 Struct::Struct(Token token, std::string identifier, std::vector<AstNodePtr> members)
-    : AstNode(std::move(token)), identifier{std::move(identifier)}, members{std::move(members)} {}
+    : AstNode(std::move(token)), identifier{std::move(identifier)}, members{std::move(members)} {
+  datatype = std::make_shared<StructType>(identifier);
+}
 
 std::string
 Struct::GetIdentifier() const { return identifier; }
@@ -56,6 +58,9 @@ Struct::GetMembers() const { return members; }
 
 AstNodeKind
 Struct::GetKind() const { AST_STRUCT; }
+
+TypePtr
+Struct::GetDatatype() const { return datatype; }
 
 
 /// Function Parameter

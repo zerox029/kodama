@@ -16,6 +16,7 @@ class AstNode;
 typedef std::shared_ptr<AstNode> AstNodePtr;
 
 enum TypeCategory {
+  STRUCT,
   UINTEGER,
   INTEGER,
   DECIMAL,
@@ -24,6 +25,7 @@ enum TypeCategory {
 };
 
 enum TypeName {
+  STRUCT_TYPE,
   U8_TYPE,
   U16_TYPE,
   U32_TYPE,
@@ -65,6 +67,21 @@ class Datatype {
 };
 
 typedef std::shared_ptr<Datatype> TypePtr;
+
+class StructType : public Datatype {
+  std::string identifier;
+ public:
+  StructType(std::string identifier);
+
+  std::string GetIdentifier();
+
+  TypeCategory GetTypeCategory() const override;
+  TypeName GetTypeName() const override;
+  std::string GetTypeNameString() const override;
+  llvm::Type* GetLLVMType(llvm::LLVMContext& context) const override;
+  bool IsCastableTo(Datatype& castType) const override;
+  AstNodePtr GetDefaultValue() const override;
+};
 
 class U8Type : public Datatype {
  public:

@@ -3,8 +3,34 @@
 //
 
 #include "datatype.hpp"
+
+#include <utility>
 #include "../../ast/ast.hpp"
 #include "llvm/IR/Constants.h"
+
+/// STRUCT_TYPE
+StructType::StructType(std::string identifier) : identifier{std::move(identifier)} {}
+
+std::string
+StructType::GetIdentifier() { return identifier; }
+
+TypeCategory
+StructType::GetTypeCategory() const { return STRUCT; }
+
+TypeName
+StructType::GetTypeName() const { return STRUCT_TYPE; }
+
+std::string
+StructType::GetTypeNameString() const { return "struct"; }
+
+llvm::Type*
+StructType::GetLLVMType(llvm::LLVMContext& context) const { return llvm::Type::getInt8Ty(context); }
+
+AstNodePtr
+StructType::GetDefaultValue() const { return nullptr; }
+
+bool
+StructType::IsCastableTo(Datatype& castType) const { return false; }
 
 /// U8_TYPE
 TypeCategory
