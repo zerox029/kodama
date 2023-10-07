@@ -108,7 +108,7 @@ Codegen::Visit(Program* element) {
 }
 
 void
-Codegen::Visit(Struct* element) {
+Codegen::Visit(StructDefinition* element) {
   std::vector<llvm::Type*> members;
 
   for(const AstNodePtr& member : element->GetMembers()) {
@@ -117,8 +117,17 @@ Codegen::Visit(Struct* element) {
 
   llvm::StructType* structType = llvm::StructType::create(members, element->GetDatatype()->GetTypeNameString());
 
+  userStructTypes.insert({element->GetDatatype()->GetTypeNameString(), structType});
+}
+
+void
+Codegen::Visit(StructInit* element) {
+  llvm::StructType* structType = userStructTypes.at(element->GetDatatype()->GetTypeNameString());
+
   llvm::AllocaInst* structInstance = builder->CreateAlloca(structType, nullptr, "structInstance");
   namedValues[element->GetDatatype()->GetTypeNameString()] = structInstance;
+
+  lastGeneratedValue = structInstance;
 
   /*
   llvm::Value* firstFieldPtr = builder->CreateStructGEP(structType, structInstance, 0, "valueOne");
@@ -162,8 +171,6 @@ Codegen::Visit(FunctionDeclaration* element) {
   element->GetBody()->Accept(this);
 
   llvm::verifyFunction(*function);
-
-  function->print(llvm::outs());
 
   if(!skipOptimizations) {
     functionPassManager->run(*function);

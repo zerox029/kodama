@@ -11,6 +11,9 @@
 /// STRUCT_TYPE
 StructType::StructType(std::string identifier) : identifier{std::move(identifier)} {}
 
+StructType::StructType(std::string identifier, std::vector<std::pair<std::string, TypePtr>> members)
+    : identifier{std::move(identifier)}, members{std::move(members)} {}
+
 TypeCategory
 StructType::GetTypeCategory() const { return STRUCT; }
 
@@ -364,7 +367,10 @@ std::string
 StringType::GetTypeNameString() const { return "string"; }
 
 llvm::Type*
-StringType::GetLLVMType(llvm::LLVMContext& context) const { return llvm::ArrayType::get(llvm::Type::getInt8Ty(context), 10); }
+StringType::GetLLVMType(llvm::LLVMContext& context) const {
+  return llvm::ArrayType::get(llvm::Type::getInt8Ty(context),
+                              10);
+}
 
 AstNodePtr
 StringType::GetDefaultValue() const {

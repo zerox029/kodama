@@ -12,7 +12,8 @@
 
 enum AstNodeKind {
   AST_PROGRAM,
-  AST_STRUCT,
+  AST_STRUCT_DEFINITION,
+  AST_STRUCT_INIT,
   AST_FUNC_DEC,
   AST_FUNC_PARAM,
   AST_BLOCK,
@@ -65,18 +66,32 @@ class Program : public AstNode {
   void Accept(AstVisitor* visitor) override;
 };
 
-class Struct : public AstNode {
+class StructDefinition : public AstNode {
  private:
   std::vector<AstNodePtr> members; // Must be Parameters
   TypePtr datatype;
-  bool isDefinition;
 
  public:
-  Struct(Token token, std::string identifier, std::vector<AstNodePtr> members, bool isDefinition);
+  StructDefinition(Token token, const std::string& identifier, std::vector<AstNodePtr> members);
 
   std::vector<AstNodePtr> GetMembers() const;
   TypePtr GetDatatype() const;
-  bool IsDefinition() const;
+
+  AstNodeKind GetKind() const override;
+  void Accept(AstVisitor* visitor) override;
+};
+
+class StructInit : public AstNode {
+ private:
+  std::vector<AstNodePtr> members; // Must be Arguments
+  TypePtr datatype;
+
+ public:
+  StructInit(Token token, const std::string& identifier, std::vector<AstNodePtr> members);
+
+  std::vector<AstNodePtr> GetMembers() const;
+  void SetDatatype(TypePtr type);
+  TypePtr GetDatatype() const;
 
   AstNodeKind GetKind() const override;
   void Accept(AstVisitor* visitor) override;
@@ -238,6 +253,7 @@ class AssignmentExpression : public AstNode {
   AssignmentExpression(Token token, std::string identifier, TypePtr type, AstNodePtr value);
 
   std::string GetIdentifier() const;
+  void SetDataType(TypePtr type);
   TypePtr GetDataType() const;
   AstNodePtr GetValue() const;
 

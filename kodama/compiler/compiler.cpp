@@ -86,7 +86,7 @@ Compiler::Compile(const cli::CliState& state) {
 
   std::vector<Token> tokens = Lex(program, codeLines).value();
   AstNodePtr ast = Parse(codeLines, tokens).value();
-  //ValidateSemantics(codeLines, tokens, ast);
-  //TypeCheck(codeLines, tokens, ast);
+  ValidateSemantics(codeLines, tokens, ast);
+  TypeCheck(codeLines, tokens, ast);
   GenerateCode(ast, state);
 }

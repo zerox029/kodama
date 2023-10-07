@@ -51,8 +51,19 @@ SemanticValidator::Visit(Program* element) {
 }
 
 void
-SemanticValidator::Visit(Struct* element) {
+SemanticValidator::Visit(StructDefinition* element) {
+  symbolTable.insert({element->GetDatatype()->GetTypeNameString(), element->GetDatatype()});
+}
 
+void
+SemanticValidator::Visit(StructInit* element) {
+  // Check if the struct exists
+  if(!symbolTable.contains(element->GetDatatype()->GetTypeNameString())) {
+    errors.push_back(Errors::Generate(Errors::ID_NOT_FOUND,
+                                      element->GetToken().GetLocation(),
+                                      code,
+                                      element->GetDatatype()->GetTypeNameString()));
+  }
 }
 
 

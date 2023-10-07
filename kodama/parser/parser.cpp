@@ -172,7 +172,7 @@ Parser::ParseStructDefinition() {
     Expect(TK_CLOSED_CURLY, Errors::EXPECTED_CL_DELIMITER, std::string("}"), currentToken.GetStr());
 
     std::string identifier = identifierToken ? identifierToken->GetStr() : "";
-    return std::make_shared<Struct>(*structToken, identifier, structMembers, true);
+    return std::make_shared<StructDefinition>(*structToken, identifier, structMembers);
   }
 
   return nullptr;
@@ -211,7 +211,7 @@ Parser::ParseStructInit() {
     Expect(TK_CLOSED_CURLY, Errors::EXPECTED_CL_DELIMITER, std::string("}"), currentToken.GetStr());
 
     std::string identifier = identifierToken ? identifierToken->GetStr() : "";
-    return std::make_shared<Struct>(*identifierToken, identifier, structMembers, false);
+    return std::make_shared<StructInit>(*identifierToken, identifier, structMembers);
   }
 
   return nullptr;

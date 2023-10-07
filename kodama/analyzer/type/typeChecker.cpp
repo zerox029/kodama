@@ -27,7 +27,14 @@ TypeChecker::Visit(Program* element) {
 }
 
 void
-TypeChecker::Visit(Struct* element) {
+TypeChecker::Visit(StructDefinition* element) {
+  lastVisitedType = element->GetDatatype();
+  symbolTable.insert({element->GetDatatype()->GetTypeNameString(), element->GetDatatype()});
+}
+
+void
+TypeChecker::Visit(StructInit* element) {
+  lastVisitedType = element->GetDatatype();
 }
 
 void
@@ -111,6 +118,21 @@ TypeChecker::Visit(AssignmentExpression* element) {
 
   // Variable value type mismatch
   if (element->GetDataType()->GetTypeName() != lastVisitedType->GetTypeName()) {
+    errors.push_back(Errors::Generate(Errors::VAR_TYPE_MISMATCH,
+                                      element->GetToken().GetLocation(),
+                                      code,
+                                      currentScopeType->GetTypeNameString(),
+                                      lastVisitedType->GetTypeNameString()));
+  }
+
+  // In the case of structs, verify that the identifiers match, if they do, add the members to the rhs type
+  if(element->GetDataType()->GetTypeName() == STRUCT_TYPE) {
+    element->SetDataType(symbolTable.at(element->GetDataType()->GetTypeNameString()));
+
+    std::shared_ptr<StructInit> structInit = std::static_pointer_cast<StructInit>(element->GetValue());
+    structInit->SetDatatype(symbolTable.at(element->GetDataType()->GetTypeNameString()));
+  }
+  else {
     errors.push_back(Errors::Generate(Errors::VAR_TYPE_MISMATCH,
                                       element->GetToken().GetLocation(),
                                       code,

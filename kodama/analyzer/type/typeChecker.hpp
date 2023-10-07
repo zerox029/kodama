@@ -25,7 +25,8 @@ class TypeChecker : public AstVisitor {
   std::vector<Errors::Error> errors;
 
   void Visit(Program* element) override;
-  void Visit(Struct* element) override;
+  void Visit(StructDefinition* element) override;
+  void Visit(StructInit* element) override;
   void Visit(FunctionDeclaration* element) override;
   void Visit(Parameter* element) override;
   void Visit(Block* element) override;

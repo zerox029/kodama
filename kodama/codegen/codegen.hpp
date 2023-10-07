@@ -21,6 +21,8 @@ class Codegen : public AstVisitor {
   std::unique_ptr<llvm::Module> module;
   std::map<std::string, llvm::AllocaInst*> namedValues;
 
+  std::unordered_map<std::string, llvm::StructType*> userStructTypes;
+
   std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager;
 
   llvm::Value* lastGeneratedValue;
@@ -45,7 +47,8 @@ class Codegen : public AstVisitor {
   void Generate(const AstNodePtr& ast);
 
   void Visit(Program* element) override;
-  void Visit(Struct* element) override;
+  void Visit(StructDefinition* element) override;
+  void Visit(StructInit* element) override;
   void Visit(FunctionDeclaration* element) override;
   void Visit(Parameter* element) override;
   void Visit(Block* element) override;

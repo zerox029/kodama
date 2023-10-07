@@ -10,7 +10,12 @@ Program::Accept(AstVisitor* visitor) {
 }
 
 void
-Struct::Accept(AstVisitor* visitor) {
+StructDefinition::Accept(AstVisitor* visitor) {
+  return visitor->Visit(this);
+}
+
+void
+StructInit::Accept(AstVisitor* visitor) {
   return visitor->Visit(this);
 }
 

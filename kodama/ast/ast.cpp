@@ -44,23 +44,48 @@ AstNodeKind
 FunctionDeclaration::GetKind() const { return AST_FUNC_DEC; }
 
 
-/// Struct
-Struct::Struct(Token token, std::string identifier, std::vector<AstNodePtr> members, bool isDefinition)
+/// StructDefinition
+StructDefinition::StructDefinition(Token token, const std::string& identifier, std::vector<AstNodePtr> members)
+    : AstNode(std::move(token)), members{std::move(members)} {
+  std::vector<std::pair<std::string, TypePtr>> datatypeMembers;
+  for(AstNodePtr node : this->members) {
+    std::shared_ptr<Parameter> parameter = std::static_pointer_cast<Parameter>(node);
+    datatypeMembers.push_back(std::make_pair(parameter->GetIdentifier(), parameter->GetDataType()));
+  }
+
+  datatype = std::make_shared<StructType>(identifier, datatypeMembers);
+}
+
+std::vector<AstNodePtr>
+StructDefinition::GetMembers() const { return members; }
+
+AstNodeKind
+StructDefinition::GetKind() const { return AST_STRUCT_DEFINITION; }
+
+TypePtr
+StructDefinition::GetDatatype() const { return datatype; }
+
+
+/// StructDefinition
+StructInit::StructInit(Token token, const std::string& identifier, std::vector<AstNodePtr> members)
     : AstNode(std::move(token)), members{std::move(members)} {
   datatype = std::make_shared<StructType>(identifier);
 }
 
 std::vector<AstNodePtr>
-Struct::GetMembers() const { return members; }
+StructInit::GetMembers() const { return members; }
 
 AstNodeKind
-Struct::GetKind() const { AST_STRUCT; }
+StructInit::GetKind() const { return AST_STRUCT_INIT; }
+
+void
+StructInit::SetDatatype(TypePtr type) {
+  // TODO: Check that names match
+  datatype = type;
+}
 
 TypePtr
-Struct::GetDatatype() const { return datatype; }
-
-bool
-Struct::IsDefinition() const { return isDefinition; }
+StructInit::GetDatatype() const { return datatype; }
 
 
 /// Function Parameter
@@ -204,6 +229,9 @@ AssignmentExpression::AssignmentExpression(Token token, std::string identifier, 
 
 std::string
 AssignmentExpression::GetIdentifier() const { return identifier; }
+
+void
+AssignmentExpression::SetDataType(TypePtr type) { dataType = type; }
 
 TypePtr
 AssignmentExpression::GetDataType() const { return dataType; }

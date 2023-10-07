@@ -12,7 +12,11 @@ TypeInference::Visit(Program* element) {
 }
 
 void
-TypeInference::Visit(Struct* element) {
+TypeInference::Visit(StructDefinition* element) {
+}
+
+void
+TypeInference::Visit(StructInit* element) {
 }
 
 

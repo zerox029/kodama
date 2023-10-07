@@ -69,9 +69,13 @@ class Datatype {
 typedef std::shared_ptr<Datatype> TypePtr;
 
 class StructType : public Datatype {
+ private:
   std::string identifier;
+  std::vector<std::pair<std::string, TypePtr>> members;
+
  public:
   StructType(std::string identifier);
+  StructType(std::string identifier, std::vector<std::pair<std::string, TypePtr>> members);
 
   TypeCategory GetTypeCategory() const override;
   TypeName GetTypeName() const override;
